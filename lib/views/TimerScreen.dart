@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:programadoro/models/ElapsedTimeModel.dart';
+import 'package:programadoro/views/StatsScreen.dart';
 import 'package:programadoro/views/WorkDurationInput.dart';
 import 'package:provider/provider.dart';
 
@@ -46,7 +47,7 @@ class _TimerScreenState extends State<TimerScreen> {
       case TimerStates.sessionResting:
       case TimerStates.noSession:
         {
-          return Color(0x00000000);
+          return Color(0xFFFFFFFF);
         }
     }
   }
@@ -120,6 +121,15 @@ class _TimerScreenState extends State<TimerScreen> {
             child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            ElevatedButton(
+              child: Text('See stats'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => StatsScreen()),
+                );
+              },
+            ),
             WorkDurationInput(),
             Text(stateLabel(watchTimerModel)),
             TimerCounter(),
