@@ -41,7 +41,7 @@ class _TimerScreenState extends State<TimerScreen> {
       case TimerStates.sessionWorkingOvertime:
       case TimerStates.sessionRestingOvertime:
         {
-          return Color(0xFFFFEBEE);
+          return Color(0xFFF08080);
         }
       case TimerStates.sessionWorking:
       case TimerStates.sessionResting:
