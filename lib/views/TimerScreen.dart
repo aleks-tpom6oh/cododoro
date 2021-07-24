@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:programadoro/models/ElapsedTimeModel.dart';
+import 'package:programadoro/views/Controlls.dart';
 import 'package:programadoro/views/StatsScreen.dart';
 import 'package:programadoro/views/WorkDurationInput.dart';
 import 'package:provider/provider.dart';
@@ -59,8 +60,8 @@ class _TimerScreenState extends State<TimerScreen> {
         var elapsedTimeModel = context.read<ElapsedTimeModel>();
         nextStage(elapsedTimeModel, timerModel);
       },
-      child: Icon(Icons.play_arrow),
-      backgroundColor: Colors.blue,
+      child: Icon(Icons.skip_next),
+      backgroundColor: Colors.green,
     );
   }
 
@@ -70,43 +71,11 @@ class _TimerScreenState extends State<TimerScreen> {
       onPressed: () {
         watchTimerModel.pauseResume();
       },
-      child: watchTimerModel.isRunning()
-          ? Icon(Icons.pause_circle)
-          : Icon(Icons.play_arrow),
-      backgroundColor: Colors.blue,
+      child: watchTimerModel.isPaused
+          ? Icon(Icons.play_arrow)
+          : Icon(Icons.pause),
+      backgroundColor: Colors.pink,
     );
-  }
-
-  Widget floatingActionButtons(TimerModel watchTimerModel) {
-    switch (watchTimerModel.state) {
-      case TimerStates.sessionWorking:
-      case TimerStates.sessionWorkingOvertime:
-        {
-          return Wrap(
-            direction: Axis.vertical,
-            children: <Widget>[
-              Container(margin: EdgeInsets.all(10), child: pauseResumeFab()),
-              Container(margin: EdgeInsets.all(10), child: proceedStageFab()),
-            ],
-          );
-        }
-
-      case TimerStates.sessionResting:
-      case TimerStates.sessionRestingOvertime:
-        {
-          return Wrap(
-            direction: Axis.vertical,
-            children: <Widget>[
-              Container(margin: EdgeInsets.all(10), child: pauseResumeFab()),
-              Container(margin: EdgeInsets.all(10), child: proceedStageFab()),
-            ],
-          );
-        }
-      case TimerStates.noSession:
-        {
-          return proceedStageFab();
-        }
-    }
   }
 
   @override
@@ -135,6 +104,21 @@ class _TimerScreenState extends State<TimerScreen> {
             TimerCounter(),
           ],
         )),
-        floatingActionButton: floatingActionButtons(watchTimerModel));
+        floatingActionButton: FloatingActionButtons(
+            expendIcon: Icon(Icons.timer),
+            collapsedIcon: Icon(Icons.timer_off),
+            distance: 112.0,
+            onExpend: () {
+              var timerModel = context.read<TimerModel>();
+              var elapsedTimeModel = context.read<ElapsedTimeModel>();
+              startSession(elapsedTimeModel, timerModel);
+            },
+            onCollapse: () {
+              var timerModel = context.read<TimerModel>();
+              var elapsedTimeModel = context.read<ElapsedTimeModel>();
+              stopSession(elapsedTimeModel, timerModel);
+            },
+            children: [proceedStageFab(), pauseResumeFab()])
+        );
   }
 }

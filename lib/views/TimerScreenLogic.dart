@@ -20,6 +20,16 @@ void tick(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) async {
   }
 }
 
+void startSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) {
+    timerModel.state = TimerStates.sessionWorking;
+    elapsedTimeModel.elapsedTime = 0;
+}
+
+void stopSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) {
+    timerModel.state = TimerStates.noSession;
+    elapsedTimeModel.elapsedTime = 0;
+}
+
 void nextStage(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) {
   switch (timerModel.state) {
     case TimerStates.sessionWorking:
@@ -40,16 +50,9 @@ void nextStage(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) {
     continue next;
     next:case TimerStates.noSession:
       {
-
         timerModel.state = TimerStates.sessionWorking;
         elapsedTimeModel.elapsedTime = 0;
       }
       break;
-    case TimerStates.noSession:
-      {
-        timerModel.state = timerModel.state == TimerStates.sessionWorking
-            ? TimerStates.sessionResting
-            : TimerStates.sessionWorking;
-      }
   }
 }
