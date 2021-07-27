@@ -40,11 +40,24 @@ class StatsScreen extends StatelessWidget {
                   final restMinutes = calculateTimeForIntervalType(
                       snapshot.data, IntervalType.rest);
                   return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       Text("Worked for $workMinutes minutes"),
                       Text("Rested for $restMinutes minutes"),
-                      Text("${snapshot.data?.map((e) => {e.toJson()})}")
+                      ListView(
+                          padding: const EdgeInsets.all(8),
+                          shrinkWrap: true,
+                          children: //<Widget>[
+                              (snapshot.data
+                                      ?.map((e) => Container(
+                                            height: 50,
+                                            color: Colors.amber[600],
+                                            child: Center(
+                                                child: Text(
+                                                    'You did ${e.type} for ${e.duration}')),
+                                          ))
+                                      .toList() ??
+                                  <Widget>[]))
                     ],
                   );
                 }
