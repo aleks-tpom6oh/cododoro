@@ -55,6 +55,7 @@ class _TimerScreenState extends State<TimerScreen> {
 
   Widget proceedStageFab() {
     return FloatingActionButton(
+      heroTag: "proceed-fab",
       onPressed: () {
         var timerModel = context.read<TimerModel>();
         var elapsedTimeModel = context.read<ElapsedTimeModel>();
@@ -68,12 +69,12 @@ class _TimerScreenState extends State<TimerScreen> {
   Widget pauseResumeFab() {
     var watchTimerModel = context.read<TimerModel>();
     return FloatingActionButton(
+      heroTag: "pause-resume-fab",
       onPressed: () {
         watchTimerModel.pauseResume();
       },
-      child: watchTimerModel.isPaused
-          ? Icon(Icons.play_arrow)
-          : Icon(Icons.pause),
+      child:
+          watchTimerModel.isPaused ? Icon(Icons.play_arrow) : Icon(Icons.pause),
       backgroundColor: Colors.pink,
     );
   }
@@ -118,7 +119,6 @@ class _TimerScreenState extends State<TimerScreen> {
               var elapsedTimeModel = context.read<ElapsedTimeModel>();
               stopSession(elapsedTimeModel, timerModel);
             },
-            children: [proceedStageFab(), pauseResumeFab()])
-        );
+            children: [proceedStageFab(), pauseResumeFab()]));
   }
 }

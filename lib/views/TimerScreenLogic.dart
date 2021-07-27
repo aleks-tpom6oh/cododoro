@@ -26,6 +26,9 @@ void startSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) {
 }
 
 void stopSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) {
+   saveSession(DateTime.now(), timerModel.isWorking ? IntervalType.work : IntervalType.rest,
+            Duration(seconds: elapsedTimeModel.elapsedTime));
+
     timerModel.state = TimerStates.noSession;
     elapsedTimeModel.elapsedTime = 0;
 }

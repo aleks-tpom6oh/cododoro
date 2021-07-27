@@ -70,10 +70,12 @@ class _FloatingActionButtonsState extends State<FloatingActionButtons>
   Widget build(BuildContext context) {
     return SizedBox.expand(
       child: Stack(
-        alignment: Alignment.bottomRight,
-        clipBehavior: Clip.none,
-        children: [_buildTapToOpenFab(), ..._buildExpandingActionButtons()],
-      ),
+          alignment: Alignment.bottomRight,
+          clipBehavior: Clip.none,
+          children: _buildExpandingActionButtons() +
+              [
+                _buildTapToOpenFab(),
+              ]),
     );
   }
 
@@ -114,6 +116,7 @@ class _FloatingActionButtonsState extends State<FloatingActionButtons>
             curve: const Interval(0.25, 1.0, curve: Curves.easeInOut),
             duration: const Duration(milliseconds: 250),
             child: FloatingActionButton(
+              heroTag: "collapse-fab",
               onPressed: _toggle,
               child: widget.collapsedIcon,
             )));
@@ -132,6 +135,7 @@ class _FloatingActionButtonsState extends State<FloatingActionButtons>
           curve: const Interval(0.25, 1.0, curve: Curves.easeInOut),
           duration: const Duration(milliseconds: 250),
           child: FloatingActionButton(
+            heroTag: "expand-fab",
             onPressed: _toggle,
             child: widget.expendIcon,
           ),

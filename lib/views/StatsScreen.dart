@@ -1,6 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:programadoro/storage/HistoryRepository.dart';
 
+extension Summer on Iterable<int> {
+  int sum() {
+    return (this.isEmpty)
+        ? 0
+        : this.reduce(
+            (value, workIntervalDuration) => value + workIntervalDuration);
+  }
+}
+
+int calculateTimeForIntervalType(
+    Iterable<PomodoroInterval>? intervals, IntervalType intervalType) {
+  return (intervals ?? [])
+      .where((interval) => interval.type == intervalType)
+      .map((interval) => interval.duration.inMinutes)
+      .sum();
+}
+
 class StatsScreen extends StatelessWidget {
   const StatsScreen({Key? key}) : super(key: key);
 
@@ -18,7 +35,18 @@ class StatsScreen extends StatelessWidget {
               builder: (BuildContext context,
                   AsyncSnapshot<Iterable<PomodoroInterval>> snapshot) {
                 if (snapshot.hasData) {
-                  return Text("${snapshot.data?.map((e) => {e.toJson()})}");
+                  final workMinutes = calculateTimeForIntervalType(
+                      snapshot.data, IntervalType.work);
+                  final restMinutes = calculateTimeForIntervalType(
+                      snapshot.data, IntervalType.rest);
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text("Worked for $workMinutes minutes"),
+                      Text("Rested for $restMinutes minutes"),
+                      Text("${snapshot.data?.map((e) => {e.toJson()})}")
+                    ],
+                  );
                 }
                 return ElevatedButton(
                   onPressed: () {
