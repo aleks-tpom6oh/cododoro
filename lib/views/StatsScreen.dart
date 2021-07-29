@@ -10,12 +10,22 @@ extension Summer on Iterable<int> {
   }
 }
 
-int calculateTimeForIntervalType(
+extension DurationPrinter on Duration {
+  String toHmsString() {
+    int hours = this.inHours;
+    int minutes = this.inMinutes - hours * 60;
+    int seconds = this.inSeconds - this.inMinutes * 60;
+    return "$hours hours, $minutes minutes, $seconds seconds";
+  }
+}
+
+Duration calculateTimeForIntervalType(
     Iterable<PomodoroInterval>? intervals, IntervalType intervalType) {
-  return (intervals ?? [])
-      .where((interval) => interval.type == intervalType)
-      .map((interval) => interval.duration.inMinutes)
-      .sum();
+  return Duration(
+      seconds: (intervals ?? [])
+          .where((interval) => interval.type == intervalType)
+          .map((interval) => interval.duration.inSeconds)
+          .sum());
 }
 
 class StatsScreen extends StatelessWidget {
@@ -35,29 +45,43 @@ class StatsScreen extends StatelessWidget {
               builder: (BuildContext context,
                   AsyncSnapshot<Iterable<PomodoroInterval>> snapshot) {
                 if (snapshot.hasData) {
-                  final workMinutes = calculateTimeForIntervalType(
+                  final workDuration = calculateTimeForIntervalType(
                       snapshot.data, IntervalType.work);
-                  final restMinutes = calculateTimeForIntervalType(
+                  final restDuration = calculateTimeForIntervalType(
                       snapshot.data, IntervalType.rest);
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Text("Worked for $workMinutes minutes"),
-                      Text("Rested for $restMinutes minutes"),
-                      ListView(
-                          padding: const EdgeInsets.all(8),
-                          shrinkWrap: true,
-                          children: //<Widget>[
-                              (snapshot.data
-                                      ?.map((e) => Container(
-                                            height: 50,
-                                            color: Colors.amber[600],
-                                            child: Center(
-                                                child: Text(
-                                                    'You did ${e.type} for ${e.duration}')),
-                                          ))
-                                      .toList() ??
-                                  <Widget>[]))
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("Worked for ${workDuration.toHmsString()}"),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("Rested for ${restDuration.toHmsString()}"),
+                      ),
+                      Expanded(
+                          child: ListView(
+                              padding: const EdgeInsets.all(8),
+                              children: //<Widget>[
+                                  (snapshot.data
+                                          ?.map((e) => Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Container(
+                                                  height: 50,
+                                                  color:
+                                                      e.type == IntervalType.work
+                                                          ? Colors.amber[600]
+                                                          : Colors.cyan,
+                                                  child:  Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: Text(
+                                                            'You did ${e.type} for ${e.duration.toHmsString()}'),
+                                                  )),
+                                                ),
+                                          )
+                                          .toList() ??
+                                      <Widget>[])))
                     ],
                   );
                 }
