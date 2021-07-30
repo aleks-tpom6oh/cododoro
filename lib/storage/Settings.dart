@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Settings {
+class Settings with ChangeNotifier {
   int _defaultWorkDuration = 55 * 60;
   int _defaultRestDuration = 5 * 60;
 
@@ -20,6 +21,7 @@ class Settings {
 
   void setWorkDuration(newDuration) async {
     (await prefs).setInt("WORK_DURATION", newDuration);
+    notifyListeners();
   }
 
   Future<int> get restDuration async {
@@ -28,5 +30,6 @@ class Settings {
 
   void setRestDuration(newDuration) async {
     (await prefs).setInt("REST_DURATION", newDuration);
+    notifyListeners();
   }
 }

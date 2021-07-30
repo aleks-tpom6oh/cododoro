@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:programadoro/models/ElapsedTimeModel.dart';
 import 'package:provider/provider.dart';
 
+import 'storage/Settings.dart';
 import 'views/TimerScreen.dart';
 import 'models/TimerModel.dart';
 
@@ -14,6 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(title: 'programadoro', home: MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => TimerModel()),
+        ChangeNotifierProvider(create: (context) => Settings()),
         ChangeNotifierProvider(create: (context) => ElapsedTimeModel()),
       ],
       child: TimerScreen()));
