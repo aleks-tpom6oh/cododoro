@@ -38,48 +38,69 @@ class DurationsSettingsDialog extends StatelessWidget {
                     this.restDurationInputController?.text = restDuration;
                     return Column(
                       children: [
-                        TextField(
-                          controller: this.workDurationInputController,
-                          maxLines: 1,
-                          textAlign: TextAlign.center,
-                          enabled: true,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                              alignLabelWithHint: true,
-                              labelText: "Work",
-                              hintText: workDuration),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: this.workDurationInputController,
+                                maxLines: 1,
+                                textAlign: TextAlign.center,
+                                enabled: true,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                    alignLabelWithHint: true,
+                                    labelText: "Work",
+                                    hintText: workDuration),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                final val =
+                                    this.workDurationInputController?.text;
+                                if (val != null) {
+                                  print("Sublitted $val ${double.parse(val)}");
+                                  this.settings?.setWorkDuration(
+                                      (double.parse(val) * 60).toInt());
+                                }
+                              },
+                              child: const Text('Apply'),
+                            )
+                          ],
                         ),
-                        TextField(
-                          controller: this.restDurationInputController,
-                          maxLines: 1,
-                          textAlign: TextAlign.center,
-                          enabled: true,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                              alignLabelWithHint: true,
-                              labelText: "Rest",
-                              hintText: restDuration),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: this.restDurationInputController,
+                                maxLines: 1,
+                                textAlign: TextAlign.center,
+                                enabled: true,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                    alignLabelWithHint: true,
+                                    labelText: "Rest",
+                                    hintText: restDuration),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                final restVal =
+                                    this.restDurationInputController?.text;
+                                if (restVal != null) {
+                                  print(
+                                      "Sublitted $restVal ${double.parse(restVal)}");
+                                  this.settings?.setRestDuration(
+                                      (double.parse(restVal) * 60).toInt());
+                                }
+                              },
+                              child: const Text('Apply'),
+                            )
+                          ],
                         )
                       ],
                     );
                   });
             }),
-        TextButton(
-          onPressed: () {
-            final val = this.workDurationInputController?.text;
-            if (val != null) {
-              print("Sublitted $val ${double.parse(val)}");
-              this.settings?.setWorkDuration((double.parse(val) * 60).toInt());
-            }
-            final restVal = this.restDurationInputController?.text;
-            if (restVal != null) {
-              print("Sublitted $restVal ${double.parse(restVal)}");
-              this.settings?.setRestDuration((double.parse(restVal) * 60).toInt());
-            }
-            Navigator.pop(context);
-          },
-          child: const Text('OK'),
-        )
       ],
     );
   }
