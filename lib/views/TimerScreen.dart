@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:programadoro/models/ElapsedTimeModel.dart';
+import 'package:programadoro/storage/HistoryRepository.dart';
 import 'package:programadoro/storage/Settings.dart';
 import 'package:programadoro/views/Controlls.dart';
 import 'package:programadoro/views/DurationSettingsDialog.dart';
@@ -33,6 +34,7 @@ class _TimerScreenState extends State<TimerScreen> {
   void initState() {
     super.initState();
     Timer.periodic(Duration(seconds: 1), (Timer t) => _tick());
+    clearOldHistory();
   }
 
   String stateLabel(TimerModel watchTimerModel) {
@@ -137,10 +139,11 @@ class _TimerScreenState extends State<TimerScreen> {
                                     _restDurationInputController =
                                     TextEditingController();
                                 return DurationsSettingsDialog(
-                                  settings: settings,
-                                  workDurationInputController: _workDurationInputController,
-                                  restDurationInputController: _restDurationInputController
-                                );
+                                    settings: settings,
+                                    workDurationInputController:
+                                        _workDurationInputController,
+                                    restDurationInputController:
+                                        _restDurationInputController);
                               },
                             );
                           },
@@ -176,5 +179,13 @@ class _TimerScreenState extends State<TimerScreen> {
               stopSession(elapsedTimeModel, timerModel);
             },
             children: [proceedStageFab(), pauseResumeFab()]));
+  }
+
+  @override
+  void dispose() {
+    notifiers.forEach((element) {
+      element.dispose();
+    });
+    super.dispose();
   }
 }

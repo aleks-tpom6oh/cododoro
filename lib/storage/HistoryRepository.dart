@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 enum IntervalType { work, rest }
 
-//class HistoryRepository {
 void saveSession(DateTime endTime, IntervalType type, Duration duration) async {
   final newIntervalJson = PomodoroInterval(endTime, type, duration).toJson();
 
@@ -27,10 +26,20 @@ Future<Iterable<PomodoroInterval>> getTodayIntervals() async {
   return todayIntervals.map((e) => PomodoroInterval.fromJson(json.decode(e)));
 }
 
+void clearOldHistory() async {
+  final prefs = await SharedPreferences.getInstance();
+
+  prefs.getKeys().forEach((prefKey) {
+    if (prefKey != key(DateTime.now()) && 
+        prefKey != key(DateTime.now().subtract(Duration(days:1)))) {
+      prefs.remove(prefKey);
+    }
+  });
+}
+
 String key(DateTime time) {
   return "${time.day}-${time.month}-${time.year}";
 }
-//}
 
 class PomodoroInterval {
   final DateTime endTime;
