@@ -1,19 +1,8 @@
-import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:programadoro/storage/BaseSharedPrefs.dart';
 
-class Settings with ChangeNotifier {
+class Settings extends BaseSharedPrefs {
   int _defaultWorkDuration = 55 * 60;
   int _defaultRestDuration = 5 * 60;
-
-  SharedPreferences? _prefs;
-
-  Future<SharedPreferences> get prefs async {
-    if (_prefs != null) {
-      return _prefs!;
-    } else {
-      return SharedPreferences.getInstance();
-    }
-  }
 
   Future<int> get workDuration async {
     return (await prefs).getInt("WORK_DURATION") ?? _defaultWorkDuration;
