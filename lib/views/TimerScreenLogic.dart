@@ -18,11 +18,13 @@ Future<void> _notifyAll() async {
 }
 
 Timer? notificationsTimer;
+int currentNotificationsDelayProgressionStep = 0;
 
 void scheduleNotifications({int step = 0}) async {
   final duration = await NotificationSchedule().timeAtStep(step);
   print("Next notification in $duration minutes");
   notificationsTimer = Timer(Duration(minutes: duration), () async {
+    currentNotificationsDelayProgressionStep = step + 1;
     await _notifyAll();
     scheduleNotifications(step: step + 1);
   });
@@ -52,6 +54,16 @@ void startSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) {
   timerModel.state = TimerStates.sessionWorking;
   elapsedTimeModel.elapsedTime = 0;
   notificationsTimer?.cancel();
+}
+
+void pauseResume(TimerModel timerModel) {
+  if (timerModel.isPaused && timerModel.isOvertime) {
+    scheduleNotifications(step: currentNotificationsDelayProgressionStep + 1);
+  } else {
+    notificationsTimer?.cancel();
+  }
+
+  timerModel.pauseResume();
 }
 
 void stopSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) {

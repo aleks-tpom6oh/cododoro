@@ -75,7 +75,7 @@ class _TimerScreenState extends State<TimerScreen> {
     return FloatingActionButton(
       heroTag: "pause-resume-fab",
       onPressed: () {
-        watchTimerModel.pauseResume();
+        pauseResume(watchTimerModel);
       },
       child:
           watchTimerModel.isPaused ? Icon(Icons.play_arrow) : Icon(Icons.pause),
