@@ -7,7 +7,7 @@ enum Strategy { Fibonacci, Linear }
 const fibonaccis = [1, 2, 3, 5, 8, 13, 21, 34, 55];
 
 class NotificationSchedule extends BaseSharedPrefs {
-  Future<Strategy> get _strategy async {
+  Future<Strategy> get strategy async {
     final strategyIndex = (await prefs).getInt("NOTIFICATIONS_STRATEGY") ?? 0;
     return Strategy.values[min(Strategy.values.length, strategyIndex)];
   }
@@ -17,7 +17,7 @@ class NotificationSchedule extends BaseSharedPrefs {
     notifyListeners();
   }
 
-  Future<int> get _baseTime async {
+  Future<int> get baseTime async {
     return (await prefs).getInt("NOTIFICATIONS_BASE_TIME") ?? 8;
   }
 
@@ -27,15 +27,15 @@ class NotificationSchedule extends BaseSharedPrefs {
   }
 
   Future<List<int>> computeTimes() async {
-    switch (await _strategy) {
+    switch (await strategy) {
       case Strategy.Fibonacci:
         {
-          final initialStep = fibonaccis.indexOf(await _baseTime) + 1;
+          final initialStep = fibonaccis.indexOf(await baseTime) + 1;
           return fibonaccis.sublist(0, initialStep).reversed.toList();
         }
       case Strategy.Linear:
         {
-          return List.generate(await _baseTime, (index) => index)
+          return List.generate(await baseTime, (index) => index)
               .reversed
               .toList();
         }

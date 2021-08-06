@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:programadoro/models/ElapsedTimeModel.dart';
-import 'package:programadoro/timeutils.dart';
+import 'package:programadoro/utils.dart';
 import 'package:provider/provider.dart';
 
 class TimerCounter extends StatelessWidget {

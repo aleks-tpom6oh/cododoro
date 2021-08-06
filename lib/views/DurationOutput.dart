@@ -25,7 +25,6 @@ class DurationOutput extends StatelessWidget {
         child: FutureBuilder(
             future: duration,
             builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-              print("${Duration(seconds: snapshot.data!).inMinutes}");
               return Text(
                   snapshot.hasData
                       ? "${Duration(seconds: snapshot.data!).inMinutes}"

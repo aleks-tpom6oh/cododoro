@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:programadoro/models/ElapsedTimeModel.dart';
 import 'package:programadoro/storage/HistoryRepository.dart';
+import 'package:programadoro/storage/NotificationsSchedule.dart';
+//import 'package:programadoro/storage/NotificationsSchedule.dart';
 import 'package:programadoro/storage/Settings.dart';
 import 'package:programadoro/views/Controlls.dart';
-import 'package:programadoro/views/DurationSettingsDialog.dart';
+import 'package:programadoro/views/settings/SettingsDialog.dart';
 import 'package:programadoro/views/StatsScreen.dart';
 import 'package:programadoro/views/DurationOutput.dart';
 import 'package:provider/provider.dart';
@@ -132,18 +134,11 @@ class _TimerScreenState extends State<TimerScreen> {
                             await showDialog<void>(
                               context: context,
                               builder: (BuildContext context) {
-                                TextEditingController
-                                    _workDurationInputController =
-                                    TextEditingController();
-                                TextEditingController
-                                    _restDurationInputController =
-                                    TextEditingController();
-                                return DurationsSettingsDialog(
-                                    settings: settings,
-                                    workDurationInputController:
-                                        _workDurationInputController,
-                                    restDurationInputController:
-                                        _restDurationInputController);
+                                return ChangeNotifierProvider(
+                                  create: (context) => NotificationSchedule(),
+                                  child: SettingsDialog(
+                                      settings: settings),
+                                );
                               },
                             );
                           },
