@@ -1,4 +1,4 @@
-package com.example.cododoro
+package com.cododoro
 
 import io.flutter.embedding.android.FlutterActivity
 

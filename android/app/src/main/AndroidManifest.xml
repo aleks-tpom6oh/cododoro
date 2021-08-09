@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.cododoro">
+    package="com.cododoro">
    <application
         android:label="cododoro"
         android:icon="@mipmap/ic_launcher">
