@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:programadoro/models/ElapsedTimeModel.dart';
-import 'package:programadoro/models/TimerModel.dart';
-import 'package:programadoro/models/TimerStates.dart';
-import 'package:programadoro/notifiers/BaseNotifier.dart';
-import 'package:programadoro/notifiers/LocalNotificationsNotifier.dart';
-import 'package:programadoro/notifiers/SoundNotifier.dart';
-import 'package:programadoro/storage/HistoryRepository.dart';
-import 'package:programadoro/storage/NotificationsSchedule.dart';
-import 'package:programadoro/storage/Settings.dart';
+import 'package:cododoro/models/ElapsedTimeModel.dart';
+import 'package:cododoro/models/TimerModel.dart';
+import 'package:cododoro/models/TimerStates.dart';
+import 'package:cododoro/notifiers/BaseNotifier.dart';
+import 'package:cododoro/notifiers/LocalNotificationsNotifier.dart';
+import 'package:cododoro/notifiers/SoundNotifier.dart';
+import 'package:cododoro/storage/HistoryRepository.dart';
+import 'package:cododoro/storage/NotificationsSchedule.dart';
+import 'package:cododoro/storage/Settings.dart';
 
 List<BaseNotifier> notifiers = [SoundNotifier(), LocalNotificationsNotifier()];
 

@@ -1,4 +1,4 @@
-import 'package:programadoro/notifiers/BaseNotifier.dart';
+import 'package:cododoro/notifiers/BaseNotifier.dart';
 import 'package:just_audio/just_audio.dart';
 
 

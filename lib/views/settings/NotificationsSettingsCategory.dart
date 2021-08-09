@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:programadoro/storage/NotificationsSchedule.dart';
+import 'package:cododoro/storage/NotificationsSchedule.dart';
 import 'package:provider/provider.dart';
 
 class NotificationsSettingsCategory extends StatelessWidget {

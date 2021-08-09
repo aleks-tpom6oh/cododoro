@@ -1,4 +1,4 @@
-import 'package:programadoro/storage/BaseSharedPrefs.dart';
+import 'package:cododoro/storage/BaseSharedPrefs.dart';
 
 class Settings extends BaseSharedPrefs {
   int _defaultWorkDuration = 55 * 60;

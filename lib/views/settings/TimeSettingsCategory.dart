@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:programadoro/storage/Settings.dart';
+import 'package:cododoro/storage/Settings.dart';
 
 class TimeSettingsCategory extends StatelessWidget {
   const TimeSettingsCategory({

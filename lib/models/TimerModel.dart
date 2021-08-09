@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:programadoro/models/TimerStates.dart';
+import 'package:cododoro/models/TimerStates.dart';
 
 class TimerModel with ChangeNotifier {
   TimerStates _state = TimerStates.noSession;

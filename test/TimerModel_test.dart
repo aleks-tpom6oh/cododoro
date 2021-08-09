@@ -1,5 +1,5 @@
-import 'package:programadoro/models/TimerModel.dart';
-import 'package:programadoro/models/TimerStates.dart';
+import 'package:cododoro/models/TimerModel.dart';
+import 'package:cododoro/models/TimerStates.dart';
 import 'package:test/test.dart';
 
 void main() {

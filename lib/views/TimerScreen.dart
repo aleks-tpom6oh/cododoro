@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:programadoro/models/ElapsedTimeModel.dart';
-import 'package:programadoro/storage/HistoryRepository.dart';
-import 'package:programadoro/storage/NotificationsSchedule.dart';
-import 'package:programadoro/storage/Settings.dart';
-import 'package:programadoro/views/Controlls.dart';
-import 'package:programadoro/views/settings/SettingsDialog.dart';
-import 'package:programadoro/views/StatsScreen.dart';
-import 'package:programadoro/views/DurationOutput.dart';
+import 'package:cododoro/models/ElapsedTimeModel.dart';
+import 'package:cododoro/storage/HistoryRepository.dart';
+import 'package:cododoro/storage/NotificationsSchedule.dart';
+import 'package:cododoro/storage/Settings.dart';
+import 'package:cododoro/views/Controlls.dart';
+import 'package:cododoro/views/settings/SettingsDialog.dart';
+import 'package:cododoro/views/StatsScreen.dart';
+import 'package:cododoro/views/DurationOutput.dart';
 import 'package:provider/provider.dart';
 
 import 'TimeCounter.dart';
@@ -106,7 +106,7 @@ class _TimerScreenState extends State<TimerScreen> {
     return Scaffold(
         backgroundColor: backgroundColor(watchTimerModel),
         appBar: AppBar(
-          title: const Text('programadoro'),
+          title: const Text('cododoro'),
         ),
         body: Stack(
           children: [

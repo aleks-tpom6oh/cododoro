@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:programadoro/storage/HistoryRepository.dart';
-import 'package:programadoro/utils.dart';
+import 'package:cododoro/storage/HistoryRepository.dart';
+import 'package:cododoro/utils.dart';
 
 class StatsScreen extends StatelessWidget {
   const StatsScreen({Key? key}) : super(key: key);

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.programadoro">
+    package="com.example.cododoro">
    <application
-        android:label="programadoro"
+        android:label="cododoro"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

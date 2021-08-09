@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:programadoro/storage/BaseSharedPrefs.dart';
+import 'package:cododoro/storage/BaseSharedPrefs.dart';
 
 enum Strategy { Fibonacci, Linear }
 

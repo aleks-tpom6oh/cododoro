@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:programadoro/storage/Settings.dart';
-import 'package:programadoro/views/settings/NotificationsSettingsCategory.dart';
-import 'package:programadoro/views/settings/TimeSettingsCategory.dart';
+import 'package:cododoro/storage/Settings.dart';
+import 'package:cododoro/views/settings/NotificationsSettingsCategory.dart';
+import 'package:cododoro/views/settings/TimeSettingsCategory.dart';
 
 
 class SettingsDialog extends StatelessWidget {
