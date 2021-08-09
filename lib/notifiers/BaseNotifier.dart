@@ -1,5 +1,5 @@
 abstract class BaseNotifier {
-  Future<void> notify();
+  Future<void> notify(String message);
 
   void dispose();
 }

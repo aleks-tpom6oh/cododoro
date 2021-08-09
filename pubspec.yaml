@@ -33,6 +33,8 @@ dependencies:
   provider: ^5.0.0
   shared_preferences: ^2.0.6
   just_audio: ^0.9.5
+  flutter_local_notifications: ^8.1.1
+  flutter_native_timezone: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -51,6 +53,7 @@ flutter:
 
   assets:
     - assets/audio/
+    - assets/images/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

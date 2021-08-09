@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:programadoro/models/ElapsedTimeModel.dart';
 import 'package:programadoro/storage/HistoryRepository.dart';
 import 'package:programadoro/storage/NotificationsSchedule.dart';
-//import 'package:programadoro/storage/NotificationsSchedule.dart';
 import 'package:programadoro/storage/Settings.dart';
 import 'package:programadoro/views/Controlls.dart';
 import 'package:programadoro/views/settings/SettingsDialog.dart';
@@ -136,8 +135,7 @@ class _TimerScreenState extends State<TimerScreen> {
                               builder: (BuildContext context) {
                                 return ChangeNotifierProvider(
                                   create: (context) => NotificationSchedule(),
-                                  child: SettingsDialog(
-                                      settings: settings),
+                                  child: SettingsDialog(settings: settings),
                                 );
                               },
                             );
@@ -178,9 +176,7 @@ class _TimerScreenState extends State<TimerScreen> {
 
   @override
   void dispose() {
-    notifiers.forEach((element) {
-      element.dispose();
-    });
+    timeScreenDispose();
     super.dispose();
   }
 }

@@ -4,29 +4,30 @@ import 'package:programadoro/models/ElapsedTimeModel.dart';
 import 'package:programadoro/models/TimerModel.dart';
 import 'package:programadoro/models/TimerStates.dart';
 import 'package:programadoro/notifiers/BaseNotifier.dart';
+import 'package:programadoro/notifiers/LocalNotificationsNotifier.dart';
 import 'package:programadoro/notifiers/SoundNotifier.dart';
 import 'package:programadoro/storage/HistoryRepository.dart';
 import 'package:programadoro/storage/NotificationsSchedule.dart';
 import 'package:programadoro/storage/Settings.dart';
 
-List<BaseNotifier> notifiers = [SoundNotifier()];
+List<BaseNotifier> notifiers = [SoundNotifier(), LocalNotificationsNotifier()];
 
-Future<void> _notifyAll() async {
+Future<void> _notifyAll(String message) async {
   notifiers.forEach((element) async {
-    await element.notify();
+    await element.notify(message);
   });
 }
 
 Timer? notificationsTimer;
 int currentNotificationsDelayProgressionStep = 0;
 
-void scheduleNotifications({int step = 0}) async {
+void scheduleNotifications({int step = 0, String message = ""}) async {
   final duration = await NotificationSchedule().timeAtStep(step);
   print("Next notification in $duration minutes");
   notificationsTimer = Timer(Duration(minutes: duration), () async {
     currentNotificationsDelayProgressionStep = step + 1;
-    await _notifyAll();
-    scheduleNotifications(step: step + 1);
+    await _notifyAll(message);
+    scheduleNotifications(step: step + 1, message: message);
   });
 }
 
@@ -39,12 +40,12 @@ void tick(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) async {
     if (timerModel.state == TimerStates.sessionWorking &&
         elapsedTimeModel.elapsedTime > await settings.workDuration) {
       timerModel.state = TimerStates.sessionWorkingOvertime;
-      await _notifyAll();
+      await _notifyAll("Time to rest!");
       scheduleNotifications();
     } else if (timerModel.state == TimerStates.sessionResting &&
         elapsedTimeModel.elapsedTime > await settings.restDuration) {
       timerModel.state = TimerStates.sessionRestingOvertime;
-      await _notifyAll();
+      await _notifyAll("Time to work!");
       scheduleNotifications();
     }
   }
@@ -104,4 +105,10 @@ void nextStage(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) {
       }
       break;
   }
+}
+
+void timeScreenDispose() {
+  notifiers.forEach((element) {
+    element.dispose();
+  });
 }

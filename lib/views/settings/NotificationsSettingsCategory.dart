@@ -39,42 +39,45 @@ class NotificationsSettingsCategory extends StatelessWidget {
                       ),
                     ),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Expanded(
-                          child: DropdownButton<String>(
-                            value: currentStrutegyString,
-                            items: Strategy.values
-                                .map((strategy) =>
-                                    strategy.toString().split('.').last)
-                                .map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: new Text(value),
-                              );
-                            }).toList(),
-                            onChanged: (newStrategyString) {
-                              if (newStrategyString != null) {
-                                final newStrategy = Strategy.values.firstWhere(
-                                    (element) => element
-                                        .toString()
-                                        .contains(newStrategyString));
-                                notificationSchedule.setStrategy(newStrategy);
-                              }
-                            },
-                          ),
-                        ),
-                        Expanded(
-                          child: TextField(
-                            controller:
-                                startNotificationDelayTimeInputController,
-                            maxLines: 1,
-                            textAlign: TextAlign.center,
-                            enabled: true,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                                alignLabelWithHint: true,
-                                labelText: "Start notification delay",
-                                hintText: "1"),
+                          child: Column(
+                            children: [
+                               DropdownButton<String>(
+                                value: currentStrutegyString,
+                                items: Strategy.values
+                                    .map((strategy) =>
+                                        strategy.toString().split('.').last)
+                                    .map((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: new Text(value),
+                                  );
+                                }).toList(),
+                                onChanged: (newStrategyString) {
+                                  if (newStrategyString != null) {
+                                    final newStrategy = Strategy.values.firstWhere(
+                                        (element) => element
+                                            .toString()
+                                            .contains(newStrategyString));
+                                    notificationSchedule.setStrategy(newStrategy);
+                                  }
+                                },
+                              ),
+                              TextField(
+                                controller:
+                                    startNotificationDelayTimeInputController,
+                                maxLines: 1,
+                                textAlign: TextAlign.center,
+                                enabled: true,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                    alignLabelWithHint: true,
+                                    labelText: "Start notification delay",
+                                    hintText: "1"),
+                              ),
+                            ],
                           ),
                         ),
                         TextButton(
