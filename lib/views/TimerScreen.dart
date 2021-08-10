@@ -24,6 +24,14 @@ class TimerScreen extends StatefulWidget {
 }
 
 class _TimerScreenState extends State<TimerScreen> {
+  bool _isSoundOn = true;
+
+  void toggleSound() {
+    setState(() {
+       _isSoundOn = !_isSoundOn;
+    });
+  }
+
   void _tick() {
     var timerModel = context.read<TimerModel>();
     var elapsedTimeModel = context.read<ElapsedTimeModel>();
@@ -110,41 +118,53 @@ class _TimerScreenState extends State<TimerScreen> {
         ),
         body: Stack(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                seeStatsButton(),
-                Container(
-                  margin: new EdgeInsets.only(right: 8, top: 8),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      DurationOutput(
-                          duration: settings.workDuration,
-                          label: "Work duration"),
-                      DurationOutput(
-                          duration: settings.restDuration,
-                          label: "Rest duration"),
-                      Container(
-                        child: ElevatedButton(
-                          child: Icon(Icons.settings),
-                          onPressed: () async {
-                            await showDialog<void>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return ChangeNotifierProvider(
-                                  create: (context) => NotificationSchedule(),
-                                  child: SettingsDialog(settings: settings),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    seeStatsButton(),
+                    Container(
+                      margin: new EdgeInsets.only(right: 8, top: 8),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          DurationOutput(
+                              duration: settings.workDuration,
+                              label: "Work duration"),
+                          DurationOutput(
+                              duration: settings.restDuration,
+                              label: "Rest duration"),
+                          Container(
+                            child: ElevatedButton(
+                              child: Icon(Icons.settings),
+                              onPressed: () async {
+                                await showDialog<void>(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return ChangeNotifierProvider(
+                                      create: (context) =>
+                                          NotificationSchedule(),
+                                      child: SettingsDialog(settings: settings),
+                                    );
+                                  },
                                 );
                               },
-                            );
-                          },
-                        ),
-                      )
-                    ],
-                  ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  child: IconButton(onPressed: () => {
+                    toggleSound()
+                  }, icon: Icon(_isSoundOn ? Icons.volume_mute_rounded : Icons.volume_up_rounded)),
+                )
               ],
             ),
             Center(
