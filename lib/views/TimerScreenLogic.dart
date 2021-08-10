@@ -21,7 +21,7 @@ Future<void> _notifyAll(String message) async {
 Timer? notificationsTimer;
 int currentNotificationsDelayProgressionStep = 0;
 
-void scheduleNotifications({int step = 0, String message = ""}) async {
+void scheduleNotifications({int step = 0, required String message}) async {
   final duration = await NotificationSchedule().timeAtStep(step);
   print("Next notification in $duration minutes");
   notificationsTimer = Timer(Duration(minutes: duration), () async {
@@ -29,6 +29,16 @@ void scheduleNotifications({int step = 0, String message = ""}) async {
     await _notifyAll(message);
     scheduleNotifications(step: step + 1, message: message);
   });
+}
+
+String getNotificationMessage(TimerModel timerModel) {
+  if (timerModel.state == TimerStates.sessionRestingOvertime) {
+    return "Time to work!";
+  } else if (timerModel.state == TimerStates.sessionWorkingOvertime) {
+    return "Time to rest!";
+  } else {
+    return "The time has come!";
+  }
 }
 
 void tick(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) async {
@@ -40,13 +50,13 @@ void tick(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) async {
     if (timerModel.state == TimerStates.sessionWorking &&
         elapsedTimeModel.elapsedTime > await settings.workDuration) {
       timerModel.state = TimerStates.sessionWorkingOvertime;
-      await _notifyAll("Time to rest!");
-      scheduleNotifications();
+      await _notifyAll(getNotificationMessage(timerModel));
+      scheduleNotifications(message: getNotificationMessage(timerModel));
     } else if (timerModel.state == TimerStates.sessionResting &&
         elapsedTimeModel.elapsedTime > await settings.restDuration) {
       timerModel.state = TimerStates.sessionRestingOvertime;
-      await _notifyAll("Time to work!");
-      scheduleNotifications();
+      await _notifyAll(getNotificationMessage(timerModel));
+      scheduleNotifications(message: getNotificationMessage(timerModel));
     }
   }
 }
@@ -59,7 +69,10 @@ void startSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) {
 
 void pauseResume(TimerModel timerModel) {
   if (timerModel.isPaused && timerModel.isOvertime) {
-    scheduleNotifications(step: currentNotificationsDelayProgressionStep + 1);
+    scheduleNotifications(
+      step: currentNotificationsDelayProgressionStep + 1,
+      message: getNotificationMessage(timerModel)
+    );
   } else {
     notificationsTimer?.cancel();
   }

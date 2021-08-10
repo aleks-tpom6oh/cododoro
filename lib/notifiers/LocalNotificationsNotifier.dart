@@ -18,7 +18,6 @@ class LocalNotificationsNotifier implements BaseNotifier {
     const MacOSNotificationDetails macOSPlatformChannelSpecifics =
         MacOSNotificationDetails(threadIdentifier: 'cododoro');
 
-    const String groupKey = 'com.android.cododoro.TIME_NOTIFICATION';
     const String groupChannelId = 'cododoro';
     const String groupChannelName = 'time notifications';
     const String groupChannelDescription =
@@ -28,7 +27,7 @@ class LocalNotificationsNotifier implements BaseNotifier {
             groupChannelId, groupChannelName, groupChannelDescription,
             importance: Importance.max,
             priority: Priority.high,
-            groupKey: groupKey);
+            groupKey: 'com.android.cododoro.TIME_NOTIFICATION');
 
     const notificationDetails = NotificationDetails(
         iOS: iOSPlatformChannelSpecifics,
