@@ -14,11 +14,11 @@ class LocalNotificationsNotifier implements BaseNotifier {
   @override
   Future<void> notify(message) async {
     const IOSNotificationDetails iOSPlatformChannelSpecifics =
-        IOSNotificationDetails(threadIdentifier: 'cododoro');
+        IOSNotificationDetails(threadIdentifier: 'cododoro', presentSound: false);
     const MacOSNotificationDetails macOSPlatformChannelSpecifics =
-        MacOSNotificationDetails(threadIdentifier: 'cododoro');
+        MacOSNotificationDetails(threadIdentifier: 'cododoro', presentSound: false);
 
-    const String groupChannelId = 'cododoro';
+    const String groupChannelId = 'cododoro-2';
     const String groupChannelName = 'time notifications';
     const String groupChannelDescription =
         'channel for cododoro time notifications';
@@ -27,7 +27,8 @@ class LocalNotificationsNotifier implements BaseNotifier {
             groupChannelId, groupChannelName, groupChannelDescription,
             importance: Importance.max,
             priority: Priority.high,
-            groupKey: 'com.android.cododoro.TIME_NOTIFICATION');
+            groupKey: 'com.android.cododoro.TIME_NOTIFICATION',
+            playSound: false);
 
     const notificationDetails = NotificationDetails(
         iOS: iOSPlatformChannelSpecifics,

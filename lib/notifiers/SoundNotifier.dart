@@ -1,6 +1,6 @@
+import 'package:cododoro/models/VolumeController.dart';
 import 'package:cododoro/notifiers/BaseNotifier.dart';
 import 'package:just_audio/just_audio.dart';
-
 
 class SoundNotifier implements BaseNotifier {
   AudioPlayer player;
@@ -9,8 +9,10 @@ class SoundNotifier implements BaseNotifier {
 
   @override
   Future<void> notify(message) async {
-    await player.setAsset('assets/audio/alarm.mp3');
-    player.play();
+    if (volumeController.isSoundOn) {
+      await player.setAsset('assets/audio/alarm.mp3');
+      player.play();
+    }
   }
 
   void dispose() {

@@ -1,3 +1,4 @@
+import 'package:cododoro/models/VolumeController.dart';
 import 'package:flutter/material.dart';
 import 'package:cododoro/models/ElapsedTimeModel.dart';
 import 'package:cododoro/storage/HistoryRepository.dart';
@@ -14,7 +15,7 @@ import 'dart:async';
 
 import '../models/TimerModel.dart';
 import '../models/TimerStates.dart';
-import 'TimerScreenLogic.dart';
+import '../viewlogic/TimerScreenLogic.dart';
 
 class TimerScreen extends StatefulWidget {
   const TimerScreen({Key? key}) : super(key: key);
@@ -24,11 +25,12 @@ class TimerScreen extends StatefulWidget {
 }
 
 class _TimerScreenState extends State<TimerScreen> {
-  bool _isSoundOn = true;
+  bool _isSoundOn = volumeController.isSoundOn;
 
   void toggleSound() {
     setState(() {
-       _isSoundOn = !_isSoundOn;
+      _isSoundOn = !_isSoundOn;
+      volumeController.isSoundOn = _isSoundOn;
     });
   }
 
@@ -160,10 +162,13 @@ class _TimerScreenState extends State<TimerScreen> {
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                  child: IconButton(onPressed: () => {
-                    toggleSound()
-                  }, icon: Icon(_isSoundOn ? Icons.volume_mute_rounded : Icons.volume_up_rounded)),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 16.0),
+                  child: IconButton(
+                      onPressed: () => {toggleSound()},
+                      icon: Icon(_isSoundOn
+                          ? Icons.volume_up_rounded
+                          : Icons.volume_mute_rounded)),
                 )
               ],
             ),
