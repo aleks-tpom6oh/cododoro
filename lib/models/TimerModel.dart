@@ -46,4 +46,9 @@ class TimerModel with ChangeNotifier {
     _isPaused = !_isPaused;
     notifyListeners();
   }
+
+  void forceResume() {
+    _isPaused = false;
+    notifyListeners();
+  }
 }

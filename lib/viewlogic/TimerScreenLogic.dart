@@ -70,9 +70,8 @@ void startSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) {
 void pauseResume(TimerModel timerModel) {
   if (timerModel.isPaused && timerModel.isOvertime) {
     scheduleNotifications(
-      step: currentNotificationsDelayProgressionStep + 1,
-      message: getNotificationMessage(timerModel)
-    );
+        step: currentNotificationsDelayProgressionStep + 1,
+        message: getNotificationMessage(timerModel));
   } else {
     notificationsTimer?.cancel();
   }
@@ -118,6 +117,7 @@ void nextStage(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) {
       }
       break;
   }
+  timerModel.forceResume();
 }
 
 void timeScreenDispose() {
