@@ -1,8 +1,8 @@
 import 'package:cododoro/storage/BaseSharedPrefs.dart';
 
 class Settings extends BaseSharedPrefs {
-  int _defaultWorkDuration = 55 * 60;
-  int _defaultRestDuration = 5 * 60;
+  int _defaultWorkDuration = 50 * 60;
+  int _defaultRestDuration = 10 * 60;
 
   Future<int> get workDuration async {
     return (await prefs).getInt("WORK_DURATION") ?? _defaultWorkDuration;

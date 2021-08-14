@@ -29,16 +29,9 @@ void main() async {
       AndroidInitializationSettings('app_icon');
 
   final IOSInitializationSettings initializationSettingsIOS =
-      IOSInitializationSettings(
-          requestAlertPermission: true,
-          requestBadgePermission: true,
-          requestSoundPermission: false);
+      IOSInitializationSettings();
   const MacOSInitializationSettings initializationSettingsMacOS =
-      MacOSInitializationSettings(
-    requestAlertPermission: true,
-    requestBadgePermission: true,
-    requestSoundPermission: false,
-  );
+      MacOSInitializationSettings();
 
   final InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
