@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:cododoro/storage/HistoryRepository.dart';
 import 'package:cododoro/utils.dart';
+import 'package:provider/provider.dart';
 
 class StatsScreen extends StatelessWidget {
   const StatsScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final todayIntervals = getTodayIntervals();
+    var historyrepository = context.watch<HistoryRepository>();
+
+    final todayIntervals = historyrepository.getTodayIntervals();
 
     return Scaffold(
       appBar: AppBar(
@@ -49,12 +52,38 @@ class StatsScreen extends StatelessWidget {
                                                           IntervalType.work
                                                       ? Colors.amber[600]
                                                       : Colors.cyan,
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Text(
-                                                        'You did ${e.type} for ${e.duration.toHmsString()}'),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                            'You did ${e.type} for ${e.duration.toHmsString()}'),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: TextButton(
+                                                          onPressed: () {
+                                                            historyrepository
+                                                                .toggleSessionType(
+                                                                    e);
+                                                          },
+                                                          child: const Text(
+                                                            'Toggle type',
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      )
+                                                    ],
                                                   )),
                                             ),
                                           )

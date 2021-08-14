@@ -102,7 +102,11 @@ class _TimerScreenState extends State<TimerScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => StatsScreen()),
+            MaterialPageRoute(
+                builder: (context) => ChangeNotifierProvider(
+                      create: (context) => HistoryRepository(),
+                      child: StatsScreen(),
+                    )),
           );
         },
       ),

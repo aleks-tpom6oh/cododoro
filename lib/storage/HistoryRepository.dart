@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'BaseSharedPrefs.dart';
+
 enum IntervalType { work, rest }
 
 void saveSession(DateTime endTime, IntervalType type, Duration duration) async {
@@ -9,36 +11,59 @@ void saveSession(DateTime endTime, IntervalType type, Duration duration) async {
 
   final prefs = await SharedPreferences.getInstance();
 
-  var todayIntervals = prefs.getStringList(key(endTime)) ?? [];
+  var todayIntervals = prefs.getStringList(dayKey(endTime)) ?? [];
 
   todayIntervals.add(json.encode(newIntervalJson));
 
-  prefs.setStringList(key(endTime), todayIntervals);
-
-  print("${key(endTime)}: $todayIntervals");
+  prefs.setStringList(dayKey(endTime), todayIntervals);
 }
 
-Future<Iterable<PomodoroInterval>> getTodayIntervals() async {
-  final prefs = await SharedPreferences.getInstance();
-
-  var todayIntervals = prefs.getStringList(key(DateTime.now())) ?? [];
-
-  return todayIntervals.map((e) => PomodoroInterval.fromJson(json.decode(e)));
+String dayKey(DateTime time) {
+  return "${time.day}-${time.month}-${time.year}";
 }
 
 void clearOldHistory() async {
   final prefs = await SharedPreferences.getInstance();
-
-  prefs.getKeys().forEach((prefKey) {
-    if (prefKey != key(DateTime.now()) && 
-        prefKey != key(DateTime.now().subtract(Duration(days:1)))) {
+  prefs.getKeys().forEach((prefKey) async {
+    if (prefKey != dayKey(DateTime.now()) &&
+        prefKey != dayKey(DateTime.now().subtract(Duration(days: 1)))) {
       prefs.remove(prefKey);
     }
   });
 }
 
-String key(DateTime time) {
-  return "${time.day}-${time.month}-${time.year}";
+class HistoryRepository extends BaseSharedPrefs {
+  void toggleSessionType(PomodoroInterval interval) async {
+    var todayIntervals =
+        (await prefs).getStringList(dayKey(interval.endTime)) ?? [];
+
+    final PomodoroInterval targetInterval = PomodoroInterval.fromJson(
+        json.decode(todayIntervals.firstWhere(
+            (e) => PomodoroInterval.fromJson(json.decode(e)) == interval)));
+
+    final newTargetInterval = new PomodoroInterval(
+        targetInterval.endTime,
+        targetInterval.type == IntervalType.work
+            ? IntervalType.rest
+            : IntervalType.work,
+        targetInterval.duration);
+
+    final targetIntervalJsonString = json.encode(targetInterval.toJson());
+
+    final intervalIndex = todayIntervals.indexOf(targetIntervalJsonString);
+    todayIntervals[intervalIndex] = json.encode(newTargetInterval.toJson());
+
+    (await prefs).setStringList(dayKey(interval.endTime), todayIntervals);
+
+    notifyListeners();
+  }
+
+  Future<Iterable<PomodoroInterval>> getTodayIntervals() async {
+    var todayIntervals =
+        (await prefs).getStringList(dayKey(DateTime.now())) ?? [];
+
+    return todayIntervals.map((e) => PomodoroInterval.fromJson(json.decode(e)));
+  }
 }
 
 class PomodoroInterval {
@@ -59,4 +84,17 @@ class PomodoroInterval {
         'type': type.toString(),
         'durationSeconds': duration.inSeconds
       };
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is PomodoroInterval &&
+            runtimeType == other.runtimeType &&
+            endTime == other.endTime &&
+            type == other.type &&
+            duration == other.duration;
+  }
+
+  @override
+  int get hashCode => endTime.hashCode ^ type.hashCode ^ duration.hashCode;
 }
