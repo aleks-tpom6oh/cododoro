@@ -1,5 +1,4 @@
 import 'package:cododoro/storage/NotificationsSchedule.dart';
-import 'package:cododoro/storage/Settings.dart';
 import 'package:cododoro/widgets/views/StatsListToggleButton.dart';
 import 'package:flutter/material.dart';
 import 'package:cododoro/storage/HistoryRepository.dart';
@@ -22,7 +21,6 @@ class _StatsScreenState extends State<StatsScreen> {
   @override
   Widget build(BuildContext context) {
     final historyRepository = context.watch<HistoryRepository>();
-    final settings = context.read<Settings>();
 
     final todayIntervals = historyRepository.getTodayIntervals();
 
@@ -32,42 +30,27 @@ class _StatsScreenState extends State<StatsScreen> {
       ),
       body: Center(
           child: FutureBuilder(
-              future: settings.targetStandingMinutes,
-              builder:
-                  (context, AsyncSnapshot<int> targetStandingMinutesSnapshot) {
-                return FutureBuilder(
-                    future: todayIntervals,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<Iterable<StoredInterval>>
-                            todayIntervalsSnapshot) {
-                      return screenContents(
-                          todayIntervalsSnapshot,
-                          targetStandingMinutesSnapshot,
-                          context,
-                          historyRepository);
-                    });
+              future: todayIntervals,
+              builder: (BuildContext context,
+                  AsyncSnapshot<Iterable<StoredInterval>>
+                      todayIntervalsSnapshot) {
+                return screenContents(
+                    todayIntervalsSnapshot, context, historyRepository);
               })),
     );
   }
 
   Widget screenContents(
       AsyncSnapshot<Iterable<StoredInterval>> todayIntervalsSnapshot,
-      AsyncSnapshot<int> targetStandingMinutesSnapshot,
       BuildContext context,
       HistoryRepository historyRepository) {
-    final targetStandingMinutes = targetStandingMinutesSnapshot.data;
-    if (todayIntervalsSnapshot.hasData && targetStandingMinutes != null) {
-      final targetStandingMinutesDuration =
-          Duration(minutes: targetStandingMinutes);
-
+    if (todayIntervalsSnapshot.hasData) {
       final workDuration = calculateTimeForIntervalType(
           todayIntervalsSnapshot.data, IntervalType.work);
       final restDuration = calculateTimeForIntervalType(
           todayIntervalsSnapshot.data, IntervalType.rest);
       final standingDuration = calculateTimeForIntervalType(
           todayIntervalsSnapshot.data, IntervalType.stand);
-
-      final standTimeTillGoal = targetStandingMinutesDuration - standingDuration;
 
       return Stack(
         children: [
@@ -104,9 +87,7 @@ class _StatsScreenState extends State<StatsScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(standTimeTillGoal > Duration(hours: 0)
-                    ? "🧍 ${standTimeTillGoal.toMsString()} till standing goal"
-                    : "🎉 You reached your standing goal!"),
+                child: Text("🧍 Stood for ${standingDuration.toMsString()}"),
               ),
               StatsListToggleButton(onToggle: (listState) {
                 setState(() {
