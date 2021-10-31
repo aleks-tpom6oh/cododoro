@@ -9,25 +9,31 @@ import 'package:cododoro/notifiers/SoundNotifier.dart';
 import 'package:cododoro/storage/HistoryRepository.dart';
 import 'package:cododoro/storage/NotificationsSchedule.dart';
 import 'package:cododoro/storage/Settings.dart';
+import 'package:confetti/confetti.dart';
+
+import '../utils.dart';
+import 'StandTimeRemaining.dart';
 
 List<BaseNotifier> notifiers = [SoundNotifier(), LocalNotificationsNotifier()];
 
-Future<void> _notifyAll(String message) async {
+Future<void> _notifyAll(String message,
+    {String soundPath = 'assets/audio/alarm.mp3'}) async {
   notifiers.forEach((element) async {
-    await element.notify(message);
+    await element.notify(message, soundPath: soundPath);
   });
 }
 
 Timer? notificationsTimer;
 int currentNotificationsDelayProgressionStep = 0;
 
-void scheduleNotifications({int step = 0, required String message}) async {
+void scheduleOvertimeNotifications(
+    {int step = 0, required String message}) async {
   final duration = await NotificationSchedule().timeAtStep(step);
   print("Next notification in $duration minutes");
   notificationsTimer = Timer(Duration(minutes: duration), () async {
     currentNotificationsDelayProgressionStep = step + 1;
     await _notifyAll(message);
-    scheduleNotifications(step: step + 1, message: message);
+    scheduleOvertimeNotifications(step: step + 1, message: message);
   });
 }
 
@@ -41,35 +47,89 @@ String getNotificationMessage(TimerModel timerModel) {
   }
 }
 
-void tick(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) async {
-  if (timerModel.isRunning()) {
-    Settings settings = new Settings();
+void tick(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
+    HistoryRepository history, Settings settings) async {
+  elapsedTimeModel.onTick(addTime: timerModel.isRunning());
 
-    elapsedTimeModel.onTick();
+  await syncSession(elapsedTimeModel, history, timerModel);
+
+  if (timerModel.isRunning()) {
+    await notifyIfStandingGoalReached(timerModel, settings, history);
 
     if (timerModel.state == TimerStates.sessionWorking &&
         elapsedTimeModel.elapsedTime > await settings.workDuration) {
       timerModel.state = TimerStates.sessionWorkingOvertime;
       await _notifyAll(getNotificationMessage(timerModel));
-      scheduleNotifications(message: getNotificationMessage(timerModel));
+      scheduleOvertimeNotifications(
+          message: getNotificationMessage(timerModel));
     } else if (timerModel.state == TimerStates.sessionResting &&
         elapsedTimeModel.elapsedTime > await settings.restDuration) {
       timerModel.state = TimerStates.sessionRestingOvertime;
       await _notifyAll(getNotificationMessage(timerModel));
-      scheduleNotifications(message: getNotificationMessage(timerModel));
+      scheduleOvertimeNotifications(
+          message: getNotificationMessage(timerModel));
+    } else if (timerModel.state == TimerStates.sessionWorkingOvertime &&
+        elapsedTimeModel.elapsedTime < await settings.workDuration) {
+      timerModel.state = TimerStates.sessionWorking;
+      notificationsTimer?.cancel();
+    } else if (timerModel.state == TimerStates.sessionRestingOvertime &&
+        elapsedTimeModel.elapsedTime < await settings.restDuration) {
+      timerModel.state = TimerStates.sessionResting;
+      notificationsTimer?.cancel();
     }
   }
 }
 
-void startSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) {
-  timerModel.state = TimerStates.sessionWorking;
-  elapsedTimeModel.elapsedTime = 0;
-  notificationsTimer?.cancel();
+late ConfettiController confetti;
+Duration? _previousStandTimeTillGoal = null;
+Future<void> notifyIfStandingGoalReached(TimerModel timerModel, Settings settings, HistoryRepository history) async {
+  if (timerModel.isWorking &&
+      (_previousStandTimeTillGoal == null ||
+          _previousStandTimeTillGoal! >= Duration(seconds: 0))) {
+    settings.standingDesk.then((hasStandingDesk) async {
+      if (hasStandingDesk) {
+        final newStandTimeTillGoal =
+            await calculateRemainingStandTime(history, settings);
+  
+        if (newStandTimeTillGoal < Duration(seconds: 0) &&
+            (_previousStandTimeTillGoal == null ||
+                _previousStandTimeTillGoal! >= Duration(seconds: 0))) {
+          confetti.play();
+          await _notifyAll(
+              "🎉 Congrats, you've reached your daily standing goal",
+              soundPath: 'assets/audio/endingsound.mp3');
+        }
+  
+        _previousStandTimeTillGoal = newStandTimeTillGoal;
+      }
+    });
+  }
+}
+
+void startSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
+    HistoryRepository history) {
+  if (timerModel.state == TimerStates.noSession) {
+    timerModel.state = TimerStates.sessionWorking;
+    elapsedTimeModel.elapsedTime = 0;
+    notificationsTimer?.cancel();
+
+    history.startSession(
+        timerModel.isWorking ? IntervalType.work : IntervalType.rest);
+  }
+}
+
+Future<void> startStanding(HistoryRepository history) async {
+  await history.startSession(IntervalType.stand);
+}
+
+Future<void> stopStanding(HistoryRepository history) async {
+  await history.updateCurrentStandingSession();
+  history.stopStanding();
 }
 
 void pauseResume(TimerModel timerModel) {
   if (timerModel.isPaused && timerModel.isOvertime) {
-    scheduleNotifications(
+    scheduleOvertimeNotifications(
         step: currentNotificationsDelayProgressionStep + 1,
         message: getNotificationMessage(timerModel));
   } else {
@@ -79,34 +139,120 @@ void pauseResume(TimerModel timerModel) {
   timerModel.pauseResume();
 }
 
-void stopSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) {
-  saveSession(
-      DateTime.now(),
-      timerModel.isWorking ? IntervalType.work : IntervalType.rest,
-      Duration(seconds: elapsedTimeModel.elapsedTime));
+Future<void> syncSession(ElapsedTimeModel elapsedTimeModel,
+    HistoryRepository history, TimerModel timerModel) async {
+  if (timerModel.isRunning()) {
+    await history.updateCurrentPomodoroSession(
+        DateTime.now(), Duration(seconds: elapsedTimeModel.elapsedTime));
+  }
+  await history.updateCurrentStandingSession(addTime: timerModel.isWorking);
+}
 
-  timerModel.state = TimerStates.noSession;
-  elapsedTimeModel.elapsedTime = 0;
+void stopSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
+    HistoryRepository history) async {
+  if (timerModel.state != TimerStates.noSession) {
+    await history.updateCurrentPomodoroSession(
+        DateTime.now(), Duration(seconds: elapsedTimeModel.elapsedTime));
+
+    timerModel.state = TimerStates.noSession;
+    elapsedTimeModel.elapsedTime = 0;
+  }
   notificationsTimer?.cancel();
 }
 
-void nextStage(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) {
+bool shouldAskStillStanding(bool isStanding, TimerModel timerModel) {
+  return isStanding && !timerModel.isWorking;
+}
+
+String currentSessionName(TimerModel timerModel) {
+  if (timerModel.isPaused) {
+    return "Paused";
+  }
+
+  switch (timerModel.state) {
+    case TimerStates.sessionWorking:
+      return "Working";
+    case TimerStates.sessionWorkingOvertime:
+      return "Working Overtime";
+    case TimerStates.sessionResting:
+      return "Resting";
+    case TimerStates.sessionRestingOvertime:
+      return "Resting Overtime";
+    case TimerStates.noSession:
+      return "Chilling";
+  }
+}
+
+String currentStateGifPath(TimerModel timerModel) {
+  if (timerModel.isPaused) {
+    return "assets/images/pause.gif";
+  }
+
+  switch (timerModel.state) {
+    case TimerStates.noSession:
+      return "assets/images/chilling.gif";
+    case TimerStates.sessionResting:
+    case TimerStates.sessionRestingOvertime:
+      return "assets/images/resting.gif";
+    case TimerStates.sessionWorking:
+      return "assets/images/working.jpeg";
+    case TimerStates.sessionWorkingOvertime:
+      return "assets/images/working.gif";
+  }
+}
+
+void maybeSuggestStanding(bool isStanding, TimerModel timerModel,
+    HistoryRepository history, Settings settings, Function(bool) result) async {
+  final todayIntervals = await history.getTodayIntervals();
+
+  final standingDesk = await settings.standingDesk;
+
+  final standingDuration =
+      calculateTimeForIntervalType(todayIntervals, IntervalType.stand);
+
+  final targetStandingMinutes = await settings.targetStandingMinutes;
+
+  final currentDayHour = DateTime.now().hour;
+  if (!isStanding &&
+      !timerModel.isWorking &&
+      standingDuration.compareTo(Duration(minutes: targetStandingMinutes)) <
+          0 &&
+      standingDesk &&
+      currentDayHour > 14) {
+    result.call(true);
+
+    return;
+  } else {
+    result.call(false);
+
+    return;
+  }
+}
+
+bool shouldShowWorkEndedDialogOnNextStageClick(TimerModel timerModel) {
+  return timerModel.state == TimerStates.sessionWorking ||
+      timerModel.state == TimerStates.sessionWorkingOvertime;
+}
+
+Future<void> nextStage(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
+    HistoryRepository history) async {
   notificationsTimer?.cancel();
   switch (timerModel.state) {
     case TimerStates.sessionWorking:
     case TimerStates.sessionWorkingOvertime:
       {
-        saveSession(DateTime.now(), IntervalType.work,
-            Duration(seconds: elapsedTimeModel.elapsedTime));
+        await history.updateCurrentPomodoroSession(
+            DateTime.now(), Duration(seconds: elapsedTimeModel.elapsedTime));
         timerModel.state = TimerStates.sessionResting;
         elapsedTimeModel.elapsedTime = 0;
+        await history.startSession(IntervalType.rest);
       }
       break;
     case TimerStates.sessionResting:
     case TimerStates.sessionRestingOvertime:
       {
-        saveSession(DateTime.now(), IntervalType.rest,
-            Duration(seconds: elapsedTimeModel.elapsedTime));
+        await history.updateCurrentPomodoroSession(
+            DateTime.now(), Duration(seconds: elapsedTimeModel.elapsedTime));
       }
       continue next;
     next:
@@ -114,13 +260,19 @@ void nextStage(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel) {
       {
         timerModel.state = TimerStates.sessionWorking;
         elapsedTimeModel.elapsedTime = 0;
+        await history.startSession(IntervalType.work);
       }
       break;
   }
   timerModel.forceResume();
 }
 
+void timerScreenInitState() {
+  confetti = ConfettiController(duration: const Duration(seconds: 10));
+}
+
 void timeScreenDispose() {
+  confetti.dispose();
   notifiers.forEach((element) {
     element.dispose();
   });

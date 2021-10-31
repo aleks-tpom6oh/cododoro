@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cododoro/storage/NotificationsSchedule.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class NotificationsSettingsCategory extends StatelessWidget {
@@ -13,12 +14,14 @@ class NotificationsSettingsCategory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var notificationSchedule = context.watch<NotificationSchedule>();
+    
     return FutureBuilder<Strategy>(
         future: notificationSchedule.strategy,
         builder:
             (BuildContext context, AsyncSnapshot<Strategy> strategySnapshot) {
           final currentStrutegyString =
               strategySnapshot.data?.toString().split('.').last;
+          
           return FutureBuilder<int>(
               future: notificationSchedule.baseTime,
               builder: (context, baseTimeSnapshot) {
@@ -26,6 +29,7 @@ class NotificationsSettingsCategory extends StatelessWidget {
                     baseTimeSnapshot.hasData
                         ? baseTimeSnapshot.data.toString()
                         : "?";
+                
                 return Column(
                   children: [
                     Padding(
@@ -38,46 +42,56 @@ class NotificationsSettingsCategory extends StatelessWidget {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
+                    Container(
+                      //width: 240,
+                      child: Text(
+                          "When a session goes overtime the app will start sending periodic notifications with decreasing delay unitil once a minute.",
+                          textAlign: TextAlign.center),
+                    ),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text("Decrease as"),
+                        DropdownButton<String>(
+                          value: currentStrutegyString,
+                          items: Strategy.values
+                              .map(
+                                  (strategy) => strategy.toString().split('.').last)
+                              .map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: new Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (newStrategyString) {
+                            if (newStrategyString != null) {
+                              final newStrategy = Strategy.values.firstWhere(
+                                  (element) => element
+                                      .toString()
+                                      .contains(newStrategyString));
+                              notificationSchedule.setStrategy(newStrategy);
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                    Row(
                       children: [
                         Expanded(
-                          child: Column(
-                            children: [
-                               DropdownButton<String>(
-                                value: currentStrutegyString,
-                                items: Strategy.values
-                                    .map((strategy) =>
-                                        strategy.toString().split('.').last)
-                                    .map((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: new Text(value),
-                                  );
-                                }).toList(),
-                                onChanged: (newStrategyString) {
-                                  if (newStrategyString != null) {
-                                    final newStrategy = Strategy.values.firstWhere(
-                                        (element) => element
-                                            .toString()
-                                            .contains(newStrategyString));
-                                    notificationSchedule.setStrategy(newStrategy);
-                                  }
-                                },
-                              ),
-                              TextField(
-                                controller:
-                                    startNotificationDelayTimeInputController,
-                                maxLines: 1,
-                                textAlign: TextAlign.center,
-                                enabled: true,
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                    alignLabelWithHint: true,
-                                    labelText: "Start notification delay",
-                                    hintText: "1"),
-                              ),
+                          child: TextField(
+                            controller:
+                                startNotificationDelayTimeInputController,
+                            maxLines: 1,
+                            textAlign: TextAlign.center,
+                            enabled: true,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
                             ],
+                            decoration: InputDecoration(
+                                alignLabelWithHint: true,
+                                labelText: "Start notification delay in minutes",
+                                hintText: "1"),
                           ),
                         ),
                         TextButton(
@@ -97,7 +111,7 @@ class NotificationsSettingsCategory extends StatelessWidget {
                               notificationSchedule.setBaseTime(newBaseTime);
                             }
                           },
-                          child: const Text('Apply'),
+                          child: const Text('Set'),
                         )
                       ],
                     ),

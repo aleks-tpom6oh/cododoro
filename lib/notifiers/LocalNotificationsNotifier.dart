@@ -12,7 +12,7 @@ class LocalNotificationsNotifier implements BaseNotifier {
   }
 
   @override
-  Future<void> notify(message) async {
+  Future<void> notify(message, {String? soundPath}) async {
     const IOSNotificationDetails iOSPlatformChannelSpecifics =
         IOSNotificationDetails(threadIdentifier: 'cododoro', presentSound: false);
     const MacOSNotificationDetails macOSPlatformChannelSpecifics =

@@ -12,6 +12,7 @@ class TimerCounter extends StatelessWidget {
   Widget build(BuildContext context) {
     var watchElapsedTimeModel =
         Provider.of<ElapsedTimeModel>(context, listen: true);
+    
     return Text(
         stopwatchTime(Duration(seconds: watchElapsedTimeModel.elapsedTime)),
         textAlign: TextAlign.center,

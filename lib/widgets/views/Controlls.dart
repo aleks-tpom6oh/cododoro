@@ -9,8 +9,9 @@ class FloatingActionButtons extends StatefulWidget {
     required this.children,
     required this.expendIcon,
     required this.collapsedIcon,
-    required this.onExpend,
+    required this.onExpand,
     required this.onCollapse,
+    required this.initiallyExpended,
   }) : super(key: key);
 
   final double distance;
@@ -18,8 +19,10 @@ class FloatingActionButtons extends StatefulWidget {
   final Icon expendIcon;
   final Icon collapsedIcon;
 
-  final Function onExpend;
+  final Function onExpand;
   final Function onCollapse;
+
+  final bool initiallyExpended;
 
   @override
   _FloatingActionButtonsState createState() => _FloatingActionButtonsState();
@@ -30,11 +33,14 @@ class _FloatingActionButtonsState extends State<FloatingActionButtons>
   late final AnimationController _controller;
   late final Animation<double> _expandAnimation;
 
+  bool _initialOpen = false;
   bool _open = false;
 
   @override
   void initState() {
     super.initState();
+    _initialOpen = widget.initiallyExpended;
+    _open = widget.initiallyExpended;
     _controller = AnimationController(
       value: _open ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 250),
@@ -58,7 +64,7 @@ class _FloatingActionButtonsState extends State<FloatingActionButtons>
       _open = !_open;
       if (_open) {
         _controller.forward();
-        widget.onExpend();
+        widget.onExpand();
       } else {
         _controller.reverse();
         widget.onCollapse();
@@ -68,6 +74,15 @@ class _FloatingActionButtonsState extends State<FloatingActionButtons>
 
   @override
   Widget build(BuildContext context) {
+    if (_initialOpen != widget.initiallyExpended) {
+      _initialOpen = widget.initiallyExpended;
+      if (_open != _initialOpen) {
+        Future.delayed(Duration.zero, () {
+          _toggle();
+        });
+      }
+    }
+
     return SizedBox.expand(
       child: Stack(
           alignment: Alignment.bottomRight,
@@ -102,6 +117,7 @@ class _FloatingActionButtonsState extends State<FloatingActionButtons>
         ),
       );
     }
+
     return children;
   }
 
@@ -169,6 +185,7 @@ class _ExpandingActionButton extends StatelessWidget {
           90 * (pi / 180.0),
           progress.value * this.offset,
         );
+
         return Positioned(
           right: 0,
           bottom: offset.dy,

@@ -1,18 +1,36 @@
 import 'package:flutter/material.dart';
 
 class ElapsedTimeModel with ChangeNotifier {
-    int _elapsedTime = 0;
+  DateTime? _lastTickDateTime = null;
+
+  Duration _elapsedTime = Duration(seconds: 0);
 
   int get elapsedTime {
-    return _elapsedTime;
+    return _elapsedTime.inSeconds;
+  }
+
+  int get elapsedTimeMs {
+    return _elapsedTime.inMilliseconds;
   }
 
   set elapsedTime(newTime) {
-    _elapsedTime = newTime;
+    _elapsedTime = Duration(seconds: newTime);
+    _lastTickDateTime = null;
   }
 
-  void onTick() {
-    _elapsedTime += 1;
+  void onTick({required bool addTime}) {
+    int additionalTime = _lastTickDateTime == null
+        ? 100
+        : (DateTime.now().subtract(Duration(
+                milliseconds: _lastTickDateTime!.millisecondsSinceEpoch)))
+            .millisecondsSinceEpoch;
+
+    print("Tick happened after ${additionalTime}");
+
+    _lastTickDateTime = DateTime.now();
+    if (addTime) {
+      _elapsedTime += Duration(milliseconds: additionalTime);
+    }
     notifyListeners();
   }
 }

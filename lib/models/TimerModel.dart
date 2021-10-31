@@ -16,22 +16,22 @@ class TimerModel with ChangeNotifier {
   bool _isPaused = false;
 
   bool get isPaused {
-    return _isPaused;
+    return _isPaused && state != TimerStates.noSession;
   }
 
   bool get isWorking {
-    return _state == TimerStates.sessionWorking ||
-        _state == TimerStates.sessionWorkingOvertime;
+    return !_isPaused && (_state == TimerStates.sessionWorking ||
+        _state == TimerStates.sessionWorkingOvertime);
   }
 
   bool get isOvertime {
-     return _state == TimerStates.sessionRestingOvertime ||
+    return _state == TimerStates.sessionRestingOvertime ||
         _state == TimerStates.sessionWorkingOvertime;
   }
 
-  bool get isResing {
-    return _state == TimerStates.sessionResting ||
-        _state == TimerStates.sessionRestingOvertime;
+  bool get isResting {
+    return !_isPaused && (_state == TimerStates.sessionResting ||
+        _state == TimerStates.sessionRestingOvertime);
   }
 
   bool get isChilling {

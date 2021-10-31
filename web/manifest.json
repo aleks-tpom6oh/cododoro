@@ -1,11 +1,11 @@
 {
-  "name": "cododoro",
-  "short_name": "cododoro",
+  "name": "Cododoro App",
+  "short_name": "Cododoro App",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#0175C2",
   "theme_color": "#0175C2",
-  "description": "A new Flutter project.",
+  "description": "A pomodoro inspired timer designed for programming",
   "orientation": "portrait-primary",
   "prefer_related_applications": false,
   "icons": [

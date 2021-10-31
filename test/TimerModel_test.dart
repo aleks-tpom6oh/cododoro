@@ -11,6 +11,7 @@ void main() {
 
   test('timerModel pause', () {
     final timerModel = TimerModel();
+    timerModel.state = TimerStates.sessionResting;
 
     expect(timerModel.isPaused, false);
 

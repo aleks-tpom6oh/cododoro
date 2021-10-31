@@ -9,6 +9,7 @@ const fibonaccis = [1, 2, 3, 5, 8, 13, 21, 34, 55];
 class NotificationSchedule extends BaseSharedPrefs {
   Future<Strategy> get strategy async {
     final strategyIndex = (await prefs).getInt("NOTIFICATIONS_STRATEGY") ?? 0;
+
     return Strategy.values[min(Strategy.values.length, strategyIndex)];
   }
 
@@ -18,7 +19,7 @@ class NotificationSchedule extends BaseSharedPrefs {
   }
 
   Future<int> get baseTime async {
-    return (await prefs).getInt("NOTIFICATIONS_BASE_TIME") ?? 8;
+    return (await prefs).getInt("NOTIFICATIONS_BASE_TIME") ?? 5;
   }
 
   void setBaseTime(int newBaseTime) async {
@@ -31,6 +32,7 @@ class NotificationSchedule extends BaseSharedPrefs {
       case Strategy.Fibonacci:
         {
           final initialStep = fibonaccis.indexOf(await baseTime) + 1;
+
           return fibonaccis.sublist(0, initialStep).reversed.toList();
         }
       case Strategy.Linear:
@@ -45,10 +47,6 @@ class NotificationSchedule extends BaseSharedPrefs {
   Future<int> timeAtStep(step) async {
     final durations = (await NotificationSchedule().computeTimes());
 
-    if (step < durations.length) {
-      return durations[step];
-    } else {
-      return 1;
-    }
+    return step < durations.length ? durations[step] : 1;
   }
 }
