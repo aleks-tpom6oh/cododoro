@@ -22,7 +22,8 @@ void main() {
     when(mockTimerModel.isWorking).thenReturn(false);
 
     TimerScreenLogic.tick(
-        mockElapsedTimeModel, mockTimerModel, mockHistoryRepo, mockSettings);
+        // ignore: no-empty-block
+        mockElapsedTimeModel, mockTimerModel, mockHistoryRepo, mockSettings, onReachedStandingGoal: () {  });
 
     verify(mockElapsedTimeModel.onTick(addTime: false));
   });
@@ -43,7 +44,8 @@ void main() {
 
     try {
       TimerScreenLogic.tick(
-          mockElapsedTimeModel, mockTimerModel, mockHistoryRepo, mockSettings);
+          // ignore: no-empty-block
+          mockElapsedTimeModel, mockTimerModel, mockHistoryRepo, mockSettings, onReachedStandingGoal: () {  });
     } catch (e) {}
 
     verify(mockElapsedTimeModel.onTick(addTime: true));

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../main.dart';
+import '../../main.dart';
 
 class RestIdeasDialog extends StatefulWidget {
   RestIdeasDialog({Key? key}) : super(key: key);

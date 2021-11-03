@@ -47,14 +47,19 @@ String getNotificationMessage(TimerModel timerModel) {
   }
 }
 
-void tick(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
-    HistoryRepository history, Settings settings) async {
+void tick(
+    ElapsedTimeModel elapsedTimeModel,
+    TimerModel timerModel,
+    HistoryRepository history,
+    Settings settings,
+    {required Function() onReachedStandingGoal}) async {
   elapsedTimeModel.onTick(addTime: timerModel.isRunning());
 
   await syncSession(elapsedTimeModel, history, timerModel);
 
   if (timerModel.isRunning()) {
-    await notifyIfStandingGoalReached(timerModel, settings, history);
+    await notifyIfStandingGoalReached(
+        timerModel, settings, history, onReachedStandingGoal);
 
     if (timerModel.state == TimerStates.sessionWorking &&
         elapsedTimeModel.elapsedTime > await settings.workDuration) {
@@ -82,7 +87,11 @@ void tick(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
 
 late ConfettiController confetti;
 Duration? _previousStandTimeTillGoal = null;
-Future<void> notifyIfStandingGoalReached(TimerModel timerModel, Settings settings, HistoryRepository history) async {
+Future<void> notifyIfStandingGoalReached(
+    TimerModel timerModel,
+    Settings settings,
+    HistoryRepository history,
+    Function() onReachedStandingGoal) async {
   if (timerModel.isWorking &&
       (_previousStandTimeTillGoal == null ||
           _previousStandTimeTillGoal! >= Duration(seconds: 0))) {
@@ -90,7 +99,7 @@ Future<void> notifyIfStandingGoalReached(TimerModel timerModel, Settings setting
       if (hasStandingDesk) {
         final newStandTimeTillGoal =
             await calculateRemainingStandTime(history, settings);
-  
+
         if (newStandTimeTillGoal < Duration(seconds: 0) &&
             (_previousStandTimeTillGoal == null ||
                 _previousStandTimeTillGoal! >= Duration(seconds: 0))) {
@@ -98,8 +107,9 @@ Future<void> notifyIfStandingGoalReached(TimerModel timerModel, Settings setting
           await _notifyAll(
               "🎉 Congrats, you've reached your daily standing goal",
               soundPath: 'assets/audio/endingsound.mp3');
+          onReachedStandingGoal();
         }
-  
+
         _previousStandTimeTillGoal = newStandTimeTillGoal;
       }
     });

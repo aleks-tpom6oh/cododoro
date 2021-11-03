@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cododoro/storage/HistoryRepository.dart';
 import 'package:cododoro/utils.dart';
 import 'package:provider/provider.dart';
-import 'package:cododoro/widgets/AddTimeDialog.dart';
+import 'package:cododoro/widgets/dialogs/AddTimeDialog.dart';
 
 enum ListState { pomodoro, standing }
 

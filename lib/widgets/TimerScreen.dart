@@ -4,11 +4,12 @@ import 'package:cododoro/main.dart';
 import 'package:cododoro/models/VolumeController.dart';
 import 'package:cododoro/onboarding/OnboardingConfig.dart';
 import 'package:cododoro/onboarding/OnboardingTour.dart';
-import 'package:cododoro/widgets/RestIdeasDialog.dart';
+import 'package:cododoro/widgets/dialogs/RestIdeasDialog.dart';
 import 'package:cododoro/widgets/SitStandButton.dart';
 import 'package:cododoro/widgets/StandGoalTimer.dart';
-import 'package:cododoro/widgets/SuggestToStandDialog.dart';
-import 'package:cododoro/widgets/WorkEndedDialog.dart';
+import 'package:cododoro/widgets/dialogs/StandingGoalReachedDialog.dart';
+import 'package:cododoro/widgets/dialogs/SuggestToStandDialog.dart';
+import 'package:cododoro/widgets/dialogs/WorkEndedDialog.dart';
 import 'package:cododoro_macos_module/main.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
@@ -57,13 +58,38 @@ class _TimerScreenState extends State<TimerScreen>
     });
   }
 
+  Timer? standingGoalReachedDialogDelayTimer;
   void _tick() {
     final timerModel = context.read<TimerModel>();
     final elapsedTimeModel = context.read<ElapsedTimeModel>();
     final historyRepository = context.read<HistoryRepository>();
     final settings = context.read<Settings>();
 
-    logic.tick(elapsedTimeModel, timerModel, historyRepository, settings);
+    logic.tick(elapsedTimeModel, timerModel, historyRepository, settings,
+        onReachedStandingGoal: () {
+      standingGoalReachedDialogDelayTimer = new Timer(new Duration(seconds: 4), () async {
+        await showDialog<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return StandingGoalReachedDialog(
+                onSit: () {
+                  setState(() {
+                    _isStanding = false;
+                    logic.stopStanding(historyRepository);
+                  });
+                },
+                onSitAndTakeABreak: () async {
+                  await nextStage(
+                      elapsedTimeModel, timerModel, historyRepository)();
+                  setState(() {
+                    _isStanding = false;
+                    logic.stopStanding(historyRepository);
+                  });
+                });
+          },
+        );
+      });
+    });
   }
 
   Future spawnIsolate() async {
@@ -401,7 +427,7 @@ class _TimerScreenState extends State<TimerScreen>
               alignment: Alignment.topCenter,
               child: ConfettiWidget(
                 confettiController: logic.confetti,
-                emissionFrequency: 0.05, // how often it should emit
+                emissionFrequency: 0.05,
                 blastDirectionality: BlastDirectionality.explosive,
               ),
             ),
@@ -435,6 +461,7 @@ class _TimerScreenState extends State<TimerScreen>
     _timerIsolate?.kill();
     tickTimer?.cancel();
     logic.timeScreenDispose();
+    standingGoalReachedDialogDelayTimer?.cancel();
     super.dispose();
   }
 
