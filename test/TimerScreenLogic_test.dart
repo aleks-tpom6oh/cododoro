@@ -95,13 +95,13 @@ void main() {
     TimerScreenLogic.startSession(
         mockElapsedTimeModel, mockTimerModel, mockHistoryRepo);
 
-     verify(mockTimerModel.forceResume());
-     verify(mockTimerModel.state = TimerStates.sessionWorking);
-     verify(mockElapsedTimeModel.elapsedTime = 0);
-     verify(mockHistoryRepo.startSession(IntervalType.work));
+    verify(mockTimerModel.forceResume());
+    verify(mockTimerModel.state = TimerStates.sessionWorking);
+    verify(mockElapsedTimeModel.elapsedTime = 0);
+    verify(mockHistoryRepo.startSession(IntervalType.work));
   });
 
-    test(
+  test(
       'Start session resumes and starts a working session if no session currently and paused',
       () {
     ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
@@ -114,9 +114,9 @@ void main() {
     TimerScreenLogic.startSession(
         mockElapsedTimeModel, mockTimerModel, mockHistoryRepo);
 
-     verify(mockTimerModel.forceResume());
-     verify(mockTimerModel.state = TimerStates.sessionWorking);
-     verify(mockElapsedTimeModel.elapsedTime = 0);
-     verify(mockHistoryRepo.startSession(IntervalType.work));
+    verify(mockTimerModel.forceResume());
+    verify(mockTimerModel.state = TimerStates.sessionWorking);
+    verify(mockElapsedTimeModel.elapsedTime = 0);
+    verify(mockHistoryRepo.startSession(IntervalType.work));
   });
 }

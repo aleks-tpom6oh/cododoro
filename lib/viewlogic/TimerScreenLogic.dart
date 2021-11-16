@@ -47,11 +47,8 @@ String getNotificationMessage(TimerModel timerModel) {
   }
 }
 
-void tick(
-    ElapsedTimeModel elapsedTimeModel,
-    TimerModel timerModel,
-    HistoryRepository history,
-    Settings settings,
+void tick(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
+    HistoryRepository history, Settings settings,
     {required Function() onReachedStandingGoal}) async {
   elapsedTimeModel.onTick(addTime: timerModel.isRunning());
 
