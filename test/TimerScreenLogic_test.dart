@@ -23,7 +23,11 @@ void main() {
 
     TimerScreenLogic.tick(
         // ignore: no-empty-block
-        mockElapsedTimeModel, mockTimerModel, mockHistoryRepo, mockSettings, onReachedStandingGoal: () {  });
+        mockElapsedTimeModel,
+        mockTimerModel,
+        mockHistoryRepo,
+        mockSettings,
+        onReachedStandingGoal: () {});
 
     verify(mockElapsedTimeModel.onTick(addTime: false));
   });
@@ -37,17 +41,82 @@ void main() {
     when(mockTimerModel.isRunning()).thenReturn(true);
     when(mockTimerModel.isWorking).thenReturn(true);
     when(mockSettings.standingDesk).thenAnswer((_) => Future.value(true));
-    when(mockSettings.targetStandingMinutes).thenAnswer((_) => Future.value(100));
-    when(mockHistoryRepo.getTodayIntervals()).thenAnswer((_) => Future.value([]));
+    when(mockSettings.targetStandingMinutes)
+        .thenAnswer((_) => Future.value(100));
+    when(mockHistoryRepo.getTodayIntervals())
+        .thenAnswer((_) => Future.value([]));
     when(mockTimerModel.state).thenReturn(TimerStates.noSession);
     when(mockElapsedTimeModel.elapsedTime).thenReturn(0);
 
     try {
       TimerScreenLogic.tick(
           // ignore: no-empty-block
-          mockElapsedTimeModel, mockTimerModel, mockHistoryRepo, mockSettings, onReachedStandingGoal: () {  });
+          mockElapsedTimeModel,
+          mockTimerModel,
+          mockHistoryRepo,
+          mockSettings,
+          onReachedStandingGoal: () {});
     } catch (e) {}
 
     verify(mockElapsedTimeModel.onTick(addTime: true));
+  });
+
+  test('Start session does nothing if session is there', () {
+    ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
+    TimerModel mockTimerModel = MockTimerModel();
+    HistoryRepository mockHistoryRepo = MockHistoryRepository();
+
+    TimerStates.values.forEach((timerState) {
+      if (timerState == TimerStates.noSession) {
+        return;
+      }
+
+      when(mockTimerModel.state).thenReturn(timerState);
+
+      TimerScreenLogic.startSession(
+          mockElapsedTimeModel, mockTimerModel, mockHistoryRepo);
+
+      verifyNever(mockTimerModel.forceResume());
+      verifyNever(mockTimerModel.state = TimerStates.sessionWorking);
+      verifyZeroInteractions(mockElapsedTimeModel);
+      verifyZeroInteractions(mockHistoryRepo);
+    });
+  });
+
+  test(
+      'Start session resumes and starts a working session if no session currently',
+      () {
+    ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
+    TimerModel mockTimerModel = MockTimerModel();
+    HistoryRepository mockHistoryRepo = MockHistoryRepository();
+
+    when(mockTimerModel.state).thenReturn(TimerStates.noSession);
+
+    TimerScreenLogic.startSession(
+        mockElapsedTimeModel, mockTimerModel, mockHistoryRepo);
+
+     verify(mockTimerModel.forceResume());
+     verify(mockTimerModel.state = TimerStates.sessionWorking);
+     verify(mockElapsedTimeModel.elapsedTime = 0);
+     verify(mockHistoryRepo.startSession(IntervalType.work));
+  });
+
+    test(
+      'Start session resumes and starts a working session if no session currently and paused',
+      () {
+    ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
+    TimerModel mockTimerModel = MockTimerModel();
+    HistoryRepository mockHistoryRepo = MockHistoryRepository();
+
+    when(mockTimerModel.state).thenReturn(TimerStates.noSession);
+    when(mockTimerModel.isPaused).thenReturn(true);
+
+    TimerScreenLogic.startSession(
+        mockElapsedTimeModel, mockTimerModel, mockHistoryRepo);
+
+     verify(mockTimerModel.forceResume());
+     verify(mockTimerModel.state = TimerStates.sessionWorking);
+     verify(mockElapsedTimeModel.elapsedTime = 0);
+     verify(mockHistoryRepo.startSession(IntervalType.work));
   });
 }

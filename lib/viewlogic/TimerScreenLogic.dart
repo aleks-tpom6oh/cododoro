@@ -120,11 +120,11 @@ void startSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
     HistoryRepository history) {
   if (timerModel.state == TimerStates.noSession) {
     timerModel.state = TimerStates.sessionWorking;
+    timerModel.forceResume();
     elapsedTimeModel.elapsedTime = 0;
     notificationsTimer?.cancel();
 
-    history.startSession(
-        timerModel.isWorking ? IntervalType.work : IntervalType.rest);
+    history.startSession(IntervalType.work);
   }
 }
 
