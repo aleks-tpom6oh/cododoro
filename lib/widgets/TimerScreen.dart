@@ -200,7 +200,7 @@ class _TimerScreenState extends State<TimerScreen>
             _isStanding = true;
           });
         } catch (e) {}
-        await logic.startStanding(historyRepository);
+        await logic.startStanding(historyRepository, timerModel);
       }
       await nextStage(elapsedTimeModel, timerModel, historyRepository)();
     };
@@ -343,7 +343,7 @@ class _TimerScreenState extends State<TimerScreen>
                                   _isStanding = !_isStanding;
 
                                   if (_isStanding) {
-                                    logic.startStanding(historyRepository);
+                                    logic.startStanding(historyRepository, watchTimerModel);
                                   } else {
                                     logic.stopStanding(historyRepository);
                                   }

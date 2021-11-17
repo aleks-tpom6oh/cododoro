@@ -27,6 +27,7 @@ void main() {
         mockTimerModel,
         mockHistoryRepo,
         mockSettings,
+        // ignore: no-empty-block
         onReachedStandingGoal: () {});
 
     verify(mockElapsedTimeModel.onTick(addTime: false));
@@ -55,6 +56,7 @@ void main() {
           mockTimerModel,
           mockHistoryRepo,
           mockSettings,
+          // ignore: no-empty-block
           onReachedStandingGoal: () {});
     } catch (e) {}
 
@@ -118,5 +120,76 @@ void main() {
     verify(mockTimerModel.state = TimerStates.sessionWorking);
     verify(mockElapsedTimeModel.elapsedTime = 0);
     verify(mockHistoryRepo.startSession(IntervalType.work));
+  });
+
+  test(
+      'Should ask if you are still standing if started standing while working',
+      () {
+    TimerModel mockTimerModel = MockTimerModel();
+    HistoryRepository mockHistoryRepo = MockHistoryRepository();
+
+    when(mockTimerModel.state).thenReturn(TimerStates.sessionWorking);
+
+    TimerScreenLogic.startStanding(mockHistoryRepo, mockTimerModel);
+
+    when(mockTimerModel.state).thenReturn(TimerStates.sessionResting);
+
+    expect(TimerScreenLogic.shouldAskStillStanding(true, mockTimerModel), true);
+  });
+
+  test(
+      'Should ask if you are still standing if started standing while working',
+      () {
+    TimerModel mockTimerModel = MockTimerModel();
+    HistoryRepository mockHistoryRepo = MockHistoryRepository();
+
+    when(mockTimerModel.state).thenReturn(TimerStates.sessionWorking);
+
+    TimerScreenLogic.startStanding(mockHistoryRepo, mockTimerModel);
+
+    when(mockTimerModel.state).thenReturn(TimerStates.sessionResting);
+
+    expect(TimerScreenLogic.shouldAskStillStanding(true, mockTimerModel), true);
+  });
+
+  test(
+      'Should ask if you are still standing if started standing while working overtime',
+      () {
+    TimerModel mockTimerModel = MockTimerModel();
+    HistoryRepository mockHistoryRepo = MockHistoryRepository();
+
+    when(mockTimerModel.state).thenReturn(TimerStates.sessionWorkingOvertime);
+
+    TimerScreenLogic.startStanding(mockHistoryRepo, mockTimerModel);
+
+    when(mockTimerModel.state).thenReturn(TimerStates.sessionResting);
+
+    expect(TimerScreenLogic.shouldAskStillStanding(true, mockTimerModel), true);
+  });
+
+  test(
+      'Should not ask if you are still standing if started standing during resting',
+      () {
+    TimerModel mockTimerModel = MockTimerModel();
+    HistoryRepository mockHistoryRepo = MockHistoryRepository();
+
+    when(mockTimerModel.state).thenReturn(TimerStates.sessionResting);
+
+    TimerScreenLogic.startStanding(mockHistoryRepo, mockTimerModel);
+
+    expect(TimerScreenLogic.shouldAskStillStanding(true, mockTimerModel), false);
+  });
+
+  test(
+      'Should not ask if you are still standing if started standing during resting overtime',
+      () {
+    TimerModel mockTimerModel = MockTimerModel();
+    HistoryRepository mockHistoryRepo = MockHistoryRepository();
+
+    when(mockTimerModel.state).thenReturn(TimerStates.sessionRestingOvertime);
+
+    TimerScreenLogic.startStanding(mockHistoryRepo, mockTimerModel);
+
+    expect(TimerScreenLogic.shouldAskStillStanding(true, mockTimerModel), false);
   });
 }
