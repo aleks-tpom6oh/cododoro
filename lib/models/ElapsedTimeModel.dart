@@ -25,8 +25,6 @@ class ElapsedTimeModel with ChangeNotifier {
                 milliseconds: _lastTickDateTime!.millisecondsSinceEpoch)))
             .millisecondsSinceEpoch;
 
-    print("Tick happened after ${additionalTime}");
-
     _lastTickDateTime = DateTime.now();
     if (addTime) {
       _elapsedTime += Duration(milliseconds: additionalTime);

@@ -50,14 +50,15 @@ String getNotificationMessage(TimerModel timerModel) {
 
 void tick(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
     HistoryRepository history, Settings settings,
-    {required Function() onReachedStandingGoal}) async {
+    {required bool isStanding,
+    required Function() onReachedStandingGoal}) async {
   elapsedTimeModel.onTick(addTime: timerModel.isRunning());
 
   await syncSession(elapsedTimeModel, history, timerModel);
 
   if (timerModel.isRunning()) {
     await notifyIfStandingGoalReached(
-        timerModel, settings, history, onReachedStandingGoal);
+        timerModel, settings, history, isStanding, onReachedStandingGoal);
 
     if (timerModel.state == TimerStates.sessionWorking &&
         elapsedTimeModel.elapsedTime > await settings.workDuration) {
@@ -89,8 +90,10 @@ Future<void> notifyIfStandingGoalReached(
     TimerModel timerModel,
     Settings settings,
     HistoryRepository history,
+    bool isStanding,
     Function() onReachedStandingGoal) async {
   if (timerModel.isWorking &&
+      isStanding &&
       (_previousStandTimeTillGoal == null ||
           _previousStandTimeTillGoal! >= Duration(seconds: 0))) {
     settings.standingDesk.then((hasStandingDesk) async {
@@ -98,9 +101,7 @@ Future<void> notifyIfStandingGoalReached(
         final newStandTimeTillGoal =
             await calculateRemainingStandTime(history, settings);
 
-        if (newStandTimeTillGoal < Duration(seconds: 0) &&
-            (_previousStandTimeTillGoal == null ||
-                _previousStandTimeTillGoal! >= Duration(seconds: 0))) {
+        if (newStandTimeTillGoal < Duration(seconds: 0)) {
           confetti.play();
           await _notifyAll(
               "🎉 Congrats, you've reached your daily standing goal",
@@ -108,6 +109,7 @@ Future<void> notifyIfStandingGoalReached(
           onReachedStandingGoal();
         }
 
+        print("Stand time till goal $newStandTimeTillGoal");
         _previousStandTimeTillGoal = newStandTimeTillGoal;
       }
     });

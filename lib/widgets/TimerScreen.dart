@@ -66,26 +66,25 @@ class _TimerScreenState extends State<TimerScreen>
     final settings = context.read<Settings>();
 
     logic.tick(elapsedTimeModel, timerModel, historyRepository, settings,
-        onReachedStandingGoal: () {
-      standingGoalReachedDialogDelayTimer = new Timer(new Duration(seconds: 4), () async {
+        isStanding: _isStanding, onReachedStandingGoal: () {
+      standingGoalReachedDialogDelayTimer =
+          new Timer(new Duration(seconds: 4), () async {
         await showDialog<void>(
           context: context,
           builder: (BuildContext context) {
-            return StandingGoalReachedDialog(
-                onSit: () {
-                  setState(() {
-                    _isStanding = false;
-                    logic.stopStanding(historyRepository);
-                  });
-                },
-                onSitAndTakeABreak: () async {
-                  await nextStage(
-                      elapsedTimeModel, timerModel, historyRepository)();
-                  setState(() {
-                    _isStanding = false;
-                    logic.stopStanding(historyRepository);
-                  });
-                });
+            return StandingGoalReachedDialog(onSit: () {
+              setState(() {
+                _isStanding = false;
+                logic.stopStanding(historyRepository);
+              });
+            }, onSitAndTakeABreak: () async {
+              await nextStage(
+                  elapsedTimeModel, timerModel, historyRepository)();
+              setState(() {
+                _isStanding = false;
+                logic.stopStanding(historyRepository);
+              });
+            });
           },
         );
       });
@@ -343,7 +342,8 @@ class _TimerScreenState extends State<TimerScreen>
                                   _isStanding = !_isStanding;
 
                                   if (_isStanding) {
-                                    logic.startStanding(historyRepository, watchTimerModel);
+                                    logic.startStanding(
+                                        historyRepository, watchTimerModel);
                                   } else {
                                     logic.stopStanding(historyRepository);
                                   }
