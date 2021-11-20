@@ -27,6 +27,7 @@ void main() {
         mockTimerModel,
         mockHistoryRepo,
         mockSettings,
+        isStanding: false,
         // ignore: no-empty-block
         onReachedStandingGoal: () {});
 
@@ -56,6 +57,7 @@ void main() {
           mockTimerModel,
           mockHistoryRepo,
           mockSettings,
+          isStanding: false,
           // ignore: no-empty-block
           onReachedStandingGoal: () {});
     } catch (e) {}
@@ -191,5 +193,20 @@ void main() {
     TimerScreenLogic.startStanding(mockHistoryRepo, mockTimerModel);
 
     expect(TimerScreenLogic.shouldAskStillStanding(true, mockTimerModel), false);
+  });
+
+    test(
+      'Should not ask if you are still standing when not standing',
+      () {
+    TimerModel mockTimerModel = MockTimerModel();
+    HistoryRepository mockHistoryRepo = MockHistoryRepository();
+
+    when(mockTimerModel.state).thenReturn(TimerStates.sessionWorkingOvertime);
+
+    TimerScreenLogic.startStanding(mockHistoryRepo, mockTimerModel);
+
+    when(mockTimerModel.state).thenReturn(TimerStates.sessionRestingOvertime);
+
+    expect(TimerScreenLogic.shouldAskStillStanding(false, mockTimerModel), false);
   });
 }

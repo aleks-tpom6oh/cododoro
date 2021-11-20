@@ -25,7 +25,7 @@ Future<void> _notifyAll(String message,
 
 Timer? notificationsTimer;
 int currentNotificationsDelayProgressionStep = 0;
-bool skipNextSitDownSuggestion = false;
+bool skipNextAskStillStanding = false;
 
 void scheduleOvertimeNotifications(
     {int step = 0, required String message}) async {
@@ -130,20 +130,20 @@ void startSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
 
 Future<void> startStanding(
     HistoryRepository history, TimerModel timerModel) async {
-  skipNextSitDownSuggestion = timerModel.state == TimerStates.sessionResting ||
+  skipNextAskStillStanding = timerModel.state == TimerStates.sessionResting ||
       timerModel.state == TimerStates.sessionRestingOvertime;
   await history.startSession(IntervalType.stand);
 }
 
 bool shouldAskStillStanding(bool isStanding, TimerModel timerModel) {
-  if (skipNextSitDownSuggestion) {
-    skipNextSitDownSuggestion = false;
+  if (skipNextAskStillStanding) {
+    skipNextAskStillStanding = false;
 
     return false;
   }
 
-  return isStanding && timerModel.state == TimerStates.sessionResting ||
-      timerModel.state == TimerStates.sessionRestingOvertime;
+  return isStanding && (timerModel.state == TimerStates.sessionResting ||
+      timerModel.state == TimerStates.sessionRestingOvertime);
 }
 
 Future<void> stopStanding(HistoryRepository history) async {
