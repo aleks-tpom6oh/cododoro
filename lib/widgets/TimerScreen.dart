@@ -33,6 +33,8 @@ import '../viewlogic/TimerScreenLogic.dart' as logic;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+import 'WorkRestTimer.dart';
+
 Isolate? _timerIsolate;
 Timer? tickTimer;
 
@@ -317,13 +319,22 @@ class _TimerScreenState extends State<TimerScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    seeStatsButton(),
+                    Container(
+                        margin: new EdgeInsets.only(right: 8, top: 8),
+                        child: Column(
+                          children: [
+                            seeStatsButton(),
+                            SizedBox(height: 8),
+                            WorkRestTimer(),
+                          ],
+                        )),
                     Container(
                       margin: new EdgeInsets.only(right: 8, top: 8),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          Text("Intervals"),
                           DurationOutput(
                               duration: settings.workDuration, label: "💻"),
                           DurationOutput(
