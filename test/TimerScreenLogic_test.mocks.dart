@@ -2,14 +2,13 @@
 // in cododoro/test/TimerScreenLogic_test.dart.
 // Do not manually edit this file.
 
-import 'dart:async' as _i8;
 import 'dart:ui' as _i4;
 
 import 'package:cododoro/models/ElapsedTimeModel.dart' as _i3;
 import 'package:cododoro/models/TimerModel.dart' as _i5;
 import 'package:cododoro/models/TimerStates.dart' as _i6;
 import 'package:cododoro/storage/HistoryRepository.dart' as _i7;
-import 'package:cododoro/storage/Settings.dart' as _i9;
+import 'package:cododoro/storage/Settings.dart' as _i8;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:shared_preferences/shared_preferences.dart' as _i2;
 
@@ -35,6 +34,10 @@ class MockElapsedTimeModel extends _i1.Mock implements _i3.ElapsedTimeModel {
   @override
   int get elapsedTime =>
       (super.noSuchMethod(Invocation.getter(#elapsedTime), returnValue: 0)
+          as int);
+  @override
+  int get elapsedTimeMs =>
+      (super.noSuchMethod(Invocation.getter(#elapsedTimeMs), returnValue: 0)
           as int);
   @override
   set elapsedTime(dynamic newTime) =>
@@ -67,11 +70,11 @@ class MockElapsedTimeModel extends _i1.Mock implements _i3.ElapsedTimeModel {
           returnValueForMissingStub: null);
 }
 
-/// A class which mocks [TimerModel].
+/// A class which mocks [TimerStateModel].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockTimerModel extends _i1.Mock implements _i5.TimerModel {
-  MockTimerModel() {
+class MockTimerStateModel extends _i1.Mock implements _i5.TimerStateModel {
+  MockTimerStateModel() {
     _i1.throwOnMissingStub(this);
   }
 
@@ -144,13 +147,11 @@ class MockHistoryRepository extends _i1.Mock implements _i7.HistoryRepository {
   }
 
   @override
-  _i8.Future<_i2.SharedPreferences> get prefs => (super.noSuchMethod(
-          Invocation.getter(#prefs),
-          returnValue:
-              Future<_i2.SharedPreferences>.value(_FakeSharedPreferences_0()))
-      as _i8.Future<_i2.SharedPreferences>);
+  _i2.SharedPreferences get prefs =>
+      (super.noSuchMethod(Invocation.getter(#prefs),
+          returnValue: _FakeSharedPreferences_0()) as _i2.SharedPreferences);
   @override
-  set prefs(_i8.Future<_i2.SharedPreferences>? _prefs) =>
+  set prefs(_i2.SharedPreferences? _prefs) =>
       super.noSuchMethod(Invocation.setter(#prefs, _prefs),
           returnValueForMissingStub: null);
   @override
@@ -158,10 +159,9 @@ class MockHistoryRepository extends _i1.Mock implements _i7.HistoryRepository {
       (super.noSuchMethod(Invocation.getter(#hasListeners), returnValue: false)
           as bool);
   @override
-  _i8.Future<void> startSession(_i7.IntervalType? type) =>
-      (super.noSuchMethod(Invocation.method(#startSession, [type]),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+  void startSession(_i7.IntervalType? type) =>
+      super.noSuchMethod(Invocation.method(#startSession, [type]),
+          returnValueForMissingStub: null);
   @override
   void stopStanding() =>
       super.noSuchMethod(Invocation.method(#stopStanding, []),
@@ -173,33 +173,28 @@ class MockHistoryRepository extends _i1.Mock implements _i7.HistoryRepository {
           Invocation.method(#saveSession, [endTime, type, duration]),
           returnValueForMissingStub: null);
   @override
-  _i8.Future<void> updateCurrentStandingSession({bool? addTime = true}) =>
-      (super.noSuchMethod(
+  void updateCurrentStandingSession({bool? addTime = true}) =>
+      super.noSuchMethod(
           Invocation.method(
               #updateCurrentStandingSession, [], {#addTime: addTime}),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: null);
   @override
-  _i8.Future<void> updateCurrentPomodoroSession(
-          DateTime? endTime, Duration? duration) =>
-      (super.noSuchMethod(
+  void updateCurrentPomodoroSession(DateTime? endTime, Duration? duration) =>
+      super.noSuchMethod(
           Invocation.method(#updateCurrentPomodoroSession, [endTime, duration]),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+          returnValueForMissingStub: null);
   @override
   void toggleSessionType(_i7.Interval? interval) =>
       super.noSuchMethod(Invocation.method(#toggleSessionType, [interval]),
           returnValueForMissingStub: null);
   @override
-  _i8.Future<bool> removeSession(_i7.Interval? interval) =>
+  bool removeSession(_i7.Interval? interval) =>
       (super.noSuchMethod(Invocation.method(#removeSession, [interval]),
-          returnValue: Future<bool>.value(false)) as _i8.Future<bool>);
+          returnValue: false) as bool);
   @override
-  _i8.Future<Iterable<_i7.StoredInterval>> getTodayIntervals() =>
+  Iterable<_i7.StoredInterval> getTodayIntervals() =>
       (super.noSuchMethod(Invocation.method(#getTodayIntervals, []),
-              returnValue: Future<Iterable<_i7.StoredInterval>>.value(
-                  <_i7.StoredInterval>[]))
-          as _i8.Future<Iterable<_i7.StoredInterval>>);
+          returnValue: <_i7.StoredInterval>[]) as Iterable<_i7.StoredInterval>);
   @override
   String toString() => super.toString();
   @override
@@ -222,37 +217,39 @@ class MockHistoryRepository extends _i1.Mock implements _i7.HistoryRepository {
 /// A class which mocks [Settings].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSettings extends _i1.Mock implements _i9.Settings {
+class MockSettings extends _i1.Mock implements _i8.Settings {
   MockSettings() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i8.Future<int> get workDuration =>
-      (super.noSuchMethod(Invocation.getter(#workDuration),
-          returnValue: Future<int>.value(0)) as _i8.Future<int>);
+  _i2.SharedPreferences get prefs =>
+      (super.noSuchMethod(Invocation.getter(#prefs),
+          returnValue: _FakeSharedPreferences_0()) as _i2.SharedPreferences);
   @override
-  _i8.Future<int> get restDuration =>
-      (super.noSuchMethod(Invocation.getter(#restDuration),
-          returnValue: Future<int>.value(0)) as _i8.Future<int>);
+  set prefs(_i2.SharedPreferences? _prefs) =>
+      super.noSuchMethod(Invocation.setter(#prefs, _prefs),
+          returnValueForMissingStub: null);
   @override
-  _i8.Future<bool> get standingDesk =>
-      (super.noSuchMethod(Invocation.getter(#standingDesk),
-          returnValue: Future<bool>.value(false)) as _i8.Future<bool>);
+  int get workDuration =>
+      (super.noSuchMethod(Invocation.getter(#workDuration), returnValue: 0)
+          as int);
   @override
-  _i8.Future<int> get targetStandingMinutes =>
+  int get restDuration =>
+      (super.noSuchMethod(Invocation.getter(#restDuration), returnValue: 0)
+          as int);
+  @override
+  bool get standingDesk =>
+      (super.noSuchMethod(Invocation.getter(#standingDesk), returnValue: false)
+          as bool);
+  @override
+  int get targetStandingMinutes =>
       (super.noSuchMethod(Invocation.getter(#targetStandingMinutes),
-          returnValue: Future<int>.value(0)) as _i8.Future<int>);
+          returnValue: 0) as int);
   @override
-  _i8.Future<int> get dayHoursOffset =>
-      (super.noSuchMethod(Invocation.getter(#dayHoursOffset),
-          returnValue: Future<int>.value(0)) as _i8.Future<int>);
-  @override
-  _i8.Future<_i2.SharedPreferences> get prefs => (super.noSuchMethod(
-          Invocation.getter(#prefs),
-          returnValue:
-              Future<_i2.SharedPreferences>.value(_FakeSharedPreferences_0()))
-      as _i8.Future<_i2.SharedPreferences>);
+  int get dayHoursOffset =>
+      (super.noSuchMethod(Invocation.getter(#dayHoursOffset), returnValue: 0)
+          as int);
   @override
   bool get hasListeners =>
       (super.noSuchMethod(Invocation.getter(#hasListeners), returnValue: false)

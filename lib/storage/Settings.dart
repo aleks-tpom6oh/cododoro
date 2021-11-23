@@ -1,4 +1,4 @@
-import 'package:cododoro/storage/BaseSharedPrefs.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String dayHoursOffsetKey = "DAY_HOURS_OFFSET";
@@ -9,7 +9,11 @@ int getDayHoursOffset(SharedPreferences prefs) {
   return prefs.getInt(dayHoursOffsetKey) ?? _defaultDayHoursOffset;
 }
 
-class Settings extends BaseSharedPrefs {
+class Settings with ChangeNotifier {
+  SharedPreferences prefs;
+
+  Settings({required this.prefs});
+
   int _defaultWorkDuration = 50 * 60;
   int _defaultRestDuration = 10 * 60;
 
@@ -17,56 +21,56 @@ class Settings extends BaseSharedPrefs {
 
   bool _defaulStandingDesk = true;
 
-  Future<int> get workDuration async {
-    return (await prefs).getInt("WORK_DURATION") ?? _defaultWorkDuration;
+  /* Future< */int/* > */ get workDuration /* async */ {
+    return /*(await prefs)*/prefs.getInt("WORK_DURATION") ?? _defaultWorkDuration;
   }
 
-  void setWorkDuration(int newDuration) async {
-    (await prefs).setInt("WORK_DURATION", newDuration);
+  void setWorkDuration(int newDuration) /* async */ {
+    /*(await prefs)*/ prefs.setInt("WORK_DURATION", newDuration);
     notifyListeners();
   }
 
-  Future<int> get restDuration async {
-    return (await prefs).getInt("REST_DURATION") ?? _defaultRestDuration;
+  /* Future<int> */int get restDuration /* async */ {
+    return /*(await prefs)*/prefs.getInt("REST_DURATION") ?? _defaultRestDuration;
   }
 
-  void setRestDuration(int newDuration) async {
-    (await prefs).setInt("REST_DURATION", newDuration);
+  void setRestDuration(int newDuration) /* async */ {
+    /*(await prefs)*/prefs.setInt("REST_DURATION", newDuration);
     notifyListeners();
   }
 
-  Future<bool> get standingDesk async {
-    return (await prefs).getBool("STANDING_DESK") ?? _defaulStandingDesk;
+  /* Future< */bool/* > */ get standingDesk /* async */ {
+    return /*(await prefs)*/prefs.getBool("STANDING_DESK") ?? _defaulStandingDesk;
   }
 
-  void setStandingDesk(bool newStandingDesk) async {
-    await (await prefs).setBool("STANDING_DESK", newStandingDesk);
+  void setStandingDesk(bool newStandingDesk) {
+    /*(await prefs)*/prefs.setBool("STANDING_DESK", newStandingDesk);
     notifyListeners();
   }
 
-  Future<int> get targetStandingMinutes async {
+  int get targetStandingMinutes  {
     final int? legacyHoursSetting =
-        (await prefs).getInt("TARGET_STANDING_HOURS");
+        /*(await prefs)*/prefs.getInt("TARGET_STANDING_HOURS");
     final int? legacyHoursInMinutes =
         legacyHoursSetting != null ? legacyHoursSetting * 60 : null;
 
-    return (await prefs).getInt("TARGET_STANDING_MINUTES") ??
+    return /*(await prefs)*/prefs.getInt("TARGET_STANDING_MINUTES") ??
         legacyHoursInMinutes ??
         _defaulTargetStandingMinutes;
   }
 
-  void setTargetStandingMinutes(int newTargetStandingMinutes) async {
-    await (await prefs)
+  void setTargetStandingMinutes(int newTargetStandingMinutes)  {
+    /*(await prefs)*/prefs
         .setInt("TARGET_STANDING_MINUTES", newTargetStandingMinutes);
     notifyListeners();
   }
 
-  Future<int> get dayHoursOffset async {
-    return getDayHoursOffset(await prefs);
+  int get dayHoursOffset  {
+    return getDayHoursOffset/*(await prefs)*/(prefs);
   }
 
-  void setDayHoursOffset(int newDayHoursOffset) async {
-    await (await prefs).setInt(dayHoursOffsetKey, newDayHoursOffset);
+  void setDayHoursOffset(int newDayHoursOffset) {
+    /*(await prefs)*/prefs.setInt(dayHoursOffsetKey, newDayHoursOffset);
     notifyListeners();
   }
 }

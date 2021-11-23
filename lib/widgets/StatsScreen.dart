@@ -1,3 +1,4 @@
+import 'package:cododoro/models/ElapsedTimeModel.dart';
 import 'package:cododoro/storage/NotificationsSchedule.dart';
 import 'package:cododoro/widgets/views/StatsListToggleButton.dart';
 import 'package:flutter/material.dart';
@@ -20,131 +21,114 @@ class _StatsScreenState extends State<StatsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final historyRepository = context.watch<HistoryRepository>();
-
-    final todayIntervals = historyRepository.getTodayIntervals();
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Stats Screen"),
       ),
       body: Center(
-          child: FutureBuilder(
-              future: todayIntervals,
-              builder: (BuildContext context,
-                  AsyncSnapshot<Iterable<StoredInterval>>
-                      todayIntervalsSnapshot) {
-                return screenContents(
-                    todayIntervalsSnapshot, context, historyRepository);
-              })),
+          child: Selector<ElapsedTimeModel, int>(
+        selector: (_, elapsedTimeModel) => elapsedTimeModel.elapsedTime,
+        builder: (_, __, ___) {
+          final historyRepository = context.read<HistoryRepository>();
+
+          final todayIntervals = historyRepository.getTodayIntervals();
+
+          return screenContents(todayIntervals, context, historyRepository);
+        },
+      )),
     );
   }
 
-  Widget screenContents(
-      AsyncSnapshot<Iterable<StoredInterval>> todayIntervalsSnapshot,
-      BuildContext context,
-      HistoryRepository historyRepository) {
-    if (todayIntervalsSnapshot.hasData) {
-      final workDuration = calculateTimeForIntervalType(
-          todayIntervalsSnapshot.data, IntervalType.work);
-      final restDuration = calculateTimeForIntervalType(
-          todayIntervalsSnapshot.data, IntervalType.rest);
-      final standingDuration = calculateTimeForIntervalType(
-          todayIntervalsSnapshot.data, IntervalType.stand);
+  Widget screenContents(Iterable<StoredInterval> todayIntervals,
+      BuildContext context, HistoryRepository historyRepository) {
+    final workDuration =
+        calculateTimeForIntervalType(todayIntervals, IntervalType.work);
+    final restDuration =
+        calculateTimeForIntervalType(todayIntervals, IntervalType.rest);
+    final standingDuration =
+        calculateTimeForIntervalType(todayIntervals, IntervalType.stand);
 
-      return Stack(
-        children: [
-          Align(
-            alignment: Alignment.topRight,
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: IconButton(
-                  onPressed: () async {
-                    await showDialog<void>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return ChangeNotifierProvider(
-                          create: (context) => NotificationSchedule(),
-                          child: AddTimeDialog(),
-                        );
-                      },
-                    );
-                  },
-                  icon: Icon(Icons.add)),
-            ),
+    return Stack(
+      children: [
+        Align(
+          alignment: Alignment.topRight,
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: IconButton(
+                onPressed: () async {
+                  await showDialog<void>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ChangeNotifierProvider(
+                        create: (context) => NotificationSchedule(),
+                        child: AddTimeDialog(),
+                      );
+                    },
+                  );
+                },
+                icon: Icon(Icons.add)),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text("💻 Worked for ${workDuration.toHmsString()}"),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text("🏖 Rested for ${restDuration.toHmsString()}"),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text("🧍 Stood for ${standingDuration.toMsString()}"),
-              ),
-              StatsListToggleButton(onToggle: (listState) {
-                setState(() {
-                  currentListState = listState;
-                });
-              }),
-              Expanded(
-                  child: intervalsList(
-                      todayIntervalsSnapshot, context, historyRepository))
-            ],
-          )
-        ],
-      );
-    } else {
-      return ElevatedButton(
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: Text('Go back!'),
-      );
-    }
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text("💻 Worked for ${workDuration.toHmsString()}"),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text("🏖 Rested for ${restDuration.toHmsString()}"),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text("🧍 Stood for ${standingDuration.toMsString()}"),
+            ),
+            StatsListToggleButton(onToggle: (listState) {
+              setState(() {
+                currentListState = listState;
+              });
+            }),
+            Expanded(
+                child:
+                    intervalsList(todayIntervals, context, historyRepository))
+          ],
+        )
+      ],
+    );
   }
 
-  ListView intervalsList(
-      AsyncSnapshot<Iterable<StoredInterval>> todayIntervalsSnapshot,
-      BuildContext context,
-      HistoryRepository historyRepository) {
+  ListView intervalsList(Iterable<StoredInterval> todayIntervals,
+      BuildContext context, HistoryRepository historyRepository) {
     return ListView(
         padding: const EdgeInsets.all(8),
-        children: (todayIntervalsSnapshot.data
-                ?.toList()
-                .reversed
-                .where((element) {
-                  return currentListState == ListState.pomodoro
-                      ? element.type != IntervalType.stand
-                      : element.type == IntervalType.stand;
-                })
-                .map(
-                  (interval) => Dismissible(
-                    key: UniqueKey(),
-                    background: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12.0),
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Color(0xFF990000)
-                          : Color(0xFFE72400),
-                      alignment: Alignment.centerRight,
-                      child: Icon(Icons.cancel),
-                    ),
-                    confirmDismiss: (DismissDirection direction) async {
-                      return onRowDismiss(
-                          direction, interval, historyRepository);
-                    },
-                    child: singleRowUi(interval, context, historyRepository),
-                  ),
-                )
-                .toList() ??
-            <Widget>[]));
+        children: (todayIntervals
+            .toList()
+            .reversed
+            .where((element) {
+              return currentListState == ListState.pomodoro
+                  ? element.type != IntervalType.stand
+                  : element.type == IntervalType.stand;
+            })
+            .map(
+              (interval) => Dismissible(
+                key: UniqueKey(),
+                background: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12.0),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Color(0xFF990000)
+                      : Color(0xFFE72400),
+                  alignment: Alignment.centerRight,
+                  child: Icon(Icons.cancel),
+                ),
+                confirmDismiss: (DismissDirection direction) async {
+                  return onRowDismiss(direction, interval, historyRepository);
+                },
+                child: singleRowUi(interval, context, historyRepository),
+              ),
+            )
+            .toList()));
   }
 
   Future<bool> onRowDismiss(DismissDirection direction, StoredInterval interval,

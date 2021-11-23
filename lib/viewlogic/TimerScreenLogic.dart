@@ -38,7 +38,7 @@ void scheduleOvertimeNotifications(
   });
 }
 
-String getNotificationMessage(TimerModel timerModel) {
+String getNotificationMessage(TimerStateModel timerModel) {
   if (timerModel.state == TimerStates.sessionRestingOvertime) {
     return "Time to work!";
   } else if (timerModel.state == TimerStates.sessionWorkingOvertime) {
@@ -48,13 +48,13 @@ String getNotificationMessage(TimerModel timerModel) {
   }
 }
 
-void tick(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
+void tick(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
     HistoryRepository history, Settings settings,
     {required bool isStanding,
     required Function() onReachedStandingGoal}) async {
   elapsedTimeModel.onTick(addTime: timerModel.isRunning());
 
-  await syncSession(elapsedTimeModel, history, timerModel);
+  syncSession(elapsedTimeModel, history, timerModel);
 
   if (timerModel.isRunning()) {
     await notifyIfStandingGoalReached(
@@ -87,7 +87,7 @@ void tick(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
 late ConfettiController confetti;
 Duration? _previousStandTimeTillGoal = null;
 Future<void> notifyIfStandingGoalReached(
-    TimerModel timerModel,
+    TimerStateModel timerModel,
     Settings settings,
     HistoryRepository history,
     bool isStanding,
@@ -96,27 +96,27 @@ Future<void> notifyIfStandingGoalReached(
       isStanding &&
       (_previousStandTimeTillGoal == null ||
           _previousStandTimeTillGoal! >= Duration(seconds: 0))) {
-    settings.standingDesk.then((hasStandingDesk) async {
-      if (hasStandingDesk) {
-        final newStandTimeTillGoal =
-            await calculateRemainingStandTime(history, settings);
+    final hasStandingDesk = settings.standingDesk;
 
-        if (newStandTimeTillGoal < Duration(seconds: 0)) {
-          confetti.play();
-          await _notifyAll(
-              "🎉 Congrats, you've reached your daily standing goal",
-              soundPath: 'assets/audio/endingsound.mp3');
-          onReachedStandingGoal();
-        }
+    if (hasStandingDesk) {
+      final newStandTimeTillGoal =
+          calculateRemainingStandTime(history, settings);
 
-        print("Stand time till goal $newStandTimeTillGoal");
-        _previousStandTimeTillGoal = newStandTimeTillGoal;
+      if (newStandTimeTillGoal < Duration(seconds: 0)) {
+        confetti.play();
+        await _notifyAll("🎉 Congrats, you've reached your daily standing goal",
+            soundPath: 'assets/audio/endingsound.mp3');
+        onReachedStandingGoal();
       }
-    });
+
+      print("Stand time till goal $newStandTimeTillGoal");
+      _previousStandTimeTillGoal = newStandTimeTillGoal;
+    }
+    ;
   }
 }
 
-void startSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
+void startSession(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
     HistoryRepository history) {
   if (timerModel.state == TimerStates.noSession) {
     timerModel.state = TimerStates.sessionWorking;
@@ -128,30 +128,31 @@ void startSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
   }
 }
 
-Future<void> startStanding(
-    HistoryRepository history, TimerModel timerModel) async {
+void startStanding(
+    HistoryRepository history, TimerStateModel timerModel) {
   skipNextAskStillStanding = timerModel.state == TimerStates.sessionResting ||
       timerModel.state == TimerStates.sessionRestingOvertime;
-  await history.startSession(IntervalType.stand);
+   history.startSession(IntervalType.stand);
 }
 
-bool shouldAskStillStanding(bool isStanding, TimerModel timerModel) {
+bool shouldAskStillStanding(bool isStanding, TimerStateModel timerModel) {
   if (skipNextAskStillStanding) {
     skipNextAskStillStanding = false;
 
     return false;
   }
 
-  return isStanding && (timerModel.state == TimerStates.sessionResting ||
-      timerModel.state == TimerStates.sessionRestingOvertime);
+  return isStanding &&
+      (timerModel.state == TimerStates.sessionResting ||
+          timerModel.state == TimerStates.sessionRestingOvertime);
 }
 
-Future<void> stopStanding(HistoryRepository history) async {
-  await history.updateCurrentStandingSession();
+void stopStanding(HistoryRepository history) {
+  history.updateCurrentStandingSession();
   history.stopStanding();
 }
 
-void pauseResume(TimerModel timerModel) {
+void pauseResume(TimerStateModel timerModel) {
   if (timerModel.isPaused && timerModel.isOvertime) {
     scheduleOvertimeNotifications(
         step: currentNotificationsDelayProgressionStep + 1,
@@ -163,19 +164,19 @@ void pauseResume(TimerModel timerModel) {
   timerModel.pauseResume();
 }
 
-Future<void> syncSession(ElapsedTimeModel elapsedTimeModel,
-    HistoryRepository history, TimerModel timerModel) async {
+void syncSession(ElapsedTimeModel elapsedTimeModel,
+    HistoryRepository history, TimerStateModel timerModel) {
   if (timerModel.isRunning()) {
-    await history.updateCurrentPomodoroSession(
+    history.updateCurrentPomodoroSession(
         DateTime.now(), Duration(seconds: elapsedTimeModel.elapsedTime));
   }
-  await history.updateCurrentStandingSession(addTime: timerModel.isWorking);
+  history.updateCurrentStandingSession(addTime: timerModel.isWorking);
 }
 
-void stopSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
-    HistoryRepository history) async {
+void stopSession(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
+    HistoryRepository history) {
   if (timerModel.state != TimerStates.noSession) {
-    await history.updateCurrentPomodoroSession(
+    history.updateCurrentPomodoroSession(
         DateTime.now(), Duration(seconds: elapsedTimeModel.elapsedTime));
 
     timerModel.state = TimerStates.noSession;
@@ -184,7 +185,7 @@ void stopSession(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
   notificationsTimer?.cancel();
 }
 
-String currentSessionName(TimerModel timerModel) {
+String currentSessionName(TimerStateModel timerModel) {
   if (timerModel.isPaused) {
     return "Paused";
   }
@@ -203,7 +204,7 @@ String currentSessionName(TimerModel timerModel) {
   }
 }
 
-String currentStateGifPath(TimerModel timerModel) {
+String currentStateGifPath(TimerStateModel timerModel) {
   if (timerModel.isPaused) {
     return "assets/images/pause.gif";
   }
@@ -221,7 +222,7 @@ String currentStateGifPath(TimerModel timerModel) {
   }
 }
 
-void maybeSuggestStanding(bool isStanding, TimerModel timerModel,
+void maybeSuggestStanding(bool isStanding, TimerStateModel timerModel,
     HistoryRepository history, Settings settings, Function(bool) result) async {
   final todayIntervals = await history.getTodayIntervals();
 
@@ -249,29 +250,29 @@ void maybeSuggestStanding(bool isStanding, TimerModel timerModel,
   }
 }
 
-bool shouldShowWorkEndedDialogOnNextStageClick(TimerModel timerModel) {
+bool shouldShowWorkEndedDialogOnNextStageClick(TimerStateModel timerModel) {
   return timerModel.state == TimerStates.sessionWorking ||
       timerModel.state == TimerStates.sessionWorkingOvertime;
 }
 
-Future<void> nextStage(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
-    HistoryRepository history) async {
+void nextStage(ElapsedTimeModel elapsedTimeModel,
+    TimerStateModel timerModel, HistoryRepository history) {
   notificationsTimer?.cancel();
   switch (timerModel.state) {
     case TimerStates.sessionWorking:
     case TimerStates.sessionWorkingOvertime:
       {
-        await history.updateCurrentPomodoroSession(
+        history.updateCurrentPomodoroSession(
             DateTime.now(), Duration(seconds: elapsedTimeModel.elapsedTime));
         timerModel.state = TimerStates.sessionResting;
         elapsedTimeModel.elapsedTime = 0;
-        await history.startSession(IntervalType.rest);
+        history.startSession(IntervalType.rest);
       }
       break;
     case TimerStates.sessionResting:
     case TimerStates.sessionRestingOvertime:
       {
-        await history.updateCurrentPomodoroSession(
+        history.updateCurrentPomodoroSession(
             DateTime.now(), Duration(seconds: elapsedTimeModel.elapsedTime));
       }
       continue next;
@@ -280,7 +281,7 @@ Future<void> nextStage(ElapsedTimeModel elapsedTimeModel, TimerModel timerModel,
       {
         timerModel.state = TimerStates.sessionWorking;
         elapsedTimeModel.elapsedTime = 0;
-        await history.startSession(IntervalType.work);
+        history.startSession(IntervalType.work);
       }
       break;
   }

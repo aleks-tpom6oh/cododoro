@@ -24,22 +24,22 @@ class _WorkEndedDialogState extends State<WorkEndedDialog> {
     HistoryRepository historyRepository = context.read<HistoryRepository>();
     Settings settings = context.read<Settings>();
 
-    settings.standingDesk.then((hasStandingDesk) async {
-      if (hasStandingDesk) {
-        final newStandTimeTillGoal =
-            await calculateRemainingStandTime(historyRepository, settings);
-        setState(() {
-          standTimeTillGoal = newStandTimeTillGoal;
-        });
-      }
+    final hasStandingDesk = settings.standingDesk;
 
-      final todayIntervals = await historyRepository.getTodayIntervals();
-      final Duration calculatedWorkDuration =
-          calculateTimeForIntervalType(todayIntervals, IntervalType.work);
-
+    if (hasStandingDesk) {
+      final newStandTimeTillGoal =
+          calculateRemainingStandTime(historyRepository, settings);
       setState(() {
-        workDuration = calculatedWorkDuration;
+        standTimeTillGoal = newStandTimeTillGoal;
       });
+    }
+
+    final todayIntervals = historyRepository.getTodayIntervals();
+    final Duration calculatedWorkDuration =
+        calculateTimeForIntervalType(todayIntervals, IntervalType.work);
+
+    setState(() {
+      workDuration = calculatedWorkDuration;
     });
   }
 

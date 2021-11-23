@@ -3,18 +3,18 @@ import 'package:cododoro/storage/Settings.dart';
 
 import '../utils.dart';
 
-Future<Duration> calculateRemainingStandTime(
+Duration calculateRemainingStandTime(
     HistoryRepository historyRepository, Settings settings) {
-  return historyRepository.getTodayIntervals().then((todayIntervals) async {
-    final targetStandingMinutes =
-        Duration(minutes: await settings.targetStandingMinutes);
+  final todayIntervals = historyRepository.getTodayIntervals();
 
-    final Duration calculatedStandDuration =
-        calculateTimeForIntervalType(todayIntervals, IntervalType.stand);
+  final targetStandingMinutes =
+      Duration(minutes: settings.targetStandingMinutes);
 
-    final Duration standTimeTillGoal =
-        targetStandingMinutes - calculatedStandDuration;
+  final Duration calculatedStandDuration =
+      calculateTimeForIntervalType(todayIntervals, IntervalType.stand);
 
-    return standTimeTillGoal;
-  });
+  final Duration standTimeTillGoal =
+      targetStandingMinutes - calculatedStandDuration;
+
+  return standTimeTillGoal;
 }

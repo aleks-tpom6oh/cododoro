@@ -10,11 +10,11 @@ import 'package:mockito/mockito.dart';
 
 import 'TimerScreenLogic_test.mocks.dart';
 
-@GenerateMocks([ElapsedTimeModel, TimerModel, HistoryRepository, Settings])
+@GenerateMocks([ElapsedTimeModel, TimerStateModel, HistoryRepository, Settings])
 void main() {
   test('Tick when timer is not running does not increase the elapsed time', () {
     ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
-    TimerModel mockTimerModel = MockTimerModel();
+    TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
     Settings mockSettings = MockSettings();
 
@@ -36,17 +36,17 @@ void main() {
 
   test('Tick when timer is running does increase the elapsed time', () {
     ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
-    TimerModel mockTimerModel = MockTimerModel();
+    TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
     Settings mockSettings = MockSettings();
 
     when(mockTimerModel.isRunning()).thenReturn(true);
     when(mockTimerModel.isWorking).thenReturn(true);
-    when(mockSettings.standingDesk).thenAnswer((_) => Future.value(true));
+    when(mockSettings.standingDesk).thenAnswer((_) => true);
     when(mockSettings.targetStandingMinutes)
-        .thenAnswer((_) => Future.value(100));
+        .thenAnswer((_) => 100);
     when(mockHistoryRepo.getTodayIntervals())
-        .thenAnswer((_) => Future.value([]));
+        .thenAnswer((_) => []);
     when(mockTimerModel.state).thenReturn(TimerStates.noSession);
     when(mockElapsedTimeModel.elapsedTime).thenReturn(0);
 
@@ -67,7 +67,7 @@ void main() {
 
   test('Start session does nothing if session is there', () {
     ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
-    TimerModel mockTimerModel = MockTimerModel();
+    TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
 
     TimerStates.values.forEach((timerState) {
@@ -91,7 +91,7 @@ void main() {
       'Start session resumes and starts a working session if no session currently',
       () {
     ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
-    TimerModel mockTimerModel = MockTimerModel();
+    TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
 
     when(mockTimerModel.state).thenReturn(TimerStates.noSession);
@@ -109,7 +109,7 @@ void main() {
       'Start session resumes and starts a working session if no session currently and paused',
       () {
     ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
-    TimerModel mockTimerModel = MockTimerModel();
+    TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
 
     when(mockTimerModel.state).thenReturn(TimerStates.noSession);
@@ -127,7 +127,7 @@ void main() {
   test(
       'Should ask if you are still standing if started standing while working',
       () {
-    TimerModel mockTimerModel = MockTimerModel();
+    TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
 
     when(mockTimerModel.state).thenReturn(TimerStates.sessionWorking);
@@ -142,7 +142,7 @@ void main() {
   test(
       'Should ask if you are still standing if started standing while working',
       () {
-    TimerModel mockTimerModel = MockTimerModel();
+    TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
 
     when(mockTimerModel.state).thenReturn(TimerStates.sessionWorking);
@@ -157,7 +157,7 @@ void main() {
   test(
       'Should ask if you are still standing if started standing while working overtime',
       () {
-    TimerModel mockTimerModel = MockTimerModel();
+    TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
 
     when(mockTimerModel.state).thenReturn(TimerStates.sessionWorkingOvertime);
@@ -172,7 +172,7 @@ void main() {
   test(
       'Should not ask if you are still standing if started standing during resting',
       () {
-    TimerModel mockTimerModel = MockTimerModel();
+    TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
 
     when(mockTimerModel.state).thenReturn(TimerStates.sessionResting);
@@ -185,7 +185,7 @@ void main() {
   test(
       'Should not ask if you are still standing if started standing during resting overtime',
       () {
-    TimerModel mockTimerModel = MockTimerModel();
+    TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
 
     when(mockTimerModel.state).thenReturn(TimerStates.sessionRestingOvertime);
@@ -198,7 +198,7 @@ void main() {
     test(
       'Should not ask if you are still standing when not standing',
       () {
-    TimerModel mockTimerModel = MockTimerModel();
+    TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
 
     when(mockTimerModel.state).thenReturn(TimerStates.sessionWorkingOvertime);

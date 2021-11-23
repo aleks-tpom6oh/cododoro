@@ -81,7 +81,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  
   ThemeSettings themeSettings = ThemeSettings();
 
   @override
@@ -116,19 +115,40 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (context) => TimerModel()),
-          ChangeNotifierProvider(create: (context) => Settings()),
-          ChangeNotifierProvider(create: (context) => ElapsedTimeModel()),
-          ChangeNotifierProvider(create: (context) => HistoryRepository(prefs: SharedPreferences.getInstance())),
-          ChangeNotifierProvider(create: (context) => themeSettings),
-        ],
-        child: MaterialApp(
-            title: 'Cododoro App',
-            theme: _themeSetting == ThemeSetting.dark ? darkTheme : lightTheme,
-            darkTheme:
-                _themeSetting == ThemeSetting.light ? lightTheme : darkTheme,
-            home: TimerScreen()));
+    return FutureBuilder(
+        future: SharedPreferences.getInstance(),
+        builder: (BuildContext context,
+            AsyncSnapshot<SharedPreferences> sharedPrefsSnapshot) {
+          return sharedPrefsSnapshot.data != null
+              ? MultiProvider(
+                  providers: [
+                      ChangeNotifierProvider(
+                          create: (context) => TimerStateModel()),
+                      ChangeNotifierProvider(create: (context) => Settings(prefs: sharedPrefsSnapshot.data!)),
+                      ChangeNotifierProvider(
+                          create: (context) => ElapsedTimeModel()),
+                      ChangeNotifierProvider(
+                          create: (context) => HistoryRepository(
+                              prefs: sharedPrefsSnapshot.data!)),
+                      ChangeNotifierProvider(create: (context) => themeSettings)
+                    ],
+                  child: MaterialApp(
+                      title: 'Cododoro App',
+                      theme: _themeSetting == ThemeSetting.dark
+                          ? darkTheme
+                          : lightTheme,
+                      darkTheme: _themeSetting == ThemeSetting.light
+                          ? lightTheme
+                          : darkTheme,
+                      home: TimerScreen()))
+              : MaterialApp(
+                      theme: _themeSetting == ThemeSetting.dark
+                          ? darkTheme
+                          : lightTheme,
+                      darkTheme: _themeSetting == ThemeSetting.light
+                          ? lightTheme
+                          : darkTheme,
+                      home: Scaffold(body: Center(child: Text("Loading"))));
+        });
   }
 }

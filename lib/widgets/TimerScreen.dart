@@ -33,6 +33,8 @@ import '../viewlogic/TimerScreenLogic.dart' as logic;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+import 'WorkRestTimer.dart';
+
 Isolate? _timerIsolate;
 Timer? tickTimer;
 
@@ -60,7 +62,7 @@ class _TimerScreenState extends State<TimerScreen>
 
   Timer? standingGoalReachedDialogDelayTimer;
   void _tick() {
-    final timerModel = context.read<TimerModel>();
+    final timerModel = context.read<TimerStateModel>();
     final elapsedTimeModel = context.read<ElapsedTimeModel>();
     final historyRepository = context.read<HistoryRepository>();
     final settings = context.read<Settings>();
@@ -77,8 +79,8 @@ class _TimerScreenState extends State<TimerScreen>
                 _isStanding = false;
                 logic.stopStanding(historyRepository);
               });
-            }, onSitAndTakeABreak: () async {
-              await nextStage(
+            }, onSitAndTakeABreak: () {
+              nextStage(
                   elapsedTimeModel, timerModel, historyRepository)();
               setState(() {
                 _isStanding = false;
@@ -130,11 +132,11 @@ class _TimerScreenState extends State<TimerScreen>
     });
   }
 
-  String stateLabel(TimerModel watchTimerModel) {
+  String stateLabel(TimerStateModel watchTimerModel) {
     return logic.currentSessionName(watchTimerModel);
   }
 
-  Color backgroundColor(BuildContext context, TimerModel watchTimerModel) {
+  Color backgroundColor(BuildContext context, TimerStateModel watchTimerModel) {
     switch (watchTimerModel.state) {
       case TimerStates.sessionWorkingOvertime:
       case TimerStates.sessionRestingOvertime:
@@ -170,9 +172,9 @@ class _TimerScreenState extends State<TimerScreen>
     }
   }
 
-  Future<void> Function() nextStage(ElapsedTimeModel elapsedTimeModel,
-      TimerModel timerModel, HistoryRepository historyRepository) {
-    final nextStage = () async {
+  void Function() nextStage(ElapsedTimeModel elapsedTimeModel,
+      TimerStateModel timerModel, HistoryRepository historyRepository) {
+    final nextStage = () {
       if (logic.shouldShowWorkEndedDialogOnNextStageClick(timerModel)) {
         showDialog<void>(
           context: context,
@@ -182,7 +184,7 @@ class _TimerScreenState extends State<TimerScreen>
         );
       }
 
-      await logic.nextStage(elapsedTimeModel, timerModel, historyRepository);
+      logic.nextStage(elapsedTimeModel, timerModel, historyRepository);
     };
 
     return nextStage;
@@ -190,7 +192,7 @@ class _TimerScreenState extends State<TimerScreen>
 
   Future<void> Function() onPleaseStandUpConfirmed(
       ElapsedTimeModel elapsedTimeModel,
-      TimerModel timerModel,
+      TimerStateModel timerModel,
       HistoryRepository historyRepository) {
     final result = () async {
       if (!_isStanding) {
@@ -199,9 +201,9 @@ class _TimerScreenState extends State<TimerScreen>
             _isStanding = true;
           });
         } catch (e) {}
-        await logic.startStanding(historyRepository, timerModel);
+        logic.startStanding(historyRepository, timerModel);
       }
-      await nextStage(elapsedTimeModel, timerModel, historyRepository)();
+      nextStage(elapsedTimeModel, timerModel, historyRepository)();
     };
 
     return result;
@@ -211,7 +213,7 @@ class _TimerScreenState extends State<TimerScreen>
     return FloatingActionButton(
       heroTag: "proceed-fab",
       onPressed: () {
-        final timerModel = context.read<TimerModel>();
+        final timerModel = context.read<TimerStateModel>();
         final elapsedTimeModel = context.read<ElapsedTimeModel>();
         final historyRepository = context.read<HistoryRepository>();
         final settings = context.read<Settings>();
@@ -243,7 +245,7 @@ class _TimerScreenState extends State<TimerScreen>
   }
 
   Widget pauseResumeFab() {
-    var watchTimerModel = context.read<TimerModel>();
+    var watchTimerModel = context.read<TimerStateModel>();
 
     return FloatingActionButton(
       heroTag: "pause-resume-fab",
@@ -276,16 +278,16 @@ class _TimerScreenState extends State<TimerScreen>
   Widget build(BuildContext context) {
     super.build(context);
 
-    final watchTimerModel = context.watch<TimerModel>();
+    final watchTimerStateModel = context.watch<TimerStateModel>();
     final settings = context.watch<Settings>();
     final historyRepository = context.read<HistoryRepository>();
 
-    _initialButtonsExpended = watchTimerModel.state != TimerStates.noSession;
+    _initialButtonsExpended = watchTimerStateModel.state != TimerStates.noSession;
 
     showMacOsNotificationsSnackbar(context);
 
     return Scaffold(
-        backgroundColor: backgroundColor(context, watchTimerModel),
+        backgroundColor: backgroundColor(context, watchTimerStateModel),
         appBar: AppBar(
           title: const Text('cododoro'),
           actions: [
@@ -317,13 +319,22 @@ class _TimerScreenState extends State<TimerScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    seeStatsButton(),
+                    Container(
+                        margin: new EdgeInsets.only(right: 8, top: 8),
+                        child: Column(
+                          children: [
+                            seeStatsButton(),
+                            SizedBox(height: 8),
+                            WorkRestTimer(),
+                          ],
+                        )),
                     Container(
                       margin: new EdgeInsets.only(right: 8, top: 8),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          Text("Intervals"),
                           DurationOutput(
                               duration: settings.workDuration, label: "💻"),
                           DurationOutput(
@@ -343,7 +354,7 @@ class _TimerScreenState extends State<TimerScreen>
 
                                   if (_isStanding) {
                                     logic.startStanding(
-                                        historyRepository, watchTimerModel);
+                                        historyRepository, watchTimerStateModel);
                                   } else {
                                     logic.stopStanding(historyRepository);
                                   }
@@ -364,7 +375,7 @@ class _TimerScreenState extends State<TimerScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Image.asset(
-                  logic.currentStateGifPath(watchTimerModel),
+                  logic.currentStateGifPath(watchTimerStateModel),
                   height: 225.0,
                   width: 225.0,
                 ),
@@ -373,12 +384,12 @@ class _TimerScreenState extends State<TimerScreen>
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text(stateLabel(watchTimerModel),
+                      child: Text(stateLabel(watchTimerStateModel),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 32, fontWeight: FontWeight.normal)),
                     ),
-                    watchTimerModel.isResting
+                    watchTimerStateModel.isResting
                         ? ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               primary: Theme.of(context)
@@ -439,7 +450,7 @@ class _TimerScreenState extends State<TimerScreen>
             collapsedIcon: Icon(Icons.timer_off),
             distance: 112.0,
             onExpand: () {
-              var timerModel = context.read<TimerModel>();
+              var timerModel = context.read<TimerStateModel>();
               var elapsedTimeModel = context.read<ElapsedTimeModel>();
               final historyRepository = context.read<HistoryRepository>();
               logic.startSession(
@@ -447,7 +458,7 @@ class _TimerScreenState extends State<TimerScreen>
               _onboardingTour?.moveToSecondOnboardingTourStep(context);
             },
             onCollapse: () {
-              final timerModel = context.read<TimerModel>();
+              final timerModel = context.read<TimerStateModel>();
               final elapsedTimeModel = context.read<ElapsedTimeModel>();
               final historyRepository = context.read<HistoryRepository>();
               logic.stopSession(

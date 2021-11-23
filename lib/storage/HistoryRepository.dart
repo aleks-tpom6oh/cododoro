@@ -25,6 +25,14 @@ Future<String> dayKey(
   return "${newTime.day}-${newTime.month}-${newTime.year}";
 }
 
+String dayKeyCache({required DateTime time, required SharedPreferences prefs}) {
+  final hoursOffset = Settings.getDayHoursOffset(prefs);
+
+  final newTime = time.subtract(Duration(hours: hoursOffset));
+
+  return "${newTime.day}-${newTime.month}-${newTime.year}";
+}
+
 void clearOldHistory() async {
   RegExp dayKeyRegExp = new RegExp(
     r"/\d{1-2}-\d{1-2}-\d{4}/",
@@ -46,12 +54,11 @@ void clearOldHistory() async {
 }
 
 class HistoryRepository with ChangeNotifier {
-
-  Future<SharedPreferences> prefs;
+  SharedPreferences prefs;
 
   HistoryRepository({required this.prefs});
 
-  Future<void> startSession(IntervalType type) async {
+  void startSession(IntervalType type) {
     final DateTime endTime = DateTime.now();
     final newInterval = StoredInterval(endTime, type, Duration(seconds: 0));
     if (type == IntervalType.stand) {
@@ -60,7 +67,7 @@ class HistoryRepository with ChangeNotifier {
       _previousPomodoroSessionId = _currentPomodoroSessionId;
       _currentPomodoroSessionId = newInterval.id;
     }
-    await _saveSessionImpl(newInterval);
+    _saveSessionImpl(newInterval);
   }
 
   void stopStanding() {
@@ -68,31 +75,30 @@ class HistoryRepository with ChangeNotifier {
   }
 
   void saveSession(
-      DateTime endTime, IntervalType type, Duration duration) async {
+      DateTime endTime, IntervalType type, Duration duration) {
     final newInterval = StoredInterval(endTime, type, duration);
-    await _saveSessionImpl(newInterval);
+    _saveSessionImpl(newInterval);
   }
 
-  Future<void> _saveSessionImpl(Interval newInterval) async {
+  void _saveSessionImpl(Interval newInterval) {
     final newIntervalJson = newInterval.toJson();
 
-    final key =
-        await dayKey(time: newInterval.endTime, maybePrefs: await prefs);
+    final key = dayKeyCache(time: newInterval.endTime, prefs: prefs);
 
-    var todayIntervals = (await prefs).getStringList(key) ?? [];
+    var todayIntervals = prefs.getStringList(key) ?? [];
 
     todayIntervals.add(json.encode(newIntervalJson));
 
-    await (await prefs).setStringList(key, todayIntervals);
+    prefs.setStringList(key, todayIntervals);
 
     notifyListeners();
   }
 
-  Future<void> updateCurrentStandingSession({bool addTime = true}) async {
+  void updateCurrentStandingSession({bool addTime = true}) {
     if (currentStandingSessionId != null) {
       final endTime = DateTime.now();
-      var todayIntervals = (await prefs).getStringList(
-              await dayKey(time: endTime, maybePrefs: await prefs)) ??
+      var todayIntervals = prefs.getStringList(
+              dayKeyCache(time: endTime, prefs: prefs)) ??
           [];
 
       todayIntervals = todayIntervals.map((todayIntervalString) {
@@ -114,22 +120,22 @@ class HistoryRepository with ChangeNotifier {
         }
       }).toList();
 
-      await (await prefs).setStringList(
-          await dayKey(time: endTime, maybePrefs: await prefs), todayIntervals);
+      prefs.setStringList(
+          dayKeyCache(time: endTime, prefs: prefs), todayIntervals);
 
       notifyListeners();
     }
   }
 
-  Future<void> updateCurrentPomodoroSession(
-      DateTime endTime, Duration duration) async {
-    await _updateCurrentSession(endTime, duration, _currentPomodoroSessionId);
+  void updateCurrentPomodoroSession(
+      DateTime endTime, Duration duration) {
+     _updateCurrentSession(endTime, duration, _currentPomodoroSessionId);
   }
 
-  Future<void> _updateCurrentSession(
-      DateTime endTime, Duration duration, String? currentSessionId) async {
-    var todayIntervals = (await prefs).getStringList(
-            await dayKey(time: endTime, maybePrefs: await prefs)) ??
+  void _updateCurrentSession(
+      DateTime endTime, Duration duration, String? currentSessionId) {
+    var todayIntervals = prefs.getStringList(
+            dayKeyCache(time: endTime, prefs: prefs)) ??
         [];
 
     todayIntervals = todayIntervals.map((todayIntervalString) {
@@ -143,19 +149,15 @@ class HistoryRepository with ChangeNotifier {
           .toJson());
     }).toList();
 
-    final actualPrefs = await prefs;
-
-    await actualPrefs.setStringList(
-        await dayKey(time: endTime, maybePrefs: actualPrefs), todayIntervals);
+    prefs.setStringList(
+        dayKeyCache(time: endTime, prefs: prefs), todayIntervals);
 
     notifyListeners();
   }
 
-  void toggleSessionType(Interval interval) async {
-    final actualPrefs = await prefs;
-
-    var todayIntervals = actualPrefs.getStringList(
-            await dayKey(time: interval.endTime, maybePrefs: actualPrefs)) ??
+  void toggleSessionType(Interval interval) {
+    var todayIntervals = prefs.getStringList(
+            dayKeyCache(time: interval.endTime, prefs: prefs)) ??
         [];
 
     final StoredInterval targetInterval = StoredInterval.fromJson(json.decode(
@@ -177,25 +179,23 @@ class HistoryRepository with ChangeNotifier {
       final intervalIndex = todayIntervals.indexOf(targetIntervalJsonString);
       todayIntervals[intervalIndex] = json.encode(newTargetInterval.toJson());
 
-      await actualPrefs.setStringList(
-          await dayKey(time: interval.endTime, maybePrefs: actualPrefs),
+      prefs.setStringList(
+          dayKeyCache(time: interval.endTime, prefs: prefs),
           todayIntervals);
 
       notifyListeners();
     }
   }
 
-  Future<bool> removeSession(Interval interval) async {
-    final actualPrefs = await prefs;
-
-    var todayIntervals = actualPrefs.getStringList(
-            await dayKey(time: interval.endTime, maybePrefs: actualPrefs)) ??
+  bool removeSession(Interval interval) {
+    var todayIntervals = prefs.getStringList(
+            dayKeyCache(time: interval.endTime, prefs: prefs)) ??
         [];
 
     bool result = todayIntervals.remove(json.encode(interval.toJson()));
 
-    actualPrefs.setStringList(
-        await dayKey(time: interval.endTime, maybePrefs: actualPrefs),
+    prefs.setStringList(
+        dayKeyCache(time: interval.endTime, prefs: prefs),
         todayIntervals);
 
     notifyListeners();
@@ -203,9 +203,9 @@ class HistoryRepository with ChangeNotifier {
     return result;
   }
 
-  Future<Iterable<StoredInterval>> getTodayIntervals() async {
-    var todayIntervals = (await prefs).getStringList(
-            await dayKey(time: DateTime.now(), maybePrefs: await prefs)) ??
+  Iterable<StoredInterval> getTodayIntervals() {
+    var todayIntervals = prefs.getStringList(
+            dayKeyCache(time: DateTime.now(), prefs: prefs)) ??
         [];
 
     return todayIntervals.map((e) => StoredInterval.fromJson(json.decode(e)));
