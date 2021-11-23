@@ -141,7 +141,14 @@ class _MyAppState extends State<MyApp> {
                           ? lightTheme
                           : darkTheme,
                       home: TimerScreen()))
-              : Text("Loading");
+              : MaterialApp(
+                      theme: _themeSetting == ThemeSetting.dark
+                          ? darkTheme
+                          : lightTheme,
+                      darkTheme: _themeSetting == ThemeSetting.light
+                          ? lightTheme
+                          : darkTheme,
+                      home: Scaffold(body: Center(child: Text("Loading"))));
         });
   }
 }

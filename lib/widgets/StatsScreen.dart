@@ -27,7 +27,7 @@ class _StatsScreenState extends State<StatsScreen> {
       ),
       body: Center(
           child: Selector<ElapsedTimeModel, int>(
-        selector: (_, elapsedTimeModel) => elapsedTimeModel.elapsedTime ~/ 2,
+        selector: (_, elapsedTimeModel) => elapsedTimeModel.elapsedTime,
         builder: (_, __, ___) {
           final historyRepository = context.read<HistoryRepository>();
 
