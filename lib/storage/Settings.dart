@@ -21,56 +21,54 @@ class Settings with ChangeNotifier {
 
   bool _defaulStandingDesk = true;
 
-  /* Future< */int/* > */ get workDuration /* async */ {
-    return /*(await prefs)*/prefs.getInt("WORK_DURATION") ?? _defaultWorkDuration;
+  int get workDuration {
+    return prefs.getInt("WORK_DURATION") ?? _defaultWorkDuration;
   }
 
-  void setWorkDuration(int newDuration) /* async */ {
-    /*(await prefs)*/ prefs.setInt("WORK_DURATION", newDuration);
+  void setWorkDuration(int newDuration) {
+    prefs.setInt("WORK_DURATION", newDuration);
     notifyListeners();
   }
 
-  /* Future<int> */int get restDuration /* async */ {
-    return /*(await prefs)*/prefs.getInt("REST_DURATION") ?? _defaultRestDuration;
+  int get restDuration {
+    return prefs.getInt("REST_DURATION") ?? _defaultRestDuration;
   }
 
-  void setRestDuration(int newDuration) /* async */ {
-    /*(await prefs)*/prefs.setInt("REST_DURATION", newDuration);
+  void setRestDuration(int newDuration) {
+    prefs.setInt("REST_DURATION", newDuration);
     notifyListeners();
   }
 
-  /* Future< */bool/* > */ get standingDesk /* async */ {
-    return /*(await prefs)*/prefs.getBool("STANDING_DESK") ?? _defaulStandingDesk;
+  bool get standingDesk {
+    return prefs.getBool("STANDING_DESK") ?? _defaulStandingDesk;
   }
 
   void setStandingDesk(bool newStandingDesk) {
-    /*(await prefs)*/prefs.setBool("STANDING_DESK", newStandingDesk);
+    prefs.setBool("STANDING_DESK", newStandingDesk);
     notifyListeners();
   }
 
-  int get targetStandingMinutes  {
-    final int? legacyHoursSetting =
-        /*(await prefs)*/prefs.getInt("TARGET_STANDING_HOURS");
+  int get targetStandingMinutes {
+    final int? legacyHoursSetting = prefs.getInt("TARGET_STANDING_HOURS");
     final int? legacyHoursInMinutes =
         legacyHoursSetting != null ? legacyHoursSetting * 60 : null;
 
-    return /*(await prefs)*/prefs.getInt("TARGET_STANDING_MINUTES") ??
+    return prefs.getInt("TARGET_STANDING_MINUTES") ??
         legacyHoursInMinutes ??
         _defaulTargetStandingMinutes;
   }
 
-  void setTargetStandingMinutes(int newTargetStandingMinutes)  {
-    /*(await prefs)*/prefs
-        .setInt("TARGET_STANDING_MINUTES", newTargetStandingMinutes);
+  void setTargetStandingMinutes(int newTargetStandingMinutes) {
+    prefs.setInt("TARGET_STANDING_MINUTES", newTargetStandingMinutes);
     notifyListeners();
   }
 
-  int get dayHoursOffset  {
-    return getDayHoursOffset/*(await prefs)*/(prefs);
+  int get dayHoursOffset {
+    return getDayHoursOffset(prefs);
   }
 
   void setDayHoursOffset(int newDayHoursOffset) {
-    /*(await prefs)*/prefs.setInt(dayHoursOffsetKey, newDayHoursOffset);
+    prefs.setInt(dayHoursOffsetKey, newDayHoursOffset);
     notifyListeners();
   }
 }

@@ -15,37 +15,31 @@ class _WorkRestTimerState extends State<WorkRestTimer> {
   Widget build(BuildContext context) {
     final historyRepository = context.watch<HistoryRepository>();
 
-/*     return FutureBuilder(
-      future: historyRepository.getTodayIntervals(),
-      builder: (BuildContext context,
-          AsyncSnapshot<Iterable<StoredInterval>> todayIntervalsSnapshot) { */
-        final Iterable<StoredInterval>? todayIntervals =
-            historyRepository.getTodayIntervals();
+    final Iterable<StoredInterval>? todayIntervals =
+        historyRepository.getTodayIntervals();
 
-        if (todayIntervals != null) {
-          final Duration todayWorkDuration =
-              calculateTimeForIntervalType(todayIntervals, IntervalType.work);
-          final Duration todayRestDuration =
-              calculateTimeForIntervalType(todayIntervals, IntervalType.rest);
+    if (todayIntervals != null) {
+      final Duration todayWorkDuration =
+          calculateTimeForIntervalType(todayIntervals, IntervalType.work);
+      final Duration todayRestDuration =
+          calculateTimeForIntervalType(todayIntervals, IntervalType.rest);
 
-          return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8.0),
-              child: Column(
+      return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8.0),
+          child: Column(
+            children: [
+              const Text("Today stats"),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Today stats"),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("💻 ${todayWorkDuration.toShortMsString()}"),
-                      Text("🏖 ${todayRestDuration.toShortMsString()}"),
-                    ],
-                  ),
+                  Text("💻 ${todayWorkDuration.toShortHmsString()}"),
+                  Text("🏖 ${todayRestDuration.toShortHmsString()}"),
                 ],
-              ));
-        }
+              ),
+            ],
+          ));
+    }
 
-        return SizedBox();
-/*       },
-    ); */
+    return SizedBox();
   }
 }

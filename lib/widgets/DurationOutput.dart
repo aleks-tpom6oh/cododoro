@@ -21,16 +21,11 @@ class DurationOutput extends StatelessWidget {
 
   Widget timeOutput() {
     return Wrap(children: [
-      /* FutureBuilder(
-          future: duration,
-          builder: (BuildContext context, AsyncSnapshot<int> snapshot) { */
-            /* return */ SizedBox(
-              width: 70,
-              child: Text("${Duration(seconds: duration).inMinutes} mins",
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis),
-            )
-        /*   }) */
+      SizedBox(
+        width: 70,
+        child: Text("${Duration(seconds: duration).inMinutes} mins",
+            textAlign: TextAlign.center, overflow: TextOverflow.ellipsis),
+      )
     ]);
   }
 }

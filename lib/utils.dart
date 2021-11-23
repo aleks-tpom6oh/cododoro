@@ -29,6 +29,23 @@ extension DurationPrinter on Duration {
     return res + "$seconds second${seconds == 1 ? '' : 's'}";
   }
 
+  String toShortHmsString() {
+    int hours = this.inHours;
+    int minutes = this.inMinutes - hours * 60;
+    int seconds = this.inSeconds - this.inMinutes * 60;
+
+    String res = "";
+
+    if (hours > 0) {
+      res += "${hours}h";
+    }
+    if (hours > 0 || minutes > 0) {
+      res += "${minutes}m";
+    }
+
+    return res + "${seconds}s";
+  }
+
   String toMsString() {
     int hours = this.inHours;
     int minutes = this.inMinutes - hours * 60;
