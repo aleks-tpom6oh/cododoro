@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class DurationOutput extends StatelessWidget {
-  DurationOutput({Key? key, @required this.duration, this.label = "Duration"})
+  DurationOutput({Key? key, required this.duration, this.label = "Duration"})
       : super(key: key);
 
-  final Future<int>? duration;
+  final int duration;
   final String label;
 
   @override
@@ -21,21 +21,16 @@ class DurationOutput extends StatelessWidget {
 
   Widget timeOutput() {
     return Wrap(children: [
-      FutureBuilder(
+      /* FutureBuilder(
           future: duration,
-          builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-            return SizedBox(
+          builder: (BuildContext context, AsyncSnapshot<int> snapshot) { */
+            /* return */ SizedBox(
               width: 70,
-              child: Text(
-                  snapshot.hasData
-                      ? "${Duration(seconds: snapshot.data!).inMinutes} mins"
-                      : snapshot.hasError
-                          ? "${snapshot.error}"
-                          : "Loading current work duration",
+              child: Text("${Duration(seconds: duration).inMinutes} mins",
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis),
-            );
-          })
+            )
+        /*   }) */
     ]);
   }
 }

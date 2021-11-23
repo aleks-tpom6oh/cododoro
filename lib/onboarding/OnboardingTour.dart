@@ -74,7 +74,7 @@ Press the timer button to go from chilling to work""",
             ),
             TextButton(
                 onPressed: () {
-                  var timerModel = context.read<TimerModel>();
+                  var timerModel = context.read<TimerStateModel>();
                   var elapsedTimeModel = context.read<ElapsedTimeModel>();
                   final historyRepository = context.read<HistoryRepository>();
                   timerScreenLogic.startSession(

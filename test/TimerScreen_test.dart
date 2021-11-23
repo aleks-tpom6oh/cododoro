@@ -12,7 +12,7 @@ import 'dart:convert';
 
 class MockSharedPrefs extends Mock implements SharedPreferences {}
 
-class MockTimerModel extends Mock implements TimerModel {}
+class MockTimerStateModel extends Mock implements TimerStateModel {}
 
 class MockElapsedTimeModel extends Mock implements ElapsedTimeModel {}
 
@@ -21,9 +21,9 @@ void main() {
       'Stand dialog confirm function starts both stansing and working intervals',
       () async {
     ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
-    TimerModel mockTimerModel = MockTimerModel();
+    TimerStateModel mockTimerModel = MockTimerStateModel();
     SharedPreferences mockPrefs = MockSharedPrefs();
-    HistoryRepository historyRepo = HistoryRepository(prefs: Future.value(mockPrefs));
+    HistoryRepository historyRepo = HistoryRepository(prefs: mockPrefs);
 
     TimerScreen timerScreen = TimerScreen(key: ValueKey(""));
 

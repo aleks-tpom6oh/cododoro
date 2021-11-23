@@ -9,7 +9,7 @@ class StandGoalTimer extends StatefulWidget {
   StandGoalTimer({Key? key, required this.standingDeskTrackingEnabled})
       : super(key: key);
 
-  final Future<bool>? standingDeskTrackingEnabled;
+  final bool standingDeskTrackingEnabled;
 
   @override
   _StandGoalTimerState createState() => _StandGoalTimerState();
@@ -21,30 +21,19 @@ class _StandGoalTimerState extends State<StandGoalTimer> {
     final historyRepository = context.watch<HistoryRepository>();
     final settings = context.read<Settings>();
 
-    return FutureBuilder<Duration>(
-        future: calculateRemainingStandTime(historyRepository, settings),
-        builder: (context, remainingStandingTimeSnapshot) {
-          return FutureBuilder(
-              future: widget.standingDeskTrackingEnabled,
-              builder: (BuildContext context,
-                  AsyncSnapshot<bool> standingEnabledSnapshot) {
-                Duration? standTimeTillGoal = remainingStandingTimeSnapshot.data;
+    Duration standTimeTillGoal =
+        calculateRemainingStandTime(historyRepository, settings);
 
-                bool standTargetReached() {
-                  return standTimeTillGoal != null &&
-                      standTimeTillGoal <= Duration(hours: 0);
-                }
+    bool standTargetReached() {
+      return standTimeTillGoal <= Duration(hours: 0);
+    }
 
-                return standingEnabledSnapshot.hasData &&
-                        standingEnabledSnapshot.data == true
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 0, horizontal: 8.0),
-                        child: Text(standTargetReached()
-                            ? "🎉 Goal reached"
-                            : "🧍 ${standTimeTillGoal?.toShortMsString()} left"))
-                    : SizedBox(width: 150);
-              });
-        });
+    return widget.standingDeskTrackingEnabled
+        ? Padding(
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8.0),
+            child: Text(standTargetReached()
+                ? "🎉 Goal reached"
+                : "🧍 ${standTimeTillGoal.toShortMsString()} left"))
+        : SizedBox(width: 150);
   }
 }

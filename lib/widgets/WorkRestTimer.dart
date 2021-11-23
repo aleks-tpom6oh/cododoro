@@ -15,12 +15,12 @@ class _WorkRestTimerState extends State<WorkRestTimer> {
   Widget build(BuildContext context) {
     final historyRepository = context.watch<HistoryRepository>();
 
-    return FutureBuilder(
+/*     return FutureBuilder(
       future: historyRepository.getTodayIntervals(),
       builder: (BuildContext context,
-          AsyncSnapshot<Iterable<StoredInterval>> todayIntervalsSnapshot) {
+          AsyncSnapshot<Iterable<StoredInterval>> todayIntervalsSnapshot) { */
         final Iterable<StoredInterval>? todayIntervals =
-            todayIntervalsSnapshot.data;
+            historyRepository.getTodayIntervals();
 
         if (todayIntervals != null) {
           final Duration todayWorkDuration =
@@ -45,7 +45,7 @@ class _WorkRestTimerState extends State<WorkRestTimer> {
         }
 
         return SizedBox();
-      },
-    );
+/*       },
+    ); */
   }
 }

@@ -8,9 +8,9 @@ import 'package:cododoro/widgets/settings/TimeSettingsCategory.dart';
 import 'package:provider/provider.dart';
 
 class SettingsDialog extends StatelessWidget {
-  const SettingsDialog({Key? key, this.settings}) : super(key: key);
+  const SettingsDialog({Key? key, required this.settings}) : super(key: key);
 
-  final Settings? settings;
+  final Settings settings;
 
   @override
   Widget build(BuildContext context) {

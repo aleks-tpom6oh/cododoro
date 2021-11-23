@@ -4,13 +4,13 @@ import 'package:test/test.dart';
 
 void main() {
   test('timerModel initial state is noSession', () {
-    final timerModel = TimerModel();
+    final timerModel = TimerStateModel();
 
     expect(timerModel.state, TimerStates.noSession);
   });
 
   test('timerModel pause', () {
-    final timerModel = TimerModel();
+    final timerModel = TimerStateModel();
     timerModel.state = TimerStates.sessionResting;
 
     expect(timerModel.isPaused, false);
@@ -25,7 +25,7 @@ void main() {
   });
 
   test('timerModel isRunning', () {
-    final timerModel = TimerModel();
+    final timerModel = TimerStateModel();
 
     expect(timerModel.isRunning(), false);
 
