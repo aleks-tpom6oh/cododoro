@@ -21,6 +21,8 @@ class Settings with ChangeNotifier {
 
   bool _defaulStandingDesk = true;
 
+  bool _defaulShowCuteCats = true;
+
   int get workDuration {
     return prefs.getInt("WORK_DURATION") ?? _defaultWorkDuration;
   }
@@ -45,6 +47,15 @@ class Settings with ChangeNotifier {
 
   void setStandingDesk(bool newStandingDesk) {
     prefs.setBool("STANDING_DESK", newStandingDesk);
+    notifyListeners();
+  }
+
+  bool get showCuteCats {
+    return prefs.getBool("SHOW_CUTE_CATS") ?? _defaulShowCuteCats;
+  }
+
+  void setShowCuteCats(bool newShowCuteCats) {
+    prefs.setBool("SHOW_CUTE_CATS", newShowCuteCats);
     notifyListeners();
   }
 

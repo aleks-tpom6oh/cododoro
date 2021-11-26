@@ -374,11 +374,11 @@ class _TimerScreenState extends State<TimerScreen>
                 child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Image.asset(
+                settings.showCuteCats ? Image.asset(
                   logic.currentStateGifPath(watchTimerStateModel),
                   height: 225.0,
                   width: 225.0,
-                ),
+                ) : SizedBox(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

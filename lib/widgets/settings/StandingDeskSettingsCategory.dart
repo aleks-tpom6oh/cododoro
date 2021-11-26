@@ -36,7 +36,7 @@ class _StandingDeskSettingsCategoryState
 
     final textController = new TextEditingController();
 
-    var standingDeskEnabled = this.widget.settings?.standingDesk;
+    standingDeskEnabled = this.widget.settings?.standingDesk;
     final targetStandingTime = this.widget.settings?.targetStandingMinutes;
 
     textController.text = targetStandingTime.toString();

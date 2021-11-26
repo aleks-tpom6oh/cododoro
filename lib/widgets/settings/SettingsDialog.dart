@@ -1,6 +1,6 @@
 import 'package:cododoro/storage/ThemeSettings.dart';
 import 'package:cododoro/widgets/settings/StandingDeskSettingsCategory.dart';
-import 'package:cododoro/widgets/settings/ThemeSettingsCategory.dart';
+import 'package:cododoro/widgets/settings/LooksSettingsCategory.dart';
 import 'package:flutter/material.dart';
 import 'package:cododoro/storage/Settings.dart';
 import 'package:cododoro/widgets/settings/NotificationsSettingsCategory.dart';
@@ -22,6 +22,7 @@ class SettingsDialog extends StatelessWidget {
         TextEditingController();
 
     ThemeSettings themeSettings = context.read<ThemeSettings>();
+    Settings settings = context.read<Settings>();
 
     final scrollController = ScrollController();
 
@@ -39,7 +40,8 @@ class SettingsDialog extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                ThemeSettingsCategory(themeSettings: themeSettings),
+                LooksSettingsCategory(
+                    themeSettings: themeSettings, settings: settings),
                 TimeSettingsCategory(
                     settings: settings,
                     workDurationInputController: workDurationInputController,
