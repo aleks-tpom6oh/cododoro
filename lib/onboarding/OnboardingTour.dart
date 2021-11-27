@@ -39,6 +39,9 @@ class OnboardingTour {
       case 6:
         _showSeventhStep(context);
         break;
+      case 7:
+        _showCuteCats8thStep(context);
+        break;
       default:
         return;
     }
@@ -81,7 +84,6 @@ Press the timer button to go from chilling to work""",
                       elapsedTimeModel, timerModel, historyRepository);
                   _overlayEntry?.remove();
 
-                  //config.setStepShown(1);
                   _showSecondStep(context);
                 },
                 child: const Text("Let's try it out"))
@@ -261,7 +263,7 @@ are on a meeting that goes over your target work duration""",
         children: [
           Text(
             """You can track your standing time with this toggle. The app will remind you
-to stand up for your daily goal time, default is 2 hours.
+to stand up for your daily goal time, default is 100 minutes.
 
 Do you want to use standing desk features?""",
             textAlign: TextAlign.center,
@@ -335,9 +337,65 @@ and edit you total daily work, rest and standing time""",
                 _overlayEntry?.remove();
 
                 config.setStepShown(7);
-                _showSixthStep(context);
+                _showCuteCats8thStep(context);
               },
               child: const Text("Got it!"))
+        ],
+      ),
+    );
+
+    if (_overlayEntry != null) {
+      overlayState?.insert(_overlayEntry!);
+    }
+  }
+
+  void _showCuteCats8thStep(BuildContext context) async {
+    if (config.stepShown >= 8) {
+      return;
+    }
+
+    OverlayState? overlayState = Overlay.of(context);
+    _overlayEntry = overlayEntryCreate(
+      left: MediaQuery.of(context).size.width * 0.14,
+      top: MediaQuery.of(context).size.height / 2,
+      tooltipDirection: TooltipDirection.no,
+      tooltipOffset: 34,
+      child: Column(
+        children: [
+          Text(
+            """Would you like to see\ncute cats in the app?""",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.normal,
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                  onPressed: () {
+                    var settingsModel = context.read<Settings>();
+                    settingsModel.setShowCuteCats(true);
+
+                    _overlayEntry?.remove();
+
+                    config.setStepShown(8);
+                  },
+                  child: const Text("Yes 😻")),
+              SizedBox(width: 24),
+              TextButton(
+                  onPressed: () {
+                    var settingsModel = context.read<Settings>();
+                    settingsModel.setShowCuteCats(false);
+
+                    _overlayEntry?.remove();
+
+                    config.setStepShown(8);
+                  },
+                  child: const Text("No 🐕‍🦺")),
+            ],
+          )
         ],
       ),
     );

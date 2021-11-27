@@ -48,7 +48,7 @@ class LeftTriangleShape extends CustomPainter {
   }
 }
 
-enum TooltipDirection { left, right }
+enum TooltipDirection { left, right, no }
 
 enum TooltipOffsetFrom { top, bottom }
 
@@ -69,45 +69,47 @@ OverlayEntry overlayEntryCreate(
       bottom: bottom,
       left: left,
       top: top,
-      child: Row(
-        crossAxisAlignment: tooltipOffsetFrom == TooltipOffsetFrom.top
-            ? CrossAxisAlignment.start
-            : tooltipOffsetFrom == TooltipOffsetFrom.bottom
-                ? CrossAxisAlignment.end
-                : CrossAxisAlignment.center,
-        children: [
-          tooltipDirection == TooltipDirection.left
-              ? Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 0, vertical: tooltipOffset ?? 0),
-                  child: CustomPaint(
-                      size: Size(10, 10), painter: LeftTriangleShape()),
-                )
-              : SizedBox(),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Container(
-              constraints: BoxConstraints(maxWidth: (width - width * 0.3)),
-              color: Colors.black,
-              child: Material(
-                type: MaterialType.transparency,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
-                  child: child,
+      child: Center(
+        child: Row(
+          crossAxisAlignment: tooltipOffsetFrom == TooltipOffsetFrom.top
+              ? CrossAxisAlignment.start
+              : tooltipOffsetFrom == TooltipOffsetFrom.bottom
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.center,
+          children: [
+            tooltipDirection == TooltipDirection.left
+                ? Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 0, vertical: tooltipOffset ?? 0),
+                    child: CustomPaint(
+                        size: Size(10, 10), painter: LeftTriangleShape()),
+                  )
+                : SizedBox(),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                constraints: BoxConstraints(maxWidth: (width - width * 0.3)),
+                color: Colors.black,
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: child,
+                  ),
                 ),
               ),
             ),
-          ),
-          tooltipDirection == TooltipDirection.right
-              ? Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 0, vertical: tooltipOffset ?? 0),
-                  child: CustomPaint(
-                      size: Size(10, 10), painter: RightTriangleShape()),
-                )
-              : SizedBox(),
-        ],
+            tooltipDirection == TooltipDirection.right
+                ? Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 0, vertical: tooltipOffset ?? 0),
+                    child: CustomPaint(
+                        size: Size(10, 10), painter: RightTriangleShape()),
+                  )
+                : SizedBox(),
+          ],
+        ),
       ),
     );
   });
