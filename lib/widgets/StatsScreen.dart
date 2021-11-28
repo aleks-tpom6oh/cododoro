@@ -178,39 +178,59 @@ class _StatsScreenState extends State<StatsScreen> {
           height: 50,
           color: interval.type == IntervalType.work ||
                   interval.type == IntervalType.stand
-              ? Theme.of(context).primaryColor
-              : Theme.of(context).primaryColorLight,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+              ? (Theme.of(context).brightness == Brightness.dark
+                  ? Theme.of(context).primaryColorDark
+                  : Theme.of(context).primaryColorLight)
+              : Theme.of(context).primaryColor,
+          child: Stack(
+            children: <Widget>[
+              Positioned(
+                  top: 2.0,
+                  left: 8.0,
                   child: Text(
-                      'You did ${interval.type.toString().split('.').last} for ${interval.duration.toHmsString()}'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextButton(
-                  onPressed: interval.id == currentPomodoroSessionId ||
-                          interval.type == IntervalType.stand
-                      ? null
-                      : () => historyRepository.toggleSessionType(interval),
-                  child: interval.type == IntervalType.stand
-                      ? SizedBox.shrink()
-                      : Text(
-                          'Toggle type',
-                          style: interval.id == currentPomodoroSessionId ||
-                                  interval.type == IntervalType.stand
-                              ? TextStyle(
-                                  color: Colors.grey,
-                                )
-                              : TextStyle(
-                                  color: Colors.black,
-                                ),
-                        ),
-                ),
+                    "${interval.endTime.subtract(interval.duration).toDayTimestamp()}",
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w100,
+                    ),
+                  )),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 18.0),
+                      child: Text(
+                          'You did ${interval.type.toString().split('.').last} for ${interval.duration.toHmsString()}'),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextButton(
+                      onPressed: interval.id == currentPomodoroSessionId ||
+                              interval.type == IntervalType.stand
+                          ? null
+                          : () => historyRepository.toggleSessionType(interval),
+                      child: interval.type == IntervalType.stand
+                          ? SizedBox.shrink()
+                          : Text(
+                              'Toggle type',
+                              style: interval.id == currentPomodoroSessionId ||
+                                      interval.type == IntervalType.stand
+                                  ? TextStyle(
+                                      color: Colors.white10,
+                                    )
+                                  : TextStyle(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.brown
+                                          : Colors.black,
+                                    ),
+                            ),
+                    ),
+                  )
+                ],
               )
             ],
           )),

@@ -11,6 +11,12 @@ extension Summer on Iterable<int> {
   }
 }
 
+extension TimePrinter on DateTime {
+  String toDayTimestamp() {
+    return this.toString().split(" ")[1].split(".")[0];
+  }
+}
+
 extension DurationPrinter on Duration {
   String toHmsString() {
     int hours = this.inHours;
