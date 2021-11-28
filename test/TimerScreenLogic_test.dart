@@ -77,7 +77,7 @@ void main() {
 
       when(mockTimerModel.state).thenReturn(timerState);
 
-      TimerScreenLogic.startSession(
+      TimerScreenLogic.startWorkSession(
           mockElapsedTimeModel, mockTimerModel, mockHistoryRepo);
 
       verifyNever(mockTimerModel.forceResume());
@@ -96,7 +96,7 @@ void main() {
 
     when(mockTimerModel.state).thenReturn(TimerStates.noSession);
 
-    TimerScreenLogic.startSession(
+    TimerScreenLogic.startWorkSession(
         mockElapsedTimeModel, mockTimerModel, mockHistoryRepo);
 
     verify(mockTimerModel.forceResume());
@@ -115,7 +115,7 @@ void main() {
     when(mockTimerModel.state).thenReturn(TimerStates.noSession);
     when(mockTimerModel.isPaused).thenReturn(true);
 
-    TimerScreenLogic.startSession(
+    TimerScreenLogic.startWorkSession(
         mockElapsedTimeModel, mockTimerModel, mockHistoryRepo);
 
     verify(mockTimerModel.forceResume());
@@ -132,7 +132,7 @@ void main() {
 
     when(mockTimerModel.state).thenReturn(TimerStates.sessionWorking);
 
-    TimerScreenLogic.startStanding(mockHistoryRepo, mockTimerModel);
+    TimerScreenLogic.startStandingSessionByUser(mockHistoryRepo, mockTimerModel);
 
     when(mockTimerModel.state).thenReturn(TimerStates.sessionResting);
 
@@ -147,7 +147,7 @@ void main() {
 
     when(mockTimerModel.state).thenReturn(TimerStates.sessionWorking);
 
-    TimerScreenLogic.startStanding(mockHistoryRepo, mockTimerModel);
+    TimerScreenLogic.startStandingSessionByUser(mockHistoryRepo, mockTimerModel);
 
     when(mockTimerModel.state).thenReturn(TimerStates.sessionResting);
 
@@ -162,7 +162,7 @@ void main() {
 
     when(mockTimerModel.state).thenReturn(TimerStates.sessionWorkingOvertime);
 
-    TimerScreenLogic.startStanding(mockHistoryRepo, mockTimerModel);
+    TimerScreenLogic.startStandingSessionByUser(mockHistoryRepo, mockTimerModel);
 
     when(mockTimerModel.state).thenReturn(TimerStates.sessionResting);
 
@@ -177,7 +177,7 @@ void main() {
 
     when(mockTimerModel.state).thenReturn(TimerStates.sessionResting);
 
-    TimerScreenLogic.startStanding(mockHistoryRepo, mockTimerModel);
+    TimerScreenLogic.startStandingSessionByUser(mockHistoryRepo, mockTimerModel);
 
     expect(TimerScreenLogic.shouldAskStillStanding(true, mockTimerModel), false);
   });
@@ -190,7 +190,7 @@ void main() {
 
     when(mockTimerModel.state).thenReturn(TimerStates.sessionRestingOvertime);
 
-    TimerScreenLogic.startStanding(mockHistoryRepo, mockTimerModel);
+    TimerScreenLogic.startStandingSessionByUser(mockHistoryRepo, mockTimerModel);
 
     expect(TimerScreenLogic.shouldAskStillStanding(true, mockTimerModel), false);
   });
@@ -203,7 +203,7 @@ void main() {
 
     when(mockTimerModel.state).thenReturn(TimerStates.sessionWorkingOvertime);
 
-    TimerScreenLogic.startStanding(mockHistoryRepo, mockTimerModel);
+    TimerScreenLogic.startStandingSessionByUser(mockHistoryRepo, mockTimerModel);
 
     when(mockTimerModel.state).thenReturn(TimerStates.sessionRestingOvertime);
 

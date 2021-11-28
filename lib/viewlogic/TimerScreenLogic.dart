@@ -60,27 +60,31 @@ void tick(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
     await notifyIfStandingGoalReached(
         timerModel, settings, history, isStanding, onReachedStandingGoal);
 
-    if (timerModel.state == TimerStates.sessionWorking &&
-        elapsedTimeModel.elapsedTime > await settings.workDuration) {
-      timerModel.state = TimerStates.sessionWorkingOvertime;
-      await _notifyAll(getNotificationMessage(timerModel));
-      scheduleOvertimeNotifications(
-          message: getNotificationMessage(timerModel));
-    } else if (timerModel.state == TimerStates.sessionResting &&
-        elapsedTimeModel.elapsedTime > await settings.restDuration) {
-      timerModel.state = TimerStates.sessionRestingOvertime;
-      await _notifyAll(getNotificationMessage(timerModel));
-      scheduleOvertimeNotifications(
-          message: getNotificationMessage(timerModel));
-    } else if (timerModel.state == TimerStates.sessionWorkingOvertime &&
-        elapsedTimeModel.elapsedTime < await settings.workDuration) {
-      timerModel.state = TimerStates.sessionWorking;
-      notificationsTimer?.cancel();
-    } else if (timerModel.state == TimerStates.sessionRestingOvertime &&
-        elapsedTimeModel.elapsedTime < await settings.restDuration) {
-      timerModel.state = TimerStates.sessionResting;
-      notificationsTimer?.cancel();
-    }
+    await handleOvertime(timerModel, elapsedTimeModel, settings);
+  }
+}
+
+Future<void> handleOvertime(TimerStateModel timerModel, ElapsedTimeModel elapsedTimeModel, Settings settings) async {
+  if (timerModel.state == TimerStates.sessionWorking &&
+      elapsedTimeModel.elapsedTime > await settings.workDuration) {
+    timerModel.state = TimerStates.sessionWorkingOvertime;
+    await _notifyAll(getNotificationMessage(timerModel));
+    scheduleOvertimeNotifications(
+        message: getNotificationMessage(timerModel));
+  } else if (timerModel.state == TimerStates.sessionResting &&
+      elapsedTimeModel.elapsedTime > await settings.restDuration) {
+    timerModel.state = TimerStates.sessionRestingOvertime;
+    await _notifyAll(getNotificationMessage(timerModel));
+    scheduleOvertimeNotifications(
+        message: getNotificationMessage(timerModel));
+  } else if (timerModel.state == TimerStates.sessionWorkingOvertime &&
+      elapsedTimeModel.elapsedTime < await settings.workDuration) {
+    timerModel.state = TimerStates.sessionWorking;
+    notificationsTimer?.cancel();
+  } else if (timerModel.state == TimerStates.sessionRestingOvertime &&
+      elapsedTimeModel.elapsedTime < await settings.restDuration) {
+    timerModel.state = TimerStates.sessionResting;
+    notificationsTimer?.cancel();
   }
 }
 
@@ -109,14 +113,13 @@ Future<void> notifyIfStandingGoalReached(
         onReachedStandingGoal();
       }
 
-      print("Stand time till goal $newStandTimeTillGoal");
       _previousStandTimeTillGoal = newStandTimeTillGoal;
     }
     ;
   }
 }
 
-void startSession(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
+void startWorkSession(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
     HistoryRepository history) {
   if (timerModel.state == TimerStates.noSession) {
     timerModel.state = TimerStates.sessionWorking;
@@ -128,11 +131,11 @@ void startSession(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
   }
 }
 
-void startStanding(
+void startStandingSessionByUser(
     HistoryRepository history, TimerStateModel timerModel) {
   skipNextAskStillStanding = timerModel.state == TimerStates.sessionResting ||
       timerModel.state == TimerStates.sessionRestingOvertime;
-   history.startSession(IntervalType.stand);
+  history.startSession(IntervalType.stand);
 }
 
 bool shouldAskStillStanding(bool isStanding, TimerStateModel timerModel) {
@@ -147,7 +150,7 @@ bool shouldAskStillStanding(bool isStanding, TimerStateModel timerModel) {
           timerModel.state == TimerStates.sessionRestingOvertime);
 }
 
-void stopStanding(HistoryRepository history) {
+void stopStandingSession(HistoryRepository history) {
   history.updateCurrentStandingSession();
   history.stopStanding();
 }
@@ -256,7 +259,7 @@ bool shouldShowWorkEndedDialogOnNextStageClick(TimerStateModel timerModel) {
 }
 
 void nextStage(ElapsedTimeModel elapsedTimeModel,
-    TimerStateModel timerModel, HistoryRepository history) {
+    TimerStateModel timerModel, HistoryRepository history, bool isStanding) {
   notificationsTimer?.cancel();
   switch (timerModel.state) {
     case TimerStates.sessionWorking:
@@ -266,6 +269,7 @@ void nextStage(ElapsedTimeModel elapsedTimeModel,
             DateTime.now(), Duration(seconds: elapsedTimeModel.elapsedTime));
         timerModel.state = TimerStates.sessionResting;
         elapsedTimeModel.elapsedTime = 0;
+        stopStandingSession(history);
         history.startSession(IntervalType.rest);
       }
       break;
@@ -281,6 +285,10 @@ void nextStage(ElapsedTimeModel elapsedTimeModel,
       {
         timerModel.state = TimerStates.sessionWorking;
         elapsedTimeModel.elapsedTime = 0;
+        if (isStanding) {
+          history.startSession(IntervalType.stand);
+        }
+
         history.startSession(IntervalType.work);
       }
       break;

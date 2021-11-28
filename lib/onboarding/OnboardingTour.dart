@@ -80,7 +80,7 @@ Press the timer button to go from chilling to work""",
                   var timerModel = context.read<TimerStateModel>();
                   var elapsedTimeModel = context.read<ElapsedTimeModel>();
                   final historyRepository = context.read<HistoryRepository>();
-                  timerScreenLogic.startSession(
+                  timerScreenLogic.startWorkSession(
                       elapsedTimeModel, timerModel, historyRepository);
                   _overlayEntry?.remove();
 

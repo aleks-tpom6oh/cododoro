@@ -91,7 +91,7 @@ class _MyAppState extends State<MyApp> {
         shouldAnonymize: true,
         shaFn: (value) => value,
         onError: (e) {
-          print("Error");
+          print("mixpanel error");
         });
 
     trackAppOpened();

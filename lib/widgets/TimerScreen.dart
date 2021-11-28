@@ -77,14 +77,14 @@ class _TimerScreenState extends State<TimerScreen>
             return StandingGoalReachedDialog(onSit: () {
               setState(() {
                 _isStanding = false;
-                logic.stopStanding(historyRepository);
+                logic.stopStandingSession(historyRepository);
               });
             }, onSitAndTakeABreak: () {
               nextStage(
                   elapsedTimeModel, timerModel, historyRepository)();
               setState(() {
                 _isStanding = false;
-                logic.stopStanding(historyRepository);
+                logic.stopStandingSession(historyRepository);
               });
             });
           },
@@ -164,7 +164,7 @@ class _TimerScreenState extends State<TimerScreen>
           onPressed: () {
             setState(() {
               _isStanding = false;
-              logic.stopStanding(history);
+              logic.stopStandingSession(history);
             });
           },
         ),
@@ -184,7 +184,7 @@ class _TimerScreenState extends State<TimerScreen>
         );
       }
 
-      logic.nextStage(elapsedTimeModel, timerModel, historyRepository);
+      logic.nextStage(elapsedTimeModel, timerModel, historyRepository, _isStanding);
     };
 
     return nextStage;
@@ -201,7 +201,7 @@ class _TimerScreenState extends State<TimerScreen>
             _isStanding = true;
           });
         } catch (e) {}
-        logic.startStanding(historyRepository, timerModel);
+        logic.startStandingSessionByUser(historyRepository, timerModel);
       }
       nextStage(elapsedTimeModel, timerModel, historyRepository)();
     };
@@ -353,10 +353,10 @@ class _TimerScreenState extends State<TimerScreen>
                                   _isStanding = !_isStanding;
 
                                   if (_isStanding) {
-                                    logic.startStanding(
+                                    logic.startStandingSessionByUser(
                                         historyRepository, watchTimerStateModel);
                                   } else {
-                                    logic.stopStanding(historyRepository);
+                                    logic.stopStandingSession(historyRepository);
                                   }
                                 });
                               }),
@@ -453,7 +453,7 @@ class _TimerScreenState extends State<TimerScreen>
               var timerModel = context.read<TimerStateModel>();
               var elapsedTimeModel = context.read<ElapsedTimeModel>();
               final historyRepository = context.read<HistoryRepository>();
-              logic.startSession(
+              logic.startWorkSession(
                   elapsedTimeModel, timerModel, historyRepository);
               _onboardingTour?.moveToSecondOnboardingTourStep(context);
             },
