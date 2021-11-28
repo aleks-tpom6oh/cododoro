@@ -80,8 +80,7 @@ class _TimerScreenState extends State<TimerScreen>
                 logic.stopStandingSession(historyRepository);
               });
             }, onSitAndTakeABreak: () {
-              nextStage(
-                  elapsedTimeModel, timerModel, historyRepository)();
+              nextStage(elapsedTimeModel, timerModel, historyRepository)();
               setState(() {
                 _isStanding = false;
                 logic.stopStandingSession(historyRepository);
@@ -184,7 +183,8 @@ class _TimerScreenState extends State<TimerScreen>
         );
       }
 
-      logic.nextStage(elapsedTimeModel, timerModel, historyRepository, _isStanding);
+      logic.nextStage(
+          elapsedTimeModel, timerModel, historyRepository, _isStanding);
     };
 
     return nextStage;
@@ -282,7 +282,8 @@ class _TimerScreenState extends State<TimerScreen>
     final settings = context.watch<Settings>();
     final historyRepository = context.read<HistoryRepository>();
 
-    _initialButtonsExpended = watchTimerStateModel.state != TimerStates.noSession;
+    _initialButtonsExpended =
+        watchTimerStateModel.state != TimerStates.noSession;
 
     showMacOsNotificationsSnackbar(context);
 
@@ -354,9 +355,11 @@ class _TimerScreenState extends State<TimerScreen>
 
                                   if (_isStanding) {
                                     logic.startStandingSessionByUser(
-                                        historyRepository, watchTimerStateModel);
+                                        historyRepository,
+                                        watchTimerStateModel);
                                   } else {
-                                    logic.stopStandingSession(historyRepository);
+                                    logic
+                                        .stopStandingSession(historyRepository);
                                   }
                                 });
                               }),
@@ -374,11 +377,13 @@ class _TimerScreenState extends State<TimerScreen>
                 child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                settings.showCuteCats ? Image.asset(
-                  logic.currentStateGifPath(watchTimerStateModel),
-                  height: 225.0,
-                  width: 225.0,
-                ) : SizedBox(),
+                settings.showCuteCats
+                    ? Image.asset(
+                        logic.currentStateGifPath(watchTimerStateModel),
+                        height: 225.0,
+                        width: 225.0,
+                      )
+                    : SizedBox(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -389,7 +394,8 @@ class _TimerScreenState extends State<TimerScreen>
                           style: TextStyle(
                               fontSize: 32, fontWeight: FontWeight.normal)),
                     ),
-                    watchTimerStateModel.isResting
+                    watchTimerStateModel.isResting ||
+                            watchTimerStateModel.isChilling
                         ? ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               primary: Theme.of(context)
@@ -405,11 +411,13 @@ class _TimerScreenState extends State<TimerScreen>
                                 },
                               );
                             },
-                            child: Text("Ideas"))
+                            child: Text("Exercises"))
                         : SizedBox(),
                   ],
                 ),
-                TimerCounter(),
+                watchTimerStateModel.isChilling
+                    ? SizedBox(height: 44)
+                    : TimerCounter(),
               ],
             )),
             Align(
