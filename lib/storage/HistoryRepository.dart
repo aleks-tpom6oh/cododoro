@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cododoro/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -59,8 +60,11 @@ class HistoryRepository with ChangeNotifier {
   HistoryRepository({required this.prefs});
 
   void startSession(IntervalType type) {
-    final DateTime endTime = DateTime.now();
-    final newInterval = StoredInterval(endTime, type, Duration(seconds: 0));
+    final newInterval = StoredInterval(
+        startTime: DateTime.now(),
+        endTime: DateTime.now(),
+        type: type,
+        duration: Duration(seconds: 0));
     if (type == IntervalType.stand) {
       _currentStandingSessionId = newInterval.id;
     } else {
@@ -74,9 +78,10 @@ class HistoryRepository with ChangeNotifier {
     _currentStandingSessionId = null;
   }
 
-  void saveSession(
-      DateTime endTime, IntervalType type, Duration duration) {
-    final newInterval = StoredInterval(endTime, type, duration);
+  void saveSession(DateTime startTime, DateTime endTime, IntervalType type,
+      Duration duration) {
+    final newInterval = StoredInterval(
+        startTime: startTime, endTime: endTime, type: type, duration: duration);
     _saveSessionImpl(newInterval);
   }
 
@@ -97,9 +102,8 @@ class HistoryRepository with ChangeNotifier {
   void updateCurrentStandingSession({bool addTime = true}) {
     if (currentStandingSessionId != null) {
       final endTime = DateTime.now();
-      var todayIntervals = prefs.getStringList(
-              dayKeyCache(time: endTime, prefs: prefs)) ??
-          [];
+      var todayIntervals =
+          prefs.getStringList(dayKeyCache(time: endTime, prefs: prefs)) ?? [];
 
       todayIntervals = todayIntervals.map((todayIntervalString) {
         final todayInterval =
@@ -113,7 +117,11 @@ class HistoryRepository with ChangeNotifier {
                   additionalDuration.inMicroseconds);
 
           return json.encode(StoredInterval.withId(
-                  todayInterval.id, endTime, todayInterval.type, totalDuration)
+                  todayInterval.id,
+                  todayInterval.startTime,
+                  endTime,
+                  todayInterval.type,
+                  totalDuration)
               .toJson());
         } else {
           return json.encode(todayInterval.toJson());
@@ -127,24 +135,22 @@ class HistoryRepository with ChangeNotifier {
     }
   }
 
-  void updateCurrentPomodoroSession(
-      DateTime endTime, Duration duration) {
-     _updateCurrentSession(endTime, duration, _currentPomodoroSessionId);
+  void updateCurrentPomodoroSession(DateTime endTime, Duration duration) {
+    _updateCurrentSession(endTime, duration, _currentPomodoroSessionId);
   }
 
   void _updateCurrentSession(
       DateTime endTime, Duration duration, String? currentSessionId) {
-    var todayIntervals = prefs.getStringList(
-            dayKeyCache(time: endTime, prefs: prefs)) ??
-        [];
+    var todayIntervals =
+        prefs.getStringList(dayKeyCache(time: endTime, prefs: prefs)) ?? [];
 
     todayIntervals = todayIntervals.map((todayIntervalString) {
       final todayInterval =
           StoredInterval.fromJson(json.decode(todayIntervalString));
 
       return json.encode((currentSessionId == todayInterval.id
-              ? StoredInterval.withId(
-                  todayInterval.id, endTime, todayInterval.type, duration)
+              ? StoredInterval.withId(todayInterval.id, todayInterval.startTime,
+                  endTime, todayInterval.type, duration)
               : todayInterval)
           .toJson());
     }).toList();
@@ -156,8 +162,8 @@ class HistoryRepository with ChangeNotifier {
   }
 
   void toggleSessionType(Interval interval) {
-    var todayIntervals = prefs.getStringList(
-            dayKeyCache(time: interval.endTime, prefs: prefs)) ??
+    var todayIntervals = prefs
+            .getStringList(dayKeyCache(time: interval.endTime, prefs: prefs)) ??
         [];
 
     final StoredInterval targetInterval = StoredInterval.fromJson(json.decode(
@@ -168,6 +174,7 @@ class HistoryRepository with ChangeNotifier {
         targetInterval.type == IntervalType.rest) {
       final newTargetInterval = new StoredInterval.withId(
           targetInterval.id,
+          targetInterval.startTime,
           targetInterval.endTime,
           targetInterval.type == IntervalType.work
               ? IntervalType.rest
@@ -180,23 +187,21 @@ class HistoryRepository with ChangeNotifier {
       todayIntervals[intervalIndex] = json.encode(newTargetInterval.toJson());
 
       prefs.setStringList(
-          dayKeyCache(time: interval.endTime, prefs: prefs),
-          todayIntervals);
+          dayKeyCache(time: interval.endTime, prefs: prefs), todayIntervals);
 
       notifyListeners();
     }
   }
 
   bool removeSession(Interval interval) {
-    var todayIntervals = prefs.getStringList(
-            dayKeyCache(time: interval.endTime, prefs: prefs)) ??
+    var todayIntervals = prefs
+            .getStringList(dayKeyCache(time: interval.endTime, prefs: prefs)) ??
         [];
 
     bool result = todayIntervals.remove(json.encode(interval.toJson()));
 
     prefs.setStringList(
-        dayKeyCache(time: interval.endTime, prefs: prefs),
-        todayIntervals);
+        dayKeyCache(time: interval.endTime, prefs: prefs), todayIntervals);
 
     notifyListeners();
 
@@ -204,9 +209,9 @@ class HistoryRepository with ChangeNotifier {
   }
 
   Iterable<StoredInterval> getTodayIntervals() {
-    var todayIntervals = prefs.getStringList(
-            dayKeyCache(time: DateTime.now(), prefs: prefs)) ??
-        [];
+    var todayIntervals =
+        prefs.getStringList(dayKeyCache(time: DateTime.now(), prefs: prefs)) ??
+            [];
 
     return todayIntervals.map((e) => StoredInterval.fromJson(json.decode(e)));
   }
@@ -216,18 +221,21 @@ abstract class Interval {
   Map<String, dynamic> toJson();
 
   DateTime get endTime;
+  DateTime get startTime;
 }
 
 class StoredInterval extends Interval {
   final String id;
   final DateTime endTime;
+  late final DateTime startTime;
   final IntervalType type;
   final Duration duration;
 
-  StoredInterval(endTime, type, duration)
-      : this.withId(UniqueKey().toString(), endTime, type, duration);
+  StoredInterval({startTime, endTime, type, duration})
+      : this.withId(UniqueKey().toString(), startTime, endTime, type, duration);
 
-  StoredInterval.withId(this.id, this.endTime, this.type, this.duration);
+  StoredInterval.withId(
+      this.id, this.startTime, this.endTime, this.type, this.duration);
 
   StoredInterval.fromJson(Map<String, dynamic> json)
       : id = json['id'] ?? "no-id",
@@ -236,10 +244,15 @@ class StoredInterval extends Interval {
             IntervalType.values.firstWhere((e) => e.toString() == json['type']),
         duration = json['durationMillis'] != null
             ? Duration(milliseconds: json['durationMillis'])
-            : Duration(seconds: json['durationSeconds']);
+            : Duration(seconds: json['durationSeconds']) {
+    this.startTime = json['startTime'] != null
+        ? DateTime.parse(json['startTime'])
+        : this.endTime.subtract(this.duration);
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,
+        'startTime': startTime.toIso8601String(),
         'endTime': endTime.toIso8601String(),
         'type': type.toString(),
         'durationMillis': duration.inMilliseconds
@@ -252,16 +265,17 @@ class StoredInterval extends Interval {
         other is StoredInterval &&
             runtimeType == other.runtimeType &&
             endTime == other.endTime &&
+            startTime == other.startTime &&
             type == other.type &&
             duration == other.duration;
   }
 
   @override
   int get hashCode =>
-      id.hashCode ^ endTime.hashCode ^ type.hashCode ^ duration.hashCode;
+      id.hashCode ^ startTime.hashCode ^ type.hashCode ^ duration.hashCode;
 
   @override
   String toString() {
-    return "${type.toString()} ${duration.toString()} ${endTime.toString()}";
+    return "${type.toString()} ${duration.toString()} ${startTime.toString()}";
   }
 }

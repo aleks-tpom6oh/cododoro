@@ -77,10 +77,13 @@ class _AddTimeDialogState extends State<AddTimeDialog> {
               IconButton(
                 onPressed: () {
                   final restVal = newWorkDurationInputController.text;
-                  final newDuration = (double.parse(restVal) * 60).toInt();
+                  final newDuration =
+                      Duration(minutes: (double.parse(restVal)).toInt());
+                  final endTime = DateTime.now();
+                  final startTime = endTime.subtract(newDuration);
 
-                  history.saveSession(DateTime.now(), currentIntervalType,
-                      Duration(seconds: newDuration));
+                  history.saveSession(
+                      startTime, endTime, currentIntervalType, newDuration);
                 },
                 icon: const Icon(Icons.add),
               )

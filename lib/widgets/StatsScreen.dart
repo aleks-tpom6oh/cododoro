@@ -188,7 +188,7 @@ class _StatsScreenState extends State<StatsScreen> {
                   top: 2.0,
                   left: 8.0,
                   child: Text(
-                    "${interval.endTime.subtract(interval.duration).toDayTimestamp()}",
+                    "${interval.startTime.toDayTimestamp()}",
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w100,
