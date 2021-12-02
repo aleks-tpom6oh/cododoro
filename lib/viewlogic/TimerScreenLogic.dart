@@ -17,7 +17,7 @@ import 'StandTimeRemaining.dart';
 List<BaseNotifier> notifiers = [SoundNotifier(), LocalNotificationsNotifier()];
 
 Future<void> _notifyAll(String message,
-    {String soundPath = 'assets/audio/alarm.mp3'}) async {
+    {String soundPath = 'assets/audio/t-bell.mp3'}) async {
   notifiers.forEach((element) async {
     await element.notify(message, soundPath: soundPath);
   });

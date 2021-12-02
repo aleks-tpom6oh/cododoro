@@ -10,7 +10,7 @@ class SoundNotifier implements BaseNotifier {
   @override
   Future<void> notify(message, {String? soundPath}) async {
     if (volumeController.isSoundOn) {
-      await player.setAsset(soundPath ?? 'assets/audio/alarm.mp3');
+      await player.setAsset(soundPath ?? 'assets/audio/t-bell.mp3');
       player.play();
     }
   }
