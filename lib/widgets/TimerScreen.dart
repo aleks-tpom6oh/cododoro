@@ -190,11 +190,10 @@ class _TimerScreenState extends State<TimerScreen>
     return nextStage;
   }
 
-  Future<void> Function() onPleaseStandUpConfirmed(
-      ElapsedTimeModel elapsedTimeModel,
-      TimerStateModel timerModel,
-      HistoryRepository historyRepository) {
-    final result = () async {
+  void Function() onPleaseStandUpConfirmed(ElapsedTimeModel elapsedTimeModel,
+      TimerStateModel timerModel, HistoryRepository historyRepository) {
+    final result = () {
+      nextStage(elapsedTimeModel, timerModel, historyRepository)();
       if (!_isStanding) {
         try {
           setState(() {
@@ -203,7 +202,6 @@ class _TimerScreenState extends State<TimerScreen>
         } catch (e) {}
         logic.startStandingSessionByUser(historyRepository, timerModel);
       }
-      nextStage(elapsedTimeModel, timerModel, historyRepository)();
     };
 
     return result;
