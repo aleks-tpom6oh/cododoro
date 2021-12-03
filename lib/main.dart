@@ -7,11 +7,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:cododoro/models/ElapsedTimeModel.dart';
+import 'package:intl/intl.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:mixpanel_analytics/mixpanel_analytics.dart';
 import 'package:provider/provider.dart';
 import 'package:platform_device_id/platform_device_id.dart';
 import 'package:platform_info/platform_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils.dart';
 
 import 'storage/Settings.dart';
 import 'widgets/TimerScreen.dart';
@@ -83,6 +86,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   ThemeSettings themeSettings = ThemeSettings();
 
+  bool started = false;
+
   @override
   void initState() {
     mixpanel = MixpanelAnalytics(
@@ -119,12 +124,14 @@ class _MyAppState extends State<MyApp> {
         future: SharedPreferences.getInstance(),
         builder: (BuildContext context,
             AsyncSnapshot<SharedPreferences> sharedPrefsSnapshot) {
-          return sharedPrefsSnapshot.data != null
+          return sharedPrefsSnapshot.data != null && started
               ? MultiProvider(
                   providers: [
                       ChangeNotifierProvider(
                           create: (context) => TimerStateModel()),
-                      ChangeNotifierProvider(create: (context) => Settings(prefs: sharedPrefsSnapshot.data!)),
+                      ChangeNotifierProvider(
+                          create: (context) =>
+                              Settings(prefs: sharedPrefsSnapshot.data!)),
                       ChangeNotifierProvider(
                           create: (context) => ElapsedTimeModel()),
                       ChangeNotifierProvider(
@@ -142,13 +149,48 @@ class _MyAppState extends State<MyApp> {
                           : darkTheme,
                       home: TimerScreen()))
               : MaterialApp(
-                      theme: _themeSetting == ThemeSetting.dark
-                          ? darkTheme
-                          : lightTheme,
-                      darkTheme: _themeSetting == ThemeSetting.light
-                          ? lightTheme
-                          : darkTheme,
-                      home: Scaffold(body: Center(child: Text("Loading"))));
+                  theme: _themeSetting == ThemeSetting.dark
+                      ? darkTheme
+                      : lightTheme,
+                  darkTheme: _themeSetting == ThemeSetting.light
+                      ? lightTheme
+                      : darkTheme,
+                  home: Scaffold(
+                      body: Center(
+                          child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text("Hello World"),
+                      SizedBox(height: 24),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text("It's "),
+                          Text(
+                            "${DateFormat('EEEE d MMMM y').format(DateTime.now())}",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 24),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: _themeSetting == ThemeSetting.light
+                                ? const Color(0xFF272236)
+                                : const Color(0xFFFF756C),
+                          ),
+                          child: Text("Let's go"),
+                          onPressed: () async {
+                            final player = AudioPlayer();
+                            await player.setAsset("assets/audio/t-bell.mp3");
+                            setState(() {
+                              started = true;
+                            });
+                            await player.play();
+                            player.dispose();
+                          }),
+                    ],
+                  ))));
         });
   }
 }

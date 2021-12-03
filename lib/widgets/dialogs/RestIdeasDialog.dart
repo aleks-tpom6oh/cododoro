@@ -52,7 +52,7 @@ class _RestIdeasDialogState extends State<RestIdeasDialog> {
                   InkWell(
                     onTap: () {
                       mixpanelTrack(
-                          eventName: "Breath Excercise Clicked", params: {});
+                          eventName: "Breath Exercise Clicked", params: {});
                       launch('https://xhalr.com/');
                     },
                     child: Text("Breath",
@@ -73,10 +73,10 @@ class _RestIdeasDialogState extends State<RestIdeasDialog> {
                   InkWell(
                     onTap: () {
                       mixpanelTrack(
-                          eventName: "Eyes Excersize Clicked", params: {});
+                          eventName: "Eyes Exersize Clicked", params: {});
                       launch('https://blimb.su/');
                     },
-                    child: Text("Eyes excercise",
+                    child: Text("Eyes exercise",
                         style: TextStyle(
                             decoration: TextDecoration.underline,
                             color: textColor)),
@@ -115,7 +115,7 @@ class _RestIdeasDialogState extends State<RestIdeasDialog> {
                   InkWell(
                     onTap: () {
                       mixpanelTrack(
-                          eventName: "Stretching Excercise Clicked",
+                          eventName: "Stretching Exercise Clicked",
                           params: {});
                       launch(
                           'https://www.spotebi.com/wp-content/uploads/2021/02/5-minute-full-body-cool-down-stretches-spotebi.gif');

@@ -167,10 +167,10 @@ class MockHistoryRepository extends _i1.Mock implements _i7.HistoryRepository {
       super.noSuchMethod(Invocation.method(#stopStanding, []),
           returnValueForMissingStub: null);
   @override
-  void saveSession(
-          DateTime? endTime, _i7.IntervalType? type, Duration? duration) =>
+  void saveSession(DateTime? startTime, DateTime? endTime,
+          _i7.IntervalType? type, Duration? duration) =>
       super.noSuchMethod(
-          Invocation.method(#saveSession, [endTime, type, duration]),
+          Invocation.method(#saveSession, [startTime, endTime, type, duration]),
           returnValueForMissingStub: null);
   @override
   void updateCurrentStandingSession({bool? addTime = true}) =>
@@ -243,6 +243,10 @@ class MockSettings extends _i1.Mock implements _i8.Settings {
       (super.noSuchMethod(Invocation.getter(#standingDesk), returnValue: false)
           as bool);
   @override
+  bool get showCuteCats =>
+      (super.noSuchMethod(Invocation.getter(#showCuteCats), returnValue: false)
+          as bool);
+  @override
   int get targetStandingMinutes =>
       (super.noSuchMethod(Invocation.getter(#targetStandingMinutes),
           returnValue: 0) as int);
@@ -265,6 +269,10 @@ class MockSettings extends _i1.Mock implements _i8.Settings {
   @override
   void setStandingDesk(bool? newStandingDesk) =>
       super.noSuchMethod(Invocation.method(#setStandingDesk, [newStandingDesk]),
+          returnValueForMissingStub: null);
+  @override
+  void setShowCuteCats(bool? newShowCuteCats) =>
+      super.noSuchMethod(Invocation.method(#setShowCuteCats, [newShowCuteCats]),
           returnValueForMissingStub: null);
   @override
   void setTargetStandingMinutes(int? newTargetStandingMinutes) =>
