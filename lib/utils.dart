@@ -79,6 +79,25 @@ extension DurationPrinter on Duration {
 
     return res + "${seconds}s";
   }
+
+  String toShortHMString() {
+    int hours = this.inHours;
+    int minutes = this.inMinutes - hours * 60;
+
+    String res = "";
+
+    if (hours > 0) {
+      res += "${hours}h";
+    }
+    if (hours > 0 || minutes > 0) {
+      res += "${minutes}m";
+    }
+    if (hours == 0 && minutes == 0) {
+      return "<1m";
+    }
+
+    return res;
+  }
 }
 
 Duration calculateTimeForIntervalType(

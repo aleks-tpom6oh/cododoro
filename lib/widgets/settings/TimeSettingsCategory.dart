@@ -9,10 +9,12 @@ class TimeSettingsCategory extends StatefulWidget {
     required this.workDurationInputController,
     required this.restDurationInputController,
     required this.dayStartAdjustmentInputController,
+    required this.targetWorkMinutesInputController,
   }) : super(key: key);
 
   final Settings settings;
   final TextEditingController workDurationInputController;
+  final TextEditingController targetWorkMinutesInputController;
   final TextEditingController restDurationInputController;
   final TextEditingController dayStartAdjustmentInputController;
 
@@ -47,6 +49,9 @@ class _TimeSettingsCategoryState extends State<TimeSettingsCategory> {
         "${Duration(seconds: this.widget.settings.restDuration).inMinutes}";
     widget.restDurationInputController.text = restDuration;
 
+    final targetWorkingMinutes = widget.settings.targetWorkingMinutes;
+    widget.targetWorkMinutesInputController.text = "$targetWorkingMinutes";
+
     return Column(
       children: [
         Padding(
@@ -77,6 +82,47 @@ class _TimeSettingsCategoryState extends State<TimeSettingsCategory> {
                 widget.settings.setWorkDuration(
                     (double.parse(widget.workDurationInputController.text) * 60)
                         .toInt());
+              },
+              child: const Text('Set'),
+            )
+          ],
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: widget.targetWorkMinutesInputController,
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                enabled: true,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: InputDecoration(
+                    alignLabelWithHint: true,
+                    labelText: "Target working minutes per day"),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                final newTaretWorkingTime =
+                    int.tryParse(widget.targetWorkMinutesInputController.text);
+                if (newTaretWorkingTime != null &&
+                    newTaretWorkingTime > 0 &&
+                    newTaretWorkingTime <= 720) {
+                  widget.settings.setTargetWorkingMinutes(newTaretWorkingTime);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Use an integer from 1 to 720')));
+
+                  if (newTaretWorkingTime != null &&
+                      newTaretWorkingTime > 720) {
+                    widget.settings.setTargetWorkingMinutes(720);
+                    widget.targetWorkMinutesInputController.text = "720";
+                  } else if (newTaretWorkingTime != null) {
+                    widget.settings.setTargetWorkingMinutes(1);
+                    widget.targetWorkMinutesInputController.text = "1";
+                  }
+                }
               },
               child: const Text('Set'),
             )
@@ -140,6 +186,15 @@ class _TimeSettingsCategoryState extends State<TimeSettingsCategory> {
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text('Use an integer from -11 to 12.')));
+
+                  if (newDayStartAdjustment != null &&
+                      newDayStartAdjustment > 12) {
+                    widget.settings.setDayHoursOffset(12);
+                    widget.dayStartAdjustmentInputController.text = "12";
+                  } else if (newDayStartAdjustment != null) {
+                    widget.settings.setDayHoursOffset(-11);
+                    widget.dayStartAdjustmentInputController.text = "-11";
+                  }
                 }
               },
               child: const Text('Set'),

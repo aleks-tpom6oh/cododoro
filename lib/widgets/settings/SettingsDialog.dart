@@ -20,6 +20,8 @@ class SettingsDialog extends StatelessWidget {
         TextEditingController();
     TextEditingController startNotificationDelayTimeInputController =
         TextEditingController();
+    TextEditingController targetWorkMinutesInputController =
+        TextEditingController();
 
     ThemeSettings themeSettings = context.read<ThemeSettings>();
     Settings settings = context.read<Settings>();
@@ -47,7 +49,9 @@ class SettingsDialog extends StatelessWidget {
                     workDurationInputController: workDurationInputController,
                     restDurationInputController: restDurationInputController,
                     dayStartAdjustmentInputController:
-                        dayStartAdjustmentInputController),
+                        dayStartAdjustmentInputController,
+                    targetWorkMinutesInputController:
+                        targetWorkMinutesInputController),
                 NotificationsSettingsCategory(
                     startNotificationDelayTimeInputController:
                         startNotificationDelayTimeInputController),

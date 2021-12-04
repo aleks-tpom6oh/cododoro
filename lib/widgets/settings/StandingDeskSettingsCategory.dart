@@ -8,7 +8,7 @@ class StandingDeskSettingsCategory extends StatefulWidget {
     required this.settings,
   }) : super(key: key);
 
-  final Settings? settings;
+  final Settings settings;
 
   @override
   _StandingDeskSettingsCategoryState createState() =>
@@ -36,8 +36,8 @@ class _StandingDeskSettingsCategoryState
 
     final textController = new TextEditingController();
 
-    standingDeskEnabled = this.widget.settings?.standingDesk;
-    final targetStandingTime = this.widget.settings?.targetStandingMinutes;
+    standingDeskEnabled = this.widget.settings.standingDesk;
+    final targetStandingTime = this.widget.settings.targetStandingMinutes;
 
     textController.text = targetStandingTime.toString();
 
@@ -60,7 +60,7 @@ class _StandingDeskSettingsCategoryState
               value: standingDeskEnabled,
               onChanged: (bool? value) {
                 if (value != null) {
-                  widget.settings?.setStandingDesk(value);
+                  widget.settings.setStandingDesk(value);
                   setState(() {
                     standingDeskEnabled = value;
                   });
@@ -98,10 +98,19 @@ class _StandingDeskSettingsCategoryState
                         newTaretStandingTime > 0 &&
                         newTaretStandingTime <= 600) {
                       widget.settings
-                          ?.setTargetStandingMinutes(newTaretStandingTime);
+                          .setTargetStandingMinutes(newTaretStandingTime);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text('Use an integer from 1 to 600')));
+
+                      if (newTaretStandingTime != null &&
+                          newTaretStandingTime > 600) {
+                        widget.settings.setTargetStandingMinutes(600);
+                        textController.text = "600";
+                      } else if (newTaretStandingTime != null) {
+                        widget.settings.setTargetStandingMinutes(1);
+                        textController.text = "1";
+                      }
                     }
                   },
                   child: const Text('Set'),

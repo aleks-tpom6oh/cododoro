@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String dayHoursOffsetKey = "DAY_HOURS_OFFSET";
+const String workDurationKey = "WORK_DURATION";
+const String restDurationKey = "REST_DURATION";
+const String standingDeskKey = "STANDING_DESK";
+const String showCuteCatsKey = "SHOW_CUTE_CATS";
+const String targetStandingMinutesKey = "TARGET_STANDING_MINUTES";
+const String targetWorkingMinutesKey = "TARGET_WORKING_MINUTES";
 
 int _defaultDayHoursOffset = 4;
 
@@ -14,48 +20,49 @@ class Settings with ChangeNotifier {
 
   Settings({required this.prefs});
 
-  int _defaultWorkDuration = 50 * 60;
-  int _defaultRestDuration = 10 * 60;
+  int _defaultWorkDuration = Duration(minutes: 50).inSeconds;
+  int _defaultRestDuration = Duration(minutes: 10).inSeconds;
 
-  int _defaulTargetStandingMinutes = 100;
+  int _defaulTargetStandingMinutes = Duration(minutes: 100).inMinutes;
+  int _defaulTargetWorkingMinutes = Duration(hours: 6).inMinutes;
 
   bool _defaulStandingDesk = true;
 
   bool _defaulShowCuteCats = true;
 
   int get workDuration {
-    return prefs.getInt("WORK_DURATION") ?? _defaultWorkDuration;
+    return prefs.getInt(workDurationKey) ?? _defaultWorkDuration;
   }
 
   void setWorkDuration(int newDuration) {
-    prefs.setInt("WORK_DURATION", newDuration);
+    prefs.setInt(workDurationKey, newDuration);
     notifyListeners();
   }
 
   int get restDuration {
-    return prefs.getInt("REST_DURATION") ?? _defaultRestDuration;
+    return prefs.getInt(restDurationKey) ?? _defaultRestDuration;
   }
 
   void setRestDuration(int newDuration) {
-    prefs.setInt("REST_DURATION", newDuration);
+    prefs.setInt(restDurationKey, newDuration);
     notifyListeners();
   }
 
   bool get standingDesk {
-    return prefs.getBool("STANDING_DESK") ?? _defaulStandingDesk;
+    return prefs.getBool(standingDeskKey) ?? _defaulStandingDesk;
   }
 
   void setStandingDesk(bool newStandingDesk) {
-    prefs.setBool("STANDING_DESK", newStandingDesk);
+    prefs.setBool(standingDeskKey, newStandingDesk);
     notifyListeners();
   }
 
   bool get showCuteCats {
-    return prefs.getBool("SHOW_CUTE_CATS") ?? _defaulShowCuteCats;
+    return prefs.getBool(showCuteCatsKey) ?? _defaulShowCuteCats;
   }
 
   void setShowCuteCats(bool newShowCuteCats) {
-    prefs.setBool("SHOW_CUTE_CATS", newShowCuteCats);
+    prefs.setBool(showCuteCatsKey, newShowCuteCats);
     notifyListeners();
   }
 
@@ -64,13 +71,13 @@ class Settings with ChangeNotifier {
     final int? legacyHoursInMinutes =
         legacyHoursSetting != null ? legacyHoursSetting * 60 : null;
 
-    return prefs.getInt("TARGET_STANDING_MINUTES") ??
+    return prefs.getInt(targetStandingMinutesKey) ??
         legacyHoursInMinutes ??
         _defaulTargetStandingMinutes;
   }
 
   void setTargetStandingMinutes(int newTargetStandingMinutes) {
-    prefs.setInt("TARGET_STANDING_MINUTES", newTargetStandingMinutes);
+    prefs.setInt(targetStandingMinutesKey, newTargetStandingMinutes);
     notifyListeners();
   }
 
@@ -80,6 +87,15 @@ class Settings with ChangeNotifier {
 
   void setDayHoursOffset(int newDayHoursOffset) {
     prefs.setInt(dayHoursOffsetKey, newDayHoursOffset);
+    notifyListeners();
+  }
+
+  int get targetWorkingMinutes {
+    return prefs.getInt(targetWorkingMinutesKey) ?? _defaulTargetWorkingMinutes;
+  }
+
+  void setTargetWorkingMinutes(int newTargetWorkingMinutes) {
+    prefs.setInt(targetWorkingMinutesKey, newTargetWorkingMinutes);
     notifyListeners();
   }
 }
