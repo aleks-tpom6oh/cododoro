@@ -8,13 +8,11 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:cododoro/models/ElapsedTimeModel.dart';
 import 'package:intl/intl.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:mixpanel_analytics/mixpanel_analytics.dart';
 import 'package:provider/provider.dart';
 import 'package:platform_device_id/platform_device_id.dart';
 import 'package:platform_info/platform_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../utils.dart';
 
 import 'storage/Settings.dart';
 import 'widgets/TimerScreen.dart';
@@ -180,14 +178,10 @@ class _MyAppState extends State<MyApp> {
                                 : const Color(0xFFFF756C),
                           ),
                           child: Text("Let's go"),
-                          onPressed: () async {
-                            final player = AudioPlayer();
-                            await player.setAsset("assets/audio/t-bell.mp3");
+                          onPressed: () {
                             setState(() {
                               started = true;
                             });
-                            await player.play();
-                            player.dispose();
                           }),
                     ],
                   ))));

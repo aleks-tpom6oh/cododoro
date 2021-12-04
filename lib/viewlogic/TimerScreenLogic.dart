@@ -10,11 +10,14 @@ import 'package:cododoro/storage/HistoryRepository.dart';
 import 'package:cododoro/storage/NotificationsSchedule.dart';
 import 'package:cododoro/storage/Settings.dart';
 import 'package:confetti/confetti.dart';
+import 'package:just_audio/just_audio.dart';
 
 import '../utils.dart';
 import 'StandTimeRemaining.dart';
 
-List<BaseNotifier> notifiers = [SoundNotifier(), LocalNotificationsNotifier()];
+BaseNotifier soundNotifier = SoundNotifier();
+
+List<BaseNotifier> notifiers = [soundNotifier, LocalNotificationsNotifier()];
 
 Future<void> _notifyAll(String message,
     {String soundPath = 'assets/audio/t-bell.mp3'}) async {
@@ -128,6 +131,8 @@ void startWorkSession(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerMo
     notificationsTimer?.cancel();
 
     history.startSession(IntervalType.work);
+
+    soundNotifier.notify("", soundPath: "assets/audio/t-bell.mp3");
   }
 }
 
@@ -259,7 +264,7 @@ bool shouldShowWorkEndedDialogOnNextStageClick(TimerStateModel timerModel) {
 }
 
 void nextStage(ElapsedTimeModel elapsedTimeModel,
-    TimerStateModel timerModel, HistoryRepository history, bool isStanding) {
+    TimerStateModel timerModel, HistoryRepository history, bool isStanding) async {
   notificationsTimer?.cancel();
   switch (timerModel.state) {
     case TimerStates.sessionWorking:
@@ -290,6 +295,8 @@ void nextStage(ElapsedTimeModel elapsedTimeModel,
         }
 
         history.startSession(IntervalType.work);
+
+        soundNotifier.notify("", soundPath: "assets/audio/t-bell.mp3");
       }
       break;
   }
