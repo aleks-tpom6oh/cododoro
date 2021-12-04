@@ -31,7 +31,7 @@ void main() {
     when(() => mockPrefs.setStringList(any(), any())).thenAnswer((_) => Future.value(true));
     when(() => mockTimerModel.state).thenReturn(TimerStates.noSession);
 
-    await timerScreen.createState().onPleaseStandUpConfirmed(
+    timerScreen.createState().onPleaseStandUpConfirmed(
         mockElapsedTimeModel, mockTimerModel, historyRepo)();
 
     List lastWrite = verify(() => mockPrefs.setStringList(any(), captureAny())).captured.last;

@@ -10,7 +10,6 @@ import 'package:cododoro/storage/HistoryRepository.dart';
 import 'package:cododoro/storage/NotificationsSchedule.dart';
 import 'package:cododoro/storage/Settings.dart';
 import 'package:confetti/confetti.dart';
-import 'package:just_audio/just_audio.dart';
 
 import '../utils.dart';
 import 'StandTimeRemaining.dart';
@@ -31,12 +30,14 @@ int currentNotificationsDelayProgressionStep = 0;
 bool skipNextAskStillStanding = false;
 
 void scheduleOvertimeNotifications(
-    {int step = 0, required String message}) async {
+    {int step = 0,
+    required String message,
+    String soundPath = 'assets/audio/t-bell.mp3'}) async {
   final duration = await NotificationSchedule().timeAtStep(step);
   print("Next notification in $duration minutes");
   notificationsTimer = Timer(Duration(minutes: duration), () async {
     currentNotificationsDelayProgressionStep = step + 1;
-    await _notifyAll(message);
+    await _notifyAll(message, soundPath: soundPath);
     scheduleOvertimeNotifications(step: step + 1, message: message);
   });
 }
@@ -49,6 +50,12 @@ String getNotificationMessage(TimerStateModel timerModel) {
   } else {
     return "The time has come!";
   }
+}
+
+String getNotificationSound(TimerStateModel timerModel) {
+  return timerModel.state == TimerStates.sessionRestingOvertime
+      ? 'assets/audio/alarm.mp3'
+      : 'assets/audio/t-bell.mp3';
 }
 
 void tick(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
@@ -67,19 +74,24 @@ void tick(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
   }
 }
 
-Future<void> handleOvertime(TimerStateModel timerModel, ElapsedTimeModel elapsedTimeModel, Settings settings) async {
+Future<void> handleOvertime(TimerStateModel timerModel,
+    ElapsedTimeModel elapsedTimeModel, Settings settings) async {
   if (timerModel.state == TimerStates.sessionWorking &&
       elapsedTimeModel.elapsedTime > await settings.workDuration) {
     timerModel.state = TimerStates.sessionWorkingOvertime;
-    await _notifyAll(getNotificationMessage(timerModel));
+    await _notifyAll(getNotificationMessage(timerModel),
+        soundPath: getNotificationSound(timerModel));
     scheduleOvertimeNotifications(
-        message: getNotificationMessage(timerModel));
+        message: getNotificationMessage(timerModel),
+        soundPath: getNotificationSound(timerModel));
   } else if (timerModel.state == TimerStates.sessionResting &&
       elapsedTimeModel.elapsedTime > await settings.restDuration) {
     timerModel.state = TimerStates.sessionRestingOvertime;
-    await _notifyAll(getNotificationMessage(timerModel));
+    await _notifyAll(getNotificationMessage(timerModel),
+        soundPath: getNotificationSound(timerModel));
     scheduleOvertimeNotifications(
-        message: getNotificationMessage(timerModel));
+        message: getNotificationMessage(timerModel),
+        soundPath: getNotificationSound(timerModel));
   } else if (timerModel.state == TimerStates.sessionWorkingOvertime &&
       elapsedTimeModel.elapsedTime < await settings.workDuration) {
     timerModel.state = TimerStates.sessionWorking;
@@ -122,8 +134,8 @@ Future<void> notifyIfStandingGoalReached(
   }
 }
 
-void startWorkSession(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
-    HistoryRepository history) {
+void startWorkSession(ElapsedTimeModel elapsedTimeModel,
+    TimerStateModel timerModel, HistoryRepository history) {
   if (timerModel.state == TimerStates.noSession) {
     timerModel.state = TimerStates.sessionWorking;
     timerModel.forceResume();
@@ -172,8 +184,8 @@ void pauseResume(TimerStateModel timerModel) {
   timerModel.pauseResume();
 }
 
-void syncSession(ElapsedTimeModel elapsedTimeModel,
-    HistoryRepository history, TimerStateModel timerModel) {
+void syncSession(ElapsedTimeModel elapsedTimeModel, HistoryRepository history,
+    TimerStateModel timerModel) {
   if (timerModel.isRunning()) {
     history.updateCurrentPomodoroSession(
         DateTime.now(), Duration(seconds: elapsedTimeModel.elapsedTime));
@@ -263,8 +275,8 @@ bool shouldShowWorkEndedDialogOnNextStageClick(TimerStateModel timerModel) {
       timerModel.state == TimerStates.sessionWorkingOvertime;
 }
 
-void nextStage(ElapsedTimeModel elapsedTimeModel,
-    TimerStateModel timerModel, HistoryRepository history, bool isStanding) async {
+void nextStage(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
+    HistoryRepository history, bool isStanding) async {
   notificationsTimer?.cancel();
   switch (timerModel.state) {
     case TimerStates.sessionWorking:
