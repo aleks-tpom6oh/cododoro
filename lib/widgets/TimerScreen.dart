@@ -39,7 +39,9 @@ Isolate? _timerIsolate;
 Timer? tickTimer;
 
 class TimerScreen extends StatefulWidget {
-  const TimerScreen({Key? key}) : super(key: key);
+  final void Function() showIdleScreen;
+
+  const TimerScreen({Key? key, required this.showIdleScreen}) : super(key: key);
 
   @override
   _TimerScreenState createState() => _TimerScreenState();
@@ -324,7 +326,7 @@ class _TimerScreenState extends State<TimerScreen>
                           children: [
                             seeStatsButton(),
                             SizedBox(height: 8),
-                            WorkRestTimer(),
+                            WorkRestTimer(showIdleScreen: widget.showIdleScreen),
                           ],
                         )),
                     Container(

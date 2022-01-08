@@ -9,6 +9,7 @@ import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
 import 'TimerScreenLogic_test.mocks.dart';
+import 'TimerScreen_test.mocks.dart';
 
 @GenerateMocks([ElapsedTimeModel, TimerStateModel, HistoryRepository, Settings])
 void main() {
@@ -95,6 +96,7 @@ void main() {
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
 
     when(mockTimerModel.state).thenReturn(TimerStates.noSession);
+    TimerScreenLogic.soundNotifier = MockBaseNotifier();
 
     TimerScreenLogic.startWorkSession(
         mockElapsedTimeModel, mockTimerModel, mockHistoryRepo);
@@ -114,6 +116,7 @@ void main() {
 
     when(mockTimerModel.state).thenReturn(TimerStates.noSession);
     when(mockTimerModel.isPaused).thenReturn(true);
+    TimerScreenLogic.soundNotifier = MockBaseNotifier();
 
     TimerScreenLogic.startWorkSession(
         mockElapsedTimeModel, mockTimerModel, mockHistoryRepo);

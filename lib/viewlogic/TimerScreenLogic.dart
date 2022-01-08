@@ -317,6 +317,10 @@ void nextStage(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
 
 void timerScreenInitState() {
   confetti = ConfettiController(duration: const Duration(seconds: 10));
+
+  soundNotifier = SoundNotifier();
+
+  notifiers = [soundNotifier, LocalNotificationsNotifier()];
 }
 
 void timeScreenDispose() {
