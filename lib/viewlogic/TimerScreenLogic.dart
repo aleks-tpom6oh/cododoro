@@ -313,12 +313,14 @@ void nextStage(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
   timerModel.forceResume();
 }
 
-void timerScreenInitState() {
+void timerScreenInitState(HistoryRepository history) {
   confetti = ConfettiController(duration: const Duration(seconds: 10));
 
   soundNotifier = SoundNotifier();
 
   notifiers = [soundNotifier, LocalNotificationsNotifier()];
+
+  history.startSession(IntervalType.work);
 }
 
 void timeScreenDispose() {

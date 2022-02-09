@@ -1,10 +1,12 @@
+import 'dart:async';
+
 import 'package:cododoro/storage/ThemeSettings.dart';
 import 'package:cododoro/viewlogic/WorkTimeRemaining.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class IdleScreen extends StatelessWidget {
+class IdleScreen extends StatefulWidget {
   final SharedPreferences? sharedPrefs;
   final ThemeSetting themeSetting;
   final void Function() showTimerScreen;
@@ -17,14 +19,36 @@ class IdleScreen extends StatelessWidget {
       : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    bool workTargetReached = this.sharedPrefs == null
-        ? false
-        : isWorkTargetReachedFromSharedPrefs(this.sharedPrefs!);
+  State<IdleScreen> createState() => _IdleScreenState();
+}
 
+class _IdleScreenState extends State<IdleScreen> {
+  Timer? _newDayChecker;
+
+  bool _workTargetReached = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkWorkTargetReached();
+    _newDayChecker = Timer.periodic(Duration(minutes: 5), (Timer t) {
+      checkWorkTargetReached();
+    });
+  }
+
+  void checkWorkTargetReached() {
+    setState(() {
+      _workTargetReached = this.widget.sharedPrefs == null
+          ? false
+          : isWorkTargetReachedFromSharedPrefs(this.widget.sharedPrefs!);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
         body: Center(
-            child: workTargetReached
+            child: _workTargetReached
                 ? Stack(
                     children: [
                       Align(
@@ -58,7 +82,7 @@ class IdleScreen extends StatelessWidget {
                                 ElevatedButton(
                                   child: Text('🚒'),
                                   onPressed: () {
-                                    this.showTimerScreen.call();
+                                    this.widget.showTimerScreen.call();
                                   },
                                 ),
                               ],
@@ -86,15 +110,22 @@ class IdleScreen extends StatelessWidget {
                       SizedBox(height: 24),
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: this.themeSetting == ThemeSetting.light
-                                ? const Color(0xFF272236)
-                                : const Color(0xFFFF756C),
+                            primary:
+                                this.widget.themeSetting == ThemeSetting.light
+                                    ? const Color(0xFF272236)
+                                    : const Color(0xFFFF756C),
                           ),
                           child: Text("Let's go"),
                           onPressed: () {
-                            this.showTimerScreen.call();
+                            this.widget.showTimerScreen.call();
                           }),
                     ],
                   )));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _newDayChecker?.cancel();
   }
 }

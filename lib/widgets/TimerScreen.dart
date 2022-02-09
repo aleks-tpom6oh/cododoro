@@ -112,7 +112,7 @@ class _TimerScreenState extends State<TimerScreen>
 
   @override
   void initState() {
-    logic.timerScreenInitState();
+    logic.timerScreenInitState(context.read<HistoryRepository>());
 
     if (!kIsWeb) {
       spawnIsolate();
