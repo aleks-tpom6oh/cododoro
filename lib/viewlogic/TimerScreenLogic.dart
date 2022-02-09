@@ -19,7 +19,7 @@ BaseNotifier soundNotifier = SoundNotifier();
 List<BaseNotifier> notifiers = [soundNotifier, LocalNotificationsNotifier()];
 
 Future<void> _notifyAll(String message,
-    {String soundPath = 'assets/audio/t-bell.mp3'}) async {
+    {String soundPath = 'assets/audio/alarm.mp3'}) async {
   notifiers.forEach((element) async {
     await element.notify(message, soundPath: soundPath);
   });
@@ -32,7 +32,7 @@ bool skipNextAskStillStanding = false;
 void scheduleOvertimeNotifications(
     {int step = 0,
     required String message,
-    String soundPath = 'assets/audio/t-bell.mp3'}) async {
+    String soundPath = 'assets/audio/alarm.mp3'}) async {
   final duration = await NotificationSchedule().timeAtStep(step);
   print("Next notification in $duration minutes");
   notificationsTimer = Timer(Duration(minutes: duration), () async {
@@ -53,9 +53,7 @@ String getNotificationMessage(TimerStateModel timerModel) {
 }
 
 String getNotificationSound(TimerStateModel timerModel) {
-  return timerModel.state == TimerStates.sessionRestingOvertime
-      ? 'assets/audio/alarm.mp3'
-      : 'assets/audio/t-bell.mp3';
+  return 'assets/audio/alarm.mp3';
 }
 
 void tick(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
