@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:avo_inspector/avo_batcher.dart';
 import 'package:avo_inspector/avo_inspector.dart';
 import 'package:cododoro/models/ElapsedTimeModel.dart';
 import 'package:cododoro/storage/HistoryRepository.dart';
