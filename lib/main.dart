@@ -84,7 +84,7 @@ void main() async {
 
   avoInspector = await AvoInspector.create(
       apiKey: "YwFVkbijwhINH1mv3JED",
-      env: AvoInspectorEnv.dev,
+      env: AvoInspectorEnv.prod,
       appVersion: "1.0",
       appName: "Flutter test");
 
