@@ -5,6 +5,7 @@ import 'package:cododoro/models/ElapsedTimeModel.dart';
 import 'package:cododoro/storage/HistoryRepository.dart';
 import 'package:cododoro/storage/ThemeSettings.dart';
 import 'package:cododoro/widgets/IdleScreen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -83,7 +84,7 @@ void main() async {
 
   avoInspector = await AvoInspector.create(
       apiKey: "YwFVkbijwhINH1mv3JED",
-      env: AvoInspectorEnv.prod,
+      env: kReleaseMode ? AvoInspectorEnv.prod : AvoInspectorEnv.dev,
       appVersion: "1.0",
       appName: "Flutter test");
 
