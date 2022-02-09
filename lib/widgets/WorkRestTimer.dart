@@ -6,7 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:cododoro/utils.dart';
 
 class WorkRestTimer extends StatefulWidget {
-  WorkRestTimer({Key? key}) : super(key: key);
+  final void Function() showIdleScreen;
+
+  WorkRestTimer({Key? key, required this.showIdleScreen}) : super(key: key);
 
   @override
   _WorkRestTimerState createState() => _WorkRestTimerState();
@@ -43,9 +45,29 @@ class _WorkRestTimerState extends State<WorkRestTimer> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("💻 ${todayWorkDuration.toShortHmsString()}"),
-                  Text(workTargetReached()
-                      ? "💻 Goal reached"
-                      : "💻 ${workTimeTillGoal.toShortHMString()} till goal"),
+                  workTargetReached()
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                              Text("💻 Goal reached"),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Theme.of(context)
+                                          .textTheme
+                                          .bodyText2
+                                          ?.color, // background
+                                    ),
+                                    onPressed: () {
+                                      widget.showIdleScreen.call();
+                                    },
+                                    child: Text("End work for today")),
+                              )
+                            ])
+                      : Text(
+                          "💻 ${workTimeTillGoal.toShortHMString()} till goal"),
                   Text("🏖 ${todayRestDuration.toShortHmsString()}"),
                 ],
               ),

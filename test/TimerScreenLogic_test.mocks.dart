@@ -255,6 +255,10 @@ class MockSettings extends _i1.Mock implements _i8.Settings {
       (super.noSuchMethod(Invocation.getter(#dayHoursOffset), returnValue: 0)
           as int);
   @override
+  int get targetWorkingMinutes =>
+      (super.noSuchMethod(Invocation.getter(#targetWorkingMinutes),
+          returnValue: 0) as int);
+  @override
   bool get hasListeners =>
       (super.noSuchMethod(Invocation.getter(#hasListeners), returnValue: false)
           as bool);
@@ -284,6 +288,12 @@ class MockSettings extends _i1.Mock implements _i8.Settings {
   void setDayHoursOffset(int? newDayHoursOffset) => super.noSuchMethod(
       Invocation.method(#setDayHoursOffset, [newDayHoursOffset]),
       returnValueForMissingStub: null);
+  @override
+  void setTargetWorkingMinutes(int? newTargetWorkingMinutes) =>
+      super.noSuchMethod(
+          Invocation.method(
+              #setTargetWorkingMinutes, [newTargetWorkingMinutes]),
+          returnValueForMissingStub: null);
   @override
   String toString() => super.toString();
   @override
