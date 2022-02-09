@@ -30,6 +30,7 @@ dependencies:
   get: ^4.3.8
   mocktail: ^0.1.4
   confetti: ^0.6.0
+  avo_inspector: ^0.9.10
 
 dev_dependencies:
   dart_code_metrics: ^4.1.0

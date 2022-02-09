@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:avo_inspector/avo_batcher.dart';
+import 'package:avo_inspector/avo_inspector.dart';
 import 'package:cododoro/models/ElapsedTimeModel.dart';
 import 'package:cododoro/storage/HistoryRepository.dart';
 import 'package:cododoro/storage/ThemeSettings.dart';
@@ -30,6 +32,7 @@ Future<void> _configureLocalTimeZone() async {
 }
 
 MixpanelAnalytics? mixpanel;
+AvoInspector? avoInspector;
 
 Future<bool> mixpanelTrack(
     {required String eventName, Map<String, dynamic> params = const {}}) async {
@@ -42,9 +45,16 @@ Future<bool> mixpanelTrack(
 
   final os = Platform.instance.operatingSystem.toString().split('.').last;
 
-  return mixpanel?.track(
-          event: eventName,
-          properties: {"distinct_id": deviceId, "OS": os}..addAll(params)) ??
+  return mixpanel
+          ?.track(
+              event: eventName,
+              properties: {"distinct_id": deviceId, "OS": os}..addAll(params))
+          .then((value) {
+        avoInspector?.trackSchemaFromEvent(
+            eventName: eventName, eventProperties: params);
+
+        return value;
+      }) ??
       Future.value(false);
 }
 
@@ -71,6 +81,12 @@ void main() async {
     macOS: initializationSettingsMacOS,
   );
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  avoInspector = await AvoInspector.create(
+      apiKey: "YwFVkbijwhINH1mv3JED",
+      env: AvoInspectorEnv.dev,
+      appVersion: "1.0",
+      appName: "Flutter test");
 
   runApp(MyApp());
 }
