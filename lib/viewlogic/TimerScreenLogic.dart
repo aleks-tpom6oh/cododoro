@@ -13,6 +13,7 @@ import 'package:confetti/confetti.dart';
 
 import '../utils.dart';
 import 'StandTimeRemaining.dart';
+import 'isDayChangeOnTick.dart';
 
 BaseNotifier soundNotifier = SoundNotifier();
 
@@ -69,6 +70,10 @@ void tick(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
         timerModel, settings, history, isStanding, onReachedStandingGoal);
 
     await handleOvertime(timerModel, elapsedTimeModel, settings);
+  }
+
+  if (isDayChangeOnTick(DateTime.now(), history.prefs)) {
+    stopSession(elapsedTimeModel, timerModel, history);
   }
 }
 
