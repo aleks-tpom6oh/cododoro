@@ -4,6 +4,7 @@ import 'package:cododoro/models/TimerStates.dart';
 import 'package:cododoro/storage/HistoryRepository.dart';
 import 'package:cododoro/storage/Settings.dart';
 import 'package:cododoro/viewlogic/TimerScreenLogic.dart' as TimerScreenLogic;
+import 'package:cododoro/viewlogic/isDayChangeOnTick.dart';
 import 'package:flutter/material.dart';
 import 'package:mockito/annotations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +13,26 @@ import 'package:mockito/mockito.dart';
 
 import 'TimerScreenLogic_test.mocks.dart';
 import 'TimerScreen_test.mocks.dart';
+
+class AlwaysTrueIsDayChangeOnTick implements IsDayChangeOnTick {
+  @override
+  DateTime lastTickTime = DateTime.now();
+
+  @override
+  isDayChangeOnTick(DateTime newTickTime, SharedPreferences prefs) {
+    return true;
+  }
+}
+
+class AlwaysFalseIsDayChangeOnTick implements IsDayChangeOnTick {
+  @override
+  DateTime lastTickTime = DateTime.now();
+
+  @override
+  isDayChangeOnTick(DateTime newTickTime, SharedPreferences prefs) {
+    return false;
+  }
+}
 
 @GenerateMocks([ElapsedTimeModel, TimerStateModel, HistoryRepository, Settings])
 void main() {
@@ -34,6 +55,7 @@ void main() {
         mockSettings,
         prefs,
         isStanding: false,
+        isDayChangeOnTick: AlwaysFalseIsDayChangeOnTick(),
         // ignore: no-empty-block
         onReachedStandingGoal: () {});
 
@@ -80,11 +102,88 @@ void main() {
           mockSettings,
           prefs,
           isStanding: false,
+          isDayChangeOnTick: AlwaysFalseIsDayChangeOnTick(),
           // ignore: no-empty-block
           onReachedStandingGoal: () {});
     } catch (e) {}
 
     verify(mockElapsedTimeModel.onTick(addTime: true));
+  });
+
+  test('Tick stops session on day changed', () async {
+    // Given
+    ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
+    TimerStateModel mockTimerModel = MockTimerStateModel();
+    HistoryRepository mockHistoryRepo = MockHistoryRepository();
+    Settings mockSettings = MockSettings();
+    SharedPreferences.setMockInitialValues({});
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    when(mockTimerModel.isRunning()).thenReturn(true);
+    when(mockTimerModel.isWorking).thenReturn(true);
+    when(mockSettings.standingDesk).thenAnswer((_) => true);
+    when(mockSettings.targetStandingMinutes)
+        .thenAnswer((_) => 100);
+    when(mockHistoryRepo.getTodayIntervals())
+        .thenAnswer((_) => []);
+    when(mockTimerModel.state).thenReturn(TimerStates.sessionWorking);
+    when(mockTimerModel.isRunning()).thenReturn(false);
+    when(mockElapsedTimeModel.elapsedTime).thenReturn(0);
+
+    // When
+    TimerScreenLogic.tick(
+        // ignore: no-empty-block
+        mockElapsedTimeModel,
+        mockTimerModel,
+        mockHistoryRepo,
+        mockSettings,
+        prefs,
+        isStanding: false,
+        isDayChangeOnTick: AlwaysTrueIsDayChangeOnTick(),
+        // ignore: no-empty-block
+        onReachedStandingGoal: () {});
+
+    // Then
+    verify(mockTimerModel.state = TimerStates.noSession);
+  });
+
+  test('Tick does not stop session on day changed', () async {
+    // Given
+    ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
+    TimerStateModel mockTimerModel = MockTimerStateModel();
+    HistoryRepository mockHistoryRepo = MockHistoryRepository();
+    Settings mockSettings = MockSettings();
+    SharedPreferences.setMockInitialValues({});
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    when(mockTimerModel.isRunning()).thenReturn(true);
+    when(mockTimerModel.isWorking).thenReturn(true);
+    when(mockSettings.standingDesk).thenAnswer((_) => true);
+    when(mockSettings.targetStandingMinutes)
+        .thenAnswer((_) => 100);
+    when(mockHistoryRepo.getTodayIntervals())
+        .thenAnswer((_) => []);
+    when(mockTimerModel.state).thenReturn(TimerStates.sessionWorking);
+    when(mockTimerModel.isRunning()).thenReturn(false);
+    when(mockElapsedTimeModel.elapsedTime).thenReturn(0);
+
+    // When
+    try {
+      TimerScreenLogic.tick(
+          // ignore: no-empty-block
+          mockElapsedTimeModel,
+          mockTimerModel,
+          mockHistoryRepo,
+          mockSettings,
+          prefs,
+          isStanding: false,
+          isDayChangeOnTick: AlwaysFalseIsDayChangeOnTick(),
+          // ignore: no-empty-block
+          onReachedStandingGoal: () {});
+    } catch (e) {}
+
+    // Then
+    verifyNever(mockTimerModel.state = TimerStates.noSession);
   });
 
   test('Start session does nothing if session is there', () {

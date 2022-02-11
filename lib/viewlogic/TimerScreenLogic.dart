@@ -61,7 +61,7 @@ String getNotificationSound(TimerStateModel timerModel) {
 void tick(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
     HistoryRepository history, Settings settings, SharedPreferences prefs,
     {required bool isStanding,
-    required Function() onReachedStandingGoal}) async {
+    required Function() onReachedStandingGoal, required IsDayChangeOnTick isDayChangeOnTick}) async {
   elapsedTimeModel.onTick(addTime: timerModel.isRunning());
 
   syncSession(elapsedTimeModel, history, timerModel);
@@ -73,7 +73,7 @@ void tick(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
     await handleOvertime(timerModel, elapsedTimeModel, settings);
   }
 
-  if (isDayChangeOnTick(DateTime.now(), prefs)) {
+  if (isDayChangeOnTick.isDayChangeOnTick(DateTime.now(), prefs)) {
     stopSession(elapsedTimeModel, timerModel, history);
   }
 }

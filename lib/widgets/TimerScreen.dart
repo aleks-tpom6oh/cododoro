@@ -4,6 +4,7 @@ import 'package:cododoro/main.dart';
 import 'package:cododoro/models/VolumeController.dart';
 import 'package:cododoro/onboarding/OnboardingConfig.dart';
 import 'package:cododoro/onboarding/OnboardingTour.dart';
+import 'package:cododoro/viewlogic/isDayChangeOnTick.dart';
 import 'package:cododoro/widgets/dialogs/RestIdeasDialog.dart';
 import 'package:cododoro/widgets/SitStandButton.dart';
 import 'package:cododoro/widgets/StandGoalTimer.dart';
@@ -70,8 +71,9 @@ class _TimerScreenState extends State<TimerScreen>
     final settings = context.read<Settings>();
 
     logic.tick(elapsedTimeModel, timerModel, historyRepository, settings,
-        historyRepository.prefs, isStanding: _isStanding,
-        onReachedStandingGoal: () {
+        historyRepository.prefs,
+        isStanding: _isStanding,
+        isDayChangeOnTick: IsDayChangeOnTick(), onReachedStandingGoal: () {
       standingGoalReachedDialogDelayTimer =
           new Timer(new Duration(seconds: 4), () async {
         await showDialog<void>(
