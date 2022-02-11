@@ -3,10 +3,10 @@ import 'package:cododoro/models/TimerStates.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('timerModel initial state is noSession', () {
+  test('timerModel initial state is sessionWorking', () {
     final timerModel = TimerStateModel();
 
-    expect(timerModel.state, TimerStates.noSession);
+    expect(timerModel.state, TimerStates.sessionWorking);
   });
 
   test('timerModel pause', () {
@@ -27,15 +27,18 @@ void main() {
   test('timerModel isRunning', () {
     final timerModel = TimerStateModel();
 
-    expect(timerModel.isRunning(), false);
-
-    timerModel.state = TimerStates.sessionWorking;
-
     expect(timerModel.isRunning(), true);
 
     timerModel.pauseResume();
 
     expect(timerModel.isRunning(), false);
+
+    timerModel.pauseResume();
+
+    expect(timerModel.isRunning(), true);
+
+    timerModel.state = TimerStates.noSession;
+
+    expect(timerModel.isRunning(), false);
   });
-  
 }

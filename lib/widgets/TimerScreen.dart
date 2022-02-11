@@ -70,7 +70,8 @@ class _TimerScreenState extends State<TimerScreen>
     final settings = context.read<Settings>();
 
     logic.tick(elapsedTimeModel, timerModel, historyRepository, settings,
-        isStanding: _isStanding, onReachedStandingGoal: () {
+        historyRepository.prefs, isStanding: _isStanding,
+        onReachedStandingGoal: () {
       standingGoalReachedDialogDelayTimer =
           new Timer(new Duration(seconds: 4), () async {
         await showDialog<void>(
@@ -326,7 +327,8 @@ class _TimerScreenState extends State<TimerScreen>
                           children: [
                             seeStatsButton(),
                             SizedBox(height: 8),
-                            WorkRestTimer(showIdleScreen: widget.showIdleScreen),
+                            WorkRestTimer(
+                                showIdleScreen: widget.showIdleScreen),
                           ],
                         )),
                     Container(

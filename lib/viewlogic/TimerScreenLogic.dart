@@ -10,6 +10,7 @@ import 'package:cododoro/storage/HistoryRepository.dart';
 import 'package:cododoro/storage/NotificationsSchedule.dart';
 import 'package:cododoro/storage/Settings.dart';
 import 'package:confetti/confetti.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils.dart';
 import 'StandTimeRemaining.dart';
@@ -58,7 +59,7 @@ String getNotificationSound(TimerStateModel timerModel) {
 }
 
 void tick(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
-    HistoryRepository history, Settings settings,
+    HistoryRepository history, Settings settings, SharedPreferences prefs,
     {required bool isStanding,
     required Function() onReachedStandingGoal}) async {
   elapsedTimeModel.onTick(addTime: timerModel.isRunning());
@@ -72,7 +73,7 @@ void tick(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
     await handleOvertime(timerModel, elapsedTimeModel, settings);
   }
 
-  if (isDayChangeOnTick(DateTime.now(), history.prefs)) {
+  if (isDayChangeOnTick(DateTime.now(), prefs)) {
     stopSession(elapsedTimeModel, timerModel, history);
   }
 }
@@ -319,13 +320,13 @@ void nextStage(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
 }
 
 void timerScreenInitState(HistoryRepository history) {
+  history.startSession(IntervalType.work);
+
   confetti = ConfettiController(duration: const Duration(seconds: 10));
 
   soundNotifier = SoundNotifier();
 
   notifiers = [soundNotifier, LocalNotificationsNotifier()];
-
-  history.startSession(IntervalType.work);
 }
 
 void timeScreenDispose() {

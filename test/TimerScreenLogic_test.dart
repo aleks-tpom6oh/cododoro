@@ -4,7 +4,9 @@ import 'package:cododoro/models/TimerStates.dart';
 import 'package:cododoro/storage/HistoryRepository.dart';
 import 'package:cododoro/storage/Settings.dart';
 import 'package:cododoro/viewlogic/TimerScreenLogic.dart' as TimerScreenLogic;
+import 'package:flutter/material.dart';
 import 'package:mockito/annotations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -13,11 +15,13 @@ import 'TimerScreen_test.mocks.dart';
 
 @GenerateMocks([ElapsedTimeModel, TimerStateModel, HistoryRepository, Settings])
 void main() {
-  test('Tick when timer is not running does not increase the elapsed time', () {
+  test('Tick when timer is not running does not increase the elapsed time', () async {
     ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
     TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
     Settings mockSettings = MockSettings();
+    SharedPreferences.setMockInitialValues({});
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     when(mockTimerModel.isRunning()).thenReturn(false);
     when(mockTimerModel.isWorking).thenReturn(false);
@@ -28,18 +32,34 @@ void main() {
         mockTimerModel,
         mockHistoryRepo,
         mockSettings,
+        prefs,
         isStanding: false,
         // ignore: no-empty-block
         onReachedStandingGoal: () {});
 
     verify(mockElapsedTimeModel.onTick(addTime: false));
   });
+  
+  test('Starts work session on init', () {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  test('Tick when timer is running does increase the elapsed time', () {
+    // Given
+    HistoryRepository mockHistoryRepo = MockHistoryRepository();
+
+    // When
+    TimerScreenLogic.timerScreenInitState(mockHistoryRepo);
+
+    // Then
+    verify(mockHistoryRepo.startSession(IntervalType.work));
+  });
+
+  test('Tick when timer is running does increase the elapsed time', () async {
     ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
     TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
     Settings mockSettings = MockSettings();
+    SharedPreferences.setMockInitialValues({});
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     when(mockTimerModel.isRunning()).thenReturn(true);
     when(mockTimerModel.isWorking).thenReturn(true);
@@ -58,6 +78,7 @@ void main() {
           mockTimerModel,
           mockHistoryRepo,
           mockSettings,
+          prefs,
           isStanding: false,
           // ignore: no-empty-block
           onReachedStandingGoal: () {});
