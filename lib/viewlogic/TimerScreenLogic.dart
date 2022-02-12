@@ -63,7 +63,8 @@ String getNotificationSound(TimerStateModel timerModel) {
 void tick(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
     HistoryRepository history, Settings settings, SharedPreferences prefs,
     {required bool isStanding,
-    required Function() onReachedStandingGoal, required IsDayChangeOnTick isDayChangeOnTick}) async {
+    required Function() onReachedStandingGoal,
+    required IsDayChangeOnTick isDayChangeOnTick}) async {
   elapsedTimeModel.onTick(addTime: timerModel.isRunning());
 
   syncSession(elapsedTimeModel, history, timerModel);
@@ -80,8 +81,12 @@ void tick(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
   }
 }
 
-void onOnboardingConfigLoaded(OnboardingConfig config, ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
-    HistoryRepository history, bool isStanding) {
+void onOnboardingConfigLoaded(
+    OnboardingConfig config,
+    ElapsedTimeModel elapsedTimeModel,
+    TimerStateModel timerModel,
+    HistoryRepository history,
+    bool isStanding) {
   if (config.stepShown >= 1) {
     nextStage(elapsedTimeModel, timerModel, history, isStanding);
   }
@@ -124,26 +129,22 @@ Future<void> notifyIfStandingGoalReached(
     HistoryRepository history,
     bool isStanding,
     Function() onReachedStandingGoal) async {
-  if (timerModel.isWorking &&
-      isStanding &&
-      (_previousStandTimeTillGoal == null ||
-          _previousStandTimeTillGoal! >= Duration(seconds: 0))) {
-    final hasStandingDesk = settings.standingDesk;
+  final hasStandingDesk = settings.standingDesk;
 
-    if (hasStandingDesk) {
-      final newStandTimeTillGoal =
-          calculateRemainingStandTime(history, settings);
-
-      if (newStandTimeTillGoal < Duration(seconds: 0)) {
-        confetti.play();
-        await _notifyAll("🎉 Congrats, you've reached your daily standing goal",
-            soundPath: 'assets/audio/endingsound.mp3');
-        onReachedStandingGoal();
-      }
-
-      _previousStandTimeTillGoal = newStandTimeTillGoal;
+  if (hasStandingDesk) {
+    final newStandTimeTillGoal = calculateRemainingStandTime(history, settings);
+    if (timerModel.isWorking &&
+        isStanding &&
+        (_previousStandTimeTillGoal == null ||
+            _previousStandTimeTillGoal! >= Duration(seconds: 0)) &&
+        newStandTimeTillGoal < Duration(seconds: 0)) {
+      confetti.play();
+      await _notifyAll("🎉 Congrats, you've reached your daily standing goal",
+          soundPath: 'assets/audio/endingsound.mp3');
+      onReachedStandingGoal();
     }
-    ;
+
+    _previousStandTimeTillGoal = newStandTimeTillGoal;
   }
 }
 
