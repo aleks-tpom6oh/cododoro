@@ -28,7 +28,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'TimeCounter.dart';
 import 'dart:async';
 
-import '../models/TimerModel.dart';
+import '../models/TimerStateModel.dart';
 import '../models/TimerStates.dart';
 import '../viewlogic/TimerScreenLogic.dart' as logic;
 
@@ -115,7 +115,7 @@ class _TimerScreenState extends State<TimerScreen>
 
   @override
   void initState() {
-    logic.timerScreenInitState(context.read<HistoryRepository>());
+    logic.timerScreenInitState();
 
     if (!kIsWeb) {
       spawnIsolate();
@@ -132,6 +132,19 @@ class _TimerScreenState extends State<TimerScreen>
       onboardingConfig.init().then((initializedOnboardingConfig) {
         _onboardingTour = OnboardingTour(initializedOnboardingConfig);
         _onboardingTour?.startOnboardingTour(context);
+
+        final timerModel = context.read<TimerStateModel>();
+        final elapsedTimeModel = context.read<ElapsedTimeModel>();
+        final historyRepository = context.read<HistoryRepository>();
+
+        logic.onOnboardingConfigLoaded(
+            initializedOnboardingConfig,
+            elapsedTimeModel,
+            timerModel,
+            historyRepository,
+            _isStanding);
+
+
       });
     });
   }

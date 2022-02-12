@@ -1,5 +1,5 @@
 import 'package:cododoro/models/ElapsedTimeModel.dart';
-import 'package:cododoro/models/TimerModel.dart';
+import 'package:cododoro/models/TimerStateModel.dart';
 import 'package:cododoro/onboarding/OnboardingConfig.dart';
 import 'package:cododoro/onboarding/OnboardingUtils.dart';
 import 'package:cododoro/storage/HistoryRepository.dart';

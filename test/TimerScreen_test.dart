@@ -7,7 +7,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
-import 'package:cododoro/models/TimerModel.dart';
+import 'package:cododoro/models/TimerStateModel.dart';
 import 'package:cododoro/storage/HistoryRepository.dart';
 
 import 'package:cododoro/viewlogic/TimerScreenLogic.dart' as logic;

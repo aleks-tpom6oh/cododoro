@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:cododoro/models/ElapsedTimeModel.dart';
-import 'package:cododoro/models/TimerModel.dart';
+import 'package:cododoro/models/TimerStateModel.dart';
 import 'package:cododoro/models/TimerStates.dart';
 import 'package:cododoro/notifiers/BaseNotifier.dart';
 import 'package:cododoro/notifiers/LocalNotificationsNotifier.dart';
 import 'package:cododoro/notifiers/SoundNotifier.dart';
+import 'package:cododoro/onboarding/OnboardingConfig.dart';
+import 'package:cododoro/onboarding/OnboardingTour.dart';
 import 'package:cododoro/storage/HistoryRepository.dart';
 import 'package:cododoro/storage/NotificationsSchedule.dart';
 import 'package:cododoro/storage/Settings.dart';
@@ -75,6 +77,13 @@ void tick(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
 
   if (isDayChangeOnTick.isDayChangeOnTick(DateTime.now(), prefs)) {
     stopSession(elapsedTimeModel, timerModel, history);
+  }
+}
+
+void onOnboardingConfigLoaded(OnboardingConfig config, ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
+    HistoryRepository history, bool isStanding) {
+  if (config.stepShown >= 1) {
+    nextStage(elapsedTimeModel, timerModel, history, isStanding);
   }
 }
 
@@ -319,9 +328,7 @@ void nextStage(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
   timerModel.forceResume();
 }
 
-void timerScreenInitState(HistoryRepository history) {
-  history.startSession(IntervalType.work);
-
+void timerScreenInitState() {
   confetti = ConfettiController(duration: const Duration(seconds: 10));
 
   soundNotifier = SoundNotifier();
