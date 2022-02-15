@@ -60,6 +60,7 @@ class _TimerScreenState extends State<TimerScreen>
     setState(() {
       _isSoundOn = !_isSoundOn;
       volumeController.isSoundOn = _isSoundOn;
+      logic.stopAllSounds();
     });
   }
 

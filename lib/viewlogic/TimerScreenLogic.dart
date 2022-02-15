@@ -7,7 +7,6 @@ import 'package:cododoro/notifiers/BaseNotifier.dart';
 import 'package:cododoro/notifiers/LocalNotificationsNotifier.dart';
 import 'package:cododoro/notifiers/SoundNotifier.dart';
 import 'package:cododoro/onboarding/OnboardingConfig.dart';
-import 'package:cododoro/onboarding/OnboardingTour.dart';
 import 'package:cododoro/storage/HistoryRepository.dart';
 import 'package:cododoro/storage/NotificationsSchedule.dart';
 import 'package:cododoro/storage/Settings.dart';
@@ -342,4 +341,11 @@ void timeScreenDispose() {
   notifiers.forEach((element) {
     element.dispose();
   });
+}
+
+void stopAllSounds() {
+  notifiers.remove(soundNotifier);
+  soundNotifier.dispose();
+  soundNotifier = SoundNotifier();
+  notifiers.add(soundNotifier);
 }
