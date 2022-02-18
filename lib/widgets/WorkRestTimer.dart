@@ -1,4 +1,6 @@
+import 'package:cododoro/models/ElapsedTimeModel.dart';
 import 'package:cododoro/storage/Settings.dart';
+import 'package:cododoro/viewlogic/WorkTimeGoalEstimate.dart';
 import 'package:cododoro/viewlogic/WorkTimeRemaining.dart';
 import 'package:flutter/material.dart';
 import 'package:cododoro/storage/HistoryRepository.dart';
@@ -19,6 +21,7 @@ class _WorkRestTimerState extends State<WorkRestTimer> {
   Widget build(BuildContext context) {
     final historyRepository = context.watch<HistoryRepository>();
     final settings = context.read<Settings>();
+    context.watch<ElapsedTimeModel>();
 
     final Iterable<StoredInterval>? todayIntervals =
         historyRepository.getTodayIntervals();
@@ -31,6 +34,9 @@ class _WorkRestTimerState extends State<WorkRestTimer> {
 
       Duration workTimeTillGoal =
           calculateRemainingWorkTime(historyRepository, settings);
+
+      DateTime estimatedEndTime =
+          estimateWorkGoalTime(historyRepository, settings, workTimeTillGoal);
 
       bool workTargetReached() {
         return workTimeTillGoal <= Duration(hours: 0);
@@ -66,8 +72,15 @@ class _WorkRestTimerState extends State<WorkRestTimer> {
                                     child: Text("End work for today")),
                               )
                             ])
-                      : Text(
-                          "💻 ${workTimeTillGoal.toShortHMString()} till goal"),
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                                "💻 ${workTimeTillGoal.toShortHMString()} till goal"),
+                            Text(
+                                "⏱ est. goal at ${estimatedEndTime.toHourMinutesTimestamp()}"),
+                          ],
+                        ),
                   Text("🏖 ${todayRestDuration.toShortHmsString()}"),
                 ],
               ),

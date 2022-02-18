@@ -15,6 +15,12 @@ extension TimePrinter on DateTime {
   String toDayTimestamp() {
     return this.toString().split(" ")[1].split(".")[0];
   }
+
+  String toHourMinutesTimestamp() {
+    final timeString =this.toString().split(" ")[1];
+  
+    return timeString.substring(0, timeString.lastIndexOf(":"));
+  }
 }
 
 extension DurationPrinter on Duration {

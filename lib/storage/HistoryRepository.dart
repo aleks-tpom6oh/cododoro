@@ -214,6 +214,19 @@ class HistoryRepository with ChangeNotifier {
 
     return todayIntervals.map((e) => StoredInterval.fromJson(json.decode(e)));
   }
+
+  StoredInterval? getLatestPomodoroInterval() {
+    final pomodoroIntervals = getTodayIntervals().where((element) =>
+        element.type == IntervalType.work || element.type == IntervalType.rest);
+
+    if (pomodoroIntervals.isEmpty) {
+      return null;
+    } else {
+      return pomodoroIntervals.reduce((value, element) {
+        return element.endTime.isAfter(value.endTime) ? element : value;
+      });
+    }
+  }
 }
 
 abstract class Interval {
