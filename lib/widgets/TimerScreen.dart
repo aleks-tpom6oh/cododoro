@@ -307,7 +307,7 @@ class _TimerScreenState extends State<TimerScreen>
     return Scaffold(
         backgroundColor: backgroundColor(context, watchTimerStateModel),
         appBar: AppBar(
-          title: const Text('cododoro'),
+          title: const Text('Pomodoro Code'),
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 16),

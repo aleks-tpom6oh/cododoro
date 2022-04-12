@@ -1,6 +1,6 @@
 {
-  "name": "Cododoro App",
-  "short_name": "Cododoro App",
+  "name": "Pomodoro Code",
+  "short_name": "Pomodoro Code",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#0175C2",

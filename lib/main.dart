@@ -171,7 +171,7 @@ class _MyAppState extends State<MyApp> {
           ChangeNotifierProvider(create: (context) => themeSettings)
         ],
         child: MaterialApp(
-            title: 'Cododoro App',
+            title: 'Pomodoro Code',
             theme: _themeSetting == ThemeSetting.dark ? darkTheme : lightTheme,
             darkTheme:
                 _themeSetting == ThemeSetting.light ? lightTheme : darkTheme,

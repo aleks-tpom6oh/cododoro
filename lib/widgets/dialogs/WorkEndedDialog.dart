@@ -51,7 +51,7 @@ class _WorkEndedDialogState extends State<WorkEndedDialog> {
         : Color(0xFF587FA8);
 
     return AlertDialog(
-      title: Text("Congrats, another Cododoro completed!"),
+      title: Text("Congrats, another work interval completed!"),
       content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,7 +67,7 @@ class _WorkEndedDialogState extends State<WorkEndedDialog> {
                           fontSize: 18),
                       children: [
                     TextSpan(
-                      text: ' of pure work today',
+                      text: ' of focus work today',
                       style: TextStyle(
                         color: textColor,
                       ),

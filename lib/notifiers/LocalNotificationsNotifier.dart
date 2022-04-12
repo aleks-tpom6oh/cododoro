@@ -21,7 +21,7 @@ class LocalNotificationsNotifier implements BaseNotifier {
     const String groupChannelId = 'cododoro-2';
     const String groupChannelName = 'time notifications';
     const String groupChannelDescription =
-        'channel for cododoro time notifications';
+        'channel for pomodoro code time notifications';
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
             groupChannelId, groupChannelName, groupChannelDescription,
@@ -36,6 +36,6 @@ class LocalNotificationsNotifier implements BaseNotifier {
         android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.show(
-        0, 'Cododoro', message, notificationDetails);
+        0, 'Pomodoro Code', message, notificationDetails);
   }
 }
