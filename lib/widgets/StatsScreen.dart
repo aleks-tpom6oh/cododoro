@@ -27,7 +27,7 @@ class _StatsScreenState extends State<StatsScreen> {
       ),
       body: Center(
           child: Selector<ElapsedTimeModel, int>(
-        selector: (_, elapsedTimeModel) => elapsedTimeModel.elapsedTime,
+        selector: (_, elapsedTimeModel) => Duration(seconds: elapsedTimeModel.elapsedTime).inMinutes,
         builder: (_, __, ___) {
           final historyRepository = context.watch<HistoryRepository>();
 
@@ -75,15 +75,15 @@ class _StatsScreenState extends State<StatsScreen> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text("💻 Worked for ${workDuration.toHmsString()}"),
+              child: Text("💻 Worked for ${workDuration.toShortHMString()}"),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text("🏖 Rested for ${restDuration.toHmsString()}"),
+              child: Text("🏖 Rested for ${restDuration.toShortHMString()}"),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text("🧍 Stood for ${standingDuration.toMsString()}"),
+              child: Text("🧍 Stood for ${standingDuration.toShortHMString()}"),
             ),
             StatsListToggleButton(onToggle: (listState) {
               setState(() {
@@ -202,7 +202,7 @@ class _StatsScreenState extends State<StatsScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8.0, vertical: 18.0),
                       child: Text(
-                          'You did ${interval.type.toString().split('.').last} for ${interval.duration.toHmsString()}'),
+                          'You did ${interval.type.toString().split('.').last} for ${interval.duration.toShortHMString()}'),
                     ),
                   ),
                   Padding(

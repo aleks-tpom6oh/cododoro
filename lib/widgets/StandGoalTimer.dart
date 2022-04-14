@@ -1,9 +1,12 @@
+import 'package:cododoro/models/ElapsedTimeModel.dart';
 import 'package:cododoro/storage/HistoryRepository.dart';
 import 'package:cododoro/storage/Settings.dart';
 import 'package:cododoro/viewlogic/StandTimeRemaining.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cododoro/utils.dart';
+
+import 'dialogs/ShareStandingGoalReachedDialog.dart';
 
 class StandGoalTimer extends StatefulWidget {
   StandGoalTimer({Key? key, required this.standingDeskTrackingEnabled})
@@ -18,7 +21,8 @@ class StandGoalTimer extends StatefulWidget {
 class _StandGoalTimerState extends State<StandGoalTimer> {
   @override
   Widget build(BuildContext context) {
-    final historyRepository = context.watch<HistoryRepository>();
+    context.watch<ElapsedTimeModel>();
+    final historyRepository = context.read<HistoryRepository>();
     final settings = context.read<Settings>();
 
     Duration standTimeTillGoal =
@@ -31,9 +35,25 @@ class _StandGoalTimerState extends State<StandGoalTimer> {
     return widget.standingDeskTrackingEnabled
         ? Padding(
             padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8.0),
-            child: Text(standTargetReached()
-                ? "🎉 Goal reached"
-                : "🧍 ${standTimeTillGoal.toShortMsString()} left"))
+            child: Column(
+              children: standTargetReached()
+                  ? [
+                      Text("🎉 Goal reached"),
+                      TextButton(
+                          onPressed: () async {
+                            await showDialog<void>(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return ShareStandingGoalReachedDialog();
+                              },
+                            );
+                          },
+                          child: Text("Share"))
+                    ]
+                  : [
+                      Text("🧍 ${standTimeTillGoal.toShortMsString()} left"),
+                    ],
+            ))
         : SizedBox(width: 150);
   }
 }

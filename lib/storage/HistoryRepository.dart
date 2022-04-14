@@ -129,8 +129,6 @@ class HistoryRepository with ChangeNotifier {
 
       prefs.setStringList(
           dayKeyCache(time: endTime, prefs: prefs), todayIntervals);
-
-      notifyListeners();
     }
   }
 
@@ -156,8 +154,6 @@ class HistoryRepository with ChangeNotifier {
 
     prefs.setStringList(
         dayKeyCache(time: endTime, prefs: prefs), todayIntervals);
-
-    notifyListeners();
   }
 
   void toggleSessionType(Interval interval) {
