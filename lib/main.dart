@@ -27,8 +27,15 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 Future<void> _configureLocalTimeZone() async {
   tz.initializeTimeZones();
-  final String? timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
-  tz.setLocalLocation(tz.getLocation(timeZoneName!));
+  String? timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
+
+  if (timeZoneName == "America/Buenos_Aires") {
+    timeZoneName = "America/Argentina/Buenos_Aires";
+  } else if (!tz.timeZoneDatabase.locations.containsKey(timeZoneName)) {
+    timeZoneName = "Atlantic/Reykjavik";
+  }
+
+  tz.setLocalLocation(tz.getLocation(timeZoneName));
 }
 
 MixpanelAnalytics? mixpanel;
