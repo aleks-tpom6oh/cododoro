@@ -49,12 +49,14 @@ class TimerScreen extends StatefulWidget {
 }
 
 class _TimerScreenState extends State<TimerScreen>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
   bool _isSoundOn = volumeController.isSoundOn;
   bool _isStanding = false;
   bool _initialButtonsExpended = false;
 
   OnboardingTour? _onboardingTour;
+
+  late final AnimationController _revealAnimation;
 
   void toggleSound() {
     setState(() {
@@ -62,6 +64,17 @@ class _TimerScreenState extends State<TimerScreen>
       volumeController.isSoundOn = _isSoundOn;
       logic.stopAllSounds();
     });
+  }
+
+  void _animateSessionInfo(Function action) {
+    _revealAnimation.reverse().then((_) {
+      _fadeInSessionInfo();
+      action.call();
+    });
+  }
+
+  void _fadeInSessionInfo() {
+    _revealAnimation.forward();
   }
 
   Timer? standingGoalReachedDialogDelayTimer;
@@ -126,6 +139,13 @@ class _TimerScreenState extends State<TimerScreen>
     }
 
     super.initState();
+
+    _revealAnimation = AnimationController(
+      value: 0.0,
+      duration: const Duration(milliseconds: 100),
+      vsync: this,
+    );
+
     clearOldHistory();
 
     Future.delayed(Duration.zero, () {
@@ -138,14 +158,8 @@ class _TimerScreenState extends State<TimerScreen>
         final elapsedTimeModel = context.read<ElapsedTimeModel>();
         final historyRepository = context.read<HistoryRepository>();
 
-        logic.onOnboardingConfigLoaded(
-            initializedOnboardingConfig,
-            elapsedTimeModel,
-            timerModel,
-            historyRepository,
-            _isStanding);
-
-
+        logic.onOnboardingConfigLoaded(initializedOnboardingConfig,
+            elapsedTimeModel, timerModel, historyRepository, _isStanding);
       });
     });
   }
@@ -202,8 +216,10 @@ class _TimerScreenState extends State<TimerScreen>
         );
       }
 
-      logic.nextStage(
-          elapsedTimeModel, timerModel, historyRepository, _isStanding);
+      _animateSessionInfo(() {
+        logic.nextStage(
+            elapsedTimeModel, timerModel, historyRepository, _isStanding);
+      });
     };
 
     return nextStage;
@@ -267,7 +283,9 @@ class _TimerScreenState extends State<TimerScreen>
     return FloatingActionButton(
       heroTag: "pause-resume-fab",
       onPressed: () {
-        logic.pauseResume(watchTimerModel);
+        _animateSessionInfo(() {
+          logic.pauseResume(watchTimerModel);
+        });
       },
       child:
           watchTimerModel.isPaused ? Icon(Icons.play_arrow) : Icon(Icons.pause),
@@ -392,51 +410,54 @@ class _TimerScreenState extends State<TimerScreen>
               ],
             ),
             Center(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                settings.showCuteCats
-                    ? Image.asset(
-                        logic.currentStateGifPath(watchTimerStateModel),
-                        height: 225.0,
-                        width: 225.0,
-                      )
-                    : SizedBox(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(stateLabel(watchTimerStateModel),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 32, fontWeight: FontWeight.normal)),
-                    ),
-                    watchTimerStateModel.isResting ||
-                            watchTimerStateModel.isChilling
-                        ? ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: Theme.of(context)
-                                  .textTheme
-                                  .bodyText2
-                                  ?.color, // background
-                            ),
-                            onPressed: () {
-                              showDialog<void>(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return RestIdeasDialog();
-                                },
-                              );
-                            },
-                            child: Text("Exercises"))
-                        : SizedBox(),
-                  ],
-                ),
-                watchTimerStateModel.isChilling
-                    ? SizedBox(height: 44)
-                    : TimerCounter(),
-              ],
+                child: FadeTransition(
+              opacity: _revealAnimation,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  settings.showCuteCats
+                      ? Image.asset(
+                          logic.currentStateGifPath(watchTimerStateModel),
+                          height: 225.0,
+                          width: 225.0,
+                        )
+                      : SizedBox(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(stateLabel(watchTimerStateModel),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 32, fontWeight: FontWeight.normal)),
+                      ),
+                      watchTimerStateModel.isResting ||
+                              watchTimerStateModel.isChilling
+                          ? ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Theme.of(context)
+                                    .textTheme
+                                    .bodyText2
+                                    ?.color, // background
+                              ),
+                              onPressed: () {
+                                showDialog<void>(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return RestIdeasDialog();
+                                  },
+                                );
+                              },
+                              child: Text("Exercises"))
+                          : SizedBox(),
+                    ],
+                  ),
+                  watchTimerStateModel.isChilling
+                      ? SizedBox(height: 44)
+                      : TimerCounter(),
+                ],
+              ),
             )),
             Align(
               alignment: Alignment.bottomLeft,
@@ -476,19 +497,23 @@ class _TimerScreenState extends State<TimerScreen>
             collapsedIcon: Icon(Icons.timer_off),
             distance: 112.0,
             onExpand: () {
-              var timerModel = context.read<TimerStateModel>();
-              var elapsedTimeModel = context.read<ElapsedTimeModel>();
-              final historyRepository = context.read<HistoryRepository>();
-              logic.startWorkSession(
-                  elapsedTimeModel, timerModel, historyRepository);
-              _onboardingTour?.moveToSecondOnboardingTourStep(context);
+              _animateSessionInfo(() {
+                var timerModel = context.read<TimerStateModel>();
+                var elapsedTimeModel = context.read<ElapsedTimeModel>();
+                final historyRepository = context.read<HistoryRepository>();
+                logic.startWorkSession(
+                    elapsedTimeModel, timerModel, historyRepository);
+                _onboardingTour?.moveToSecondOnboardingTourStep(context);
+              });
             },
             onCollapse: () {
-              final timerModel = context.read<TimerStateModel>();
-              final elapsedTimeModel = context.read<ElapsedTimeModel>();
-              final historyRepository = context.read<HistoryRepository>();
-              logic.stopSession(
-                  elapsedTimeModel, timerModel, historyRepository);
+              _animateSessionInfo(() {
+                final timerModel = context.read<TimerStateModel>();
+                final elapsedTimeModel = context.read<ElapsedTimeModel>();
+                final historyRepository = context.read<HistoryRepository>();
+                logic.stopSession(
+                    elapsedTimeModel, timerModel, historyRepository);
+              });
             },
             children: [proceedStageFab(), pauseResumeFab()]));
   }
@@ -499,6 +524,7 @@ class _TimerScreenState extends State<TimerScreen>
     tickTimer?.cancel();
     logic.timeScreenDispose();
     standingGoalReachedDialogDelayTimer?.cancel();
+    _revealAnimation.dispose();
     super.dispose();
   }
 

@@ -28,10 +28,12 @@ class FloatingActionButtons extends StatefulWidget {
   _FloatingActionButtonsState createState() => _FloatingActionButtonsState();
 }
 
+final animationDuration = const Duration(milliseconds: 500);
+
 class _FloatingActionButtonsState extends State<FloatingActionButtons>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  late final Animation<double> _expandAnimation;
+  late final CurvedAnimation _expandAnimation;
 
   bool _initialOpen = false;
   bool _open = false;
@@ -42,13 +44,13 @@ class _FloatingActionButtonsState extends State<FloatingActionButtons>
     _initialOpen = widget.initiallyExpended;
     _open = widget.initiallyExpended;
     _controller = AnimationController(
-      value: _open ? 1.0 : 0.0,
-      duration: const Duration(milliseconds: 250),
+      value: 0.0,
+      duration: animationDuration,
       vsync: this,
     );
     _expandAnimation = CurvedAnimation(
-      curve: Curves.fastOutSlowIn,
-      reverseCurve: Curves.easeOutQuad,
+      curve: Curves.easeIn,
+      reverseCurve: Curves.easeOut,
       parent: _controller,
     );
   }
@@ -56,6 +58,7 @@ class _FloatingActionButtonsState extends State<FloatingActionButtons>
   @override
   void dispose() {
     _controller.dispose();
+    _expandAnimation.dispose();
     super.dispose();
   }
 
@@ -63,11 +66,17 @@ class _FloatingActionButtonsState extends State<FloatingActionButtons>
     setState(() {
       _open = !_open;
       if (_open) {
-        _controller.forward();
-        widget.onExpand();
+        _controller.forward().then((_) {
+          if (_expandAnimation.value == 1.0) {
+            widget.onExpand();
+          }
+        });
       } else {
-        _controller.reverse();
-        widget.onCollapse();
+        _controller.reverse().then((value) {
+          if (_expandAnimation.value == 0.0) {
+            widget.onCollapse();
+          }
+        });
       }
     });
   }
@@ -77,7 +86,7 @@ class _FloatingActionButtonsState extends State<FloatingActionButtons>
     if (_initialOpen != widget.initiallyExpended) {
       _initialOpen = widget.initiallyExpended;
       if (_open != _initialOpen) {
-        Future.delayed(Duration.zero, () {
+        Future.delayed(Duration(milliseconds: 550), () {
           _toggle();
         });
       }
@@ -99,8 +108,7 @@ class _FloatingActionButtonsState extends State<FloatingActionButtons>
     final step = 70.0;
 
     final children = <Widget>[
-      _ExpandingActionButton(
-        delay: 0.0,
+      _ExpandingActionButtonTransition(
         offset: count * step,
         progress: _expandAnimation,
         child: _buildTapToCloseFab(),
@@ -109,8 +117,7 @@ class _FloatingActionButtonsState extends State<FloatingActionButtons>
 
     for (var i = 0, offset = 0.0; i < count; i++, offset += step) {
       children.add(
-        _ExpandingActionButton(
-          delay: 0.3 * i,
+        _ExpandingActionButtonTransition(
           offset: offset,
           progress: _expandAnimation,
           child: widget.children[i],
@@ -125,12 +132,12 @@ class _FloatingActionButtonsState extends State<FloatingActionButtons>
     return AnimatedContainer(
         transformAlignment: Alignment.center,
         transform: Matrix4.diagonal3Values(0.7, 0.7, 1.0),
-        duration: const Duration(milliseconds: 250),
+        duration: animationDuration,
         curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
         child: AnimatedOpacity(
             opacity: 1.0,
             curve: const Interval(0.25, 1.0, curve: Curves.easeInOut),
-            duration: const Duration(milliseconds: 250),
+            duration: animationDuration,
             child: FloatingActionButton(
               heroTag: "collapse-fab",
               onPressed: _toggle,
@@ -144,12 +151,12 @@ class _FloatingActionButtonsState extends State<FloatingActionButtons>
       child: AnimatedContainer(
         transformAlignment: Alignment.center,
         transform: Matrix4.diagonal3Values(0.7, 0.7, 1.0),
-        duration: const Duration(milliseconds: 250),
+        duration: animationDuration,
         curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
         child: AnimatedOpacity(
           opacity: _open ? 0.0 : 1.0,
           curve: const Interval(0.25, 1.0, curve: Curves.easeInOut),
-          duration: const Duration(milliseconds: 250),
+          duration: animationDuration,
           child: FloatingActionButton(
             heroTag: "expand-fab",
             onPressed: _toggle,
@@ -162,47 +169,32 @@ class _FloatingActionButtonsState extends State<FloatingActionButtons>
 }
 
 @immutable
-class _ExpandingActionButton extends StatelessWidget {
-  _ExpandingActionButton({
+class _ExpandingActionButtonTransition extends AnimatedWidget {
+  const _ExpandingActionButtonTransition({
     Key? key,
-    required this.delay,
+    required Animation<double> progress,
     required this.offset,
-    required this.progress,
     required this.child,
-  }) : super(key: key);
+  }) : super(key: key, listenable: progress);
 
-  final double delay;
   final double offset;
-  final Animation<double> progress;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: progress,
-      builder: (BuildContext context, Widget? child) {
-        final offset = Offset.fromDirection(
-          90 * (pi / 180.0),
-          progress.value * this.offset,
-        );
+    Animation<double> progress = listenable as Animation<double>;
 
-        return Positioned(
-          right: 0,
-          bottom: offset.dy,
-          child: Transform.rotate(
-            angle: (1.0 - progress.value) * pi / 2,
-            child: child!,
-          ),
-        );
-      },
-      child: FadeTransition(
-        opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
-          CurvedAnimation(
-            parent: progress,
-            curve: Interval(delay, 1.0),
-          ),
-        ),
-        child: child,
+    final offset = Offset.fromDirection(
+      90 * (pi / 180.0),
+      progress.value * this.offset,
+    );
+
+    return Positioned(
+      right: 0,
+      bottom: offset.dy,
+      child: Transform.rotate(
+        angle: (1.0 - progress.value) * pi / 2,
+        child: Opacity(opacity: progress.value, child: child),
       ),
     );
   }

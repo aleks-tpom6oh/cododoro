@@ -37,7 +37,6 @@ void scheduleOvertimeNotifications(
     required String message,
     String soundPath = 'assets/audio/alarm.mp3'}) async {
   final duration = await NotificationSchedule().timeAtStep(step);
-  print("Next notification in $duration minutes");
   notificationsTimer = Timer(Duration(minutes: duration), () async {
     currentNotificationsDelayProgressionStep = step + 1;
     await _notifyAll(message, soundPath: soundPath);
@@ -157,7 +156,9 @@ void startWorkSession(ElapsedTimeModel elapsedTimeModel,
 
     history.startSession(IntervalType.work);
 
-    soundNotifier.notify("", soundPath: "assets/audio/t-bell.mp3");
+    soundNotifier.notify("",
+        soundPath: "assets/audio/t-bell.mp3",
+        delay: Duration(milliseconds: 200));
   }
 }
 
@@ -272,7 +273,7 @@ void maybeSuggestStanding(bool isStanding, TimerStateModel timerModel,
       standingDuration.compareTo(Duration(minutes: targetStandingMinutes)) <
           0 &&
       standingDesk &&
-      currentDayHour > 14) {
+      currentDayHour > 12) {
     result.call(true);
 
     return;
@@ -321,7 +322,9 @@ void nextStage(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
 
         history.startSession(IntervalType.work);
 
-        soundNotifier.notify("", soundPath: "assets/audio/t-bell.mp3");
+        soundNotifier.notify("",
+            soundPath: "assets/audio/t-bell.mp3",
+            delay: Duration(milliseconds: 200));
       }
       break;
   }
