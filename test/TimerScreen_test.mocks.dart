@@ -24,9 +24,11 @@ class MockBaseNotifier extends _i1.Mock implements _i2.BaseNotifier {
   }
 
   @override
-  _i3.Future<void> notify(String? message, {String? soundPath}) =>
+  _i3.Future<void> notify(String? message,
+          {String? soundPath, Duration? delay = const Duration(seconds: 0)}) =>
       (super.noSuchMethod(
-          Invocation.method(#notify, [message], {#soundPath: soundPath}),
+          Invocation.method(
+              #notify, [message], {#soundPath: soundPath, #delay: delay}),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
   @override
