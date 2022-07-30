@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cododoro/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
 import 'package:cododoro/utils.dart';
 import 'package:provider/provider.dart';
 

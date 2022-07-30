@@ -1,5 +1,5 @@
-import 'package:cododoro/storage/ThemeSettings.dart';
-import 'package:cododoro/storage/Settings.dart';
+import 'package:cododoro/data_layer/storage/ThemeSettings.dart';
+import 'package:cododoro/data_layer/storage/Settings.dart';
 import 'package:flutter/material.dart';
 
 class LooksSettingsCategory extends StatefulWidget {

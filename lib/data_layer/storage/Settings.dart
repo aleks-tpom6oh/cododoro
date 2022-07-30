@@ -8,6 +8,7 @@ const String standingDeskKey = "STANDING_DESK";
 const String showCuteCatsKey = "SHOW_CUTE_CATS";
 const String targetStandingMinutesKey = "TARGET_STANDING_MINUTES";
 const String targetWorkingMinutesKey = "TARGET_WORKING_MINUTES";
+const String standingReminderHourKey = "STANDING_REMINDER_HOUR";
 
 int _defaultDayHoursOffset = 4;
 
@@ -25,6 +26,8 @@ class Settings with ChangeNotifier {
 
   int _defaulTargetStandingMinutes = Duration(minutes: 100).inMinutes;
   int _defaulTargetWorkingMinutes = Duration(hours: 6).inMinutes;
+
+  int _defaulStandingReminderHour = 14;
 
   bool _defaulStandingDesk = true;
 
@@ -96,6 +99,15 @@ class Settings with ChangeNotifier {
 
   void setTargetWorkingMinutes(int newTargetWorkingMinutes) {
     prefs.setInt(targetWorkingMinutesKey, newTargetWorkingMinutes);
+    notifyListeners();
+  }
+
+  int get standingReminderHour {
+    return prefs.getInt(standingReminderHourKey) ?? _defaulStandingReminderHour;
+  }
+
+  void setStandingReminderHour(int newStandingReminderHour) {
+    prefs.setInt(standingReminderHourKey, newStandingReminderHour);
     notifyListeners();
   }
 }

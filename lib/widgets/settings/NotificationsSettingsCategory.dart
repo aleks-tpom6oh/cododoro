@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cododoro/storage/NotificationsSchedule.dart';
+import 'package:cododoro/data_layer/storage/NotificationsSchedule.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 

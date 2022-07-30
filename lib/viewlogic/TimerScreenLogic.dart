@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:cododoro/models/ElapsedTimeModel.dart';
-import 'package:cododoro/models/TimerStateModel.dart';
-import 'package:cododoro/models/TimerStates.dart';
-import 'package:cododoro/notifiers/BaseNotifier.dart';
-import 'package:cododoro/notifiers/LocalNotificationsNotifier.dart';
-import 'package:cododoro/notifiers/SoundNotifier.dart';
+import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/models/TimerStateModel.dart';
+import 'package:cododoro/data_layer/models/TimerStates.dart';
+import 'package:cododoro/notifications/BaseNotifier.dart';
+import 'package:cododoro/notifications/LocalNotificationsNotifier.dart';
+import 'package:cododoro/notifications/SoundNotifier.dart';
 import 'package:cododoro/onboarding/OnboardingConfig.dart';
-import 'package:cododoro/storage/HistoryRepository.dart';
-import 'package:cododoro/storage/NotificationsSchedule.dart';
-import 'package:cododoro/storage/Settings.dart';
+import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
+import 'package:cododoro/data_layer/storage/NotificationsSchedule.dart';
+import 'package:cododoro/data_layer/storage/Settings.dart';
 import 'package:confetti/confetti.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -261,6 +261,7 @@ void maybeSuggestStanding(bool isStanding, TimerStateModel timerModel,
   final todayIntervals = await history.getTodayIntervals();
 
   final standingDesk = await settings.standingDesk;
+  final standingReminderHour = await settings.standingReminderHour;
 
   final standingDuration =
       calculateTimeForIntervalType(todayIntervals, IntervalType.stand);
@@ -273,7 +274,7 @@ void maybeSuggestStanding(bool isStanding, TimerStateModel timerModel,
       standingDuration.compareTo(Duration(minutes: targetStandingMinutes)) <
           0 &&
       standingDesk &&
-      currentDayHour > 12) {
+      currentDayHour > standingReminderHour) {
     result.call(true);
 
     return;

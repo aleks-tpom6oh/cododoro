@@ -1,4 +1,4 @@
-import 'package:cododoro/storage/Settings.dart';
+import 'package:cododoro/data_layer/storage/Settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class IsDayChangeOnTick {

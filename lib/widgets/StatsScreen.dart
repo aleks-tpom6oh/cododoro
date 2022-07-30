@@ -1,8 +1,8 @@
-import 'package:cododoro/models/ElapsedTimeModel.dart';
-import 'package:cododoro/storage/NotificationsSchedule.dart';
+import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/storage/NotificationsSchedule.dart';
 import 'package:cododoro/widgets/views/StatsListToggleButton.dart';
 import 'package:flutter/material.dart';
-import 'package:cododoro/storage/HistoryRepository.dart';
+import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
 import 'package:cododoro/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:cododoro/widgets/dialogs/AddTimeDialog.dart';

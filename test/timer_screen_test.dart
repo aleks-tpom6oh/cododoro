@@ -1,20 +1,20 @@
-import 'package:cododoro/models/ElapsedTimeModel.dart';
-import 'package:cododoro/models/TimerStates.dart';
-import 'package:cododoro/notifiers/BaseNotifier.dart';
+import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/models/TimerStates.dart';
+import 'package:cododoro/notifications/BaseNotifier.dart';
 import 'package:cododoro/widgets/TimerScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
-import 'package:cododoro/models/TimerStateModel.dart';
-import 'package:cododoro/storage/HistoryRepository.dart';
+import 'package:cododoro/data_layer/models/TimerStateModel.dart';
+import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
 
 import 'package:cododoro/viewlogic/TimerScreenLogic.dart' as logic;
 
 import 'dart:convert';
 
-import 'TimerScreen_test.mocks.dart';
+import 'timer_screen_test.mocks.dart';
 
 class MockSharedPrefs extends Mock implements SharedPreferences {}
 

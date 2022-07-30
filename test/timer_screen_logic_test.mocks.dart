@@ -4,11 +4,11 @@
 
 import 'dart:ui' as _i4;
 
-import 'package:cododoro/models/ElapsedTimeModel.dart' as _i3;
-import 'package:cododoro/models/TimerStateModel.dart' as _i5;
-import 'package:cododoro/models/TimerStates.dart' as _i6;
-import 'package:cododoro/storage/HistoryRepository.dart' as _i7;
-import 'package:cododoro/storage/Settings.dart' as _i8;
+import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart' as _i3;
+import 'package:cododoro/data_layer/models/TimerStateModel.dart' as _i5;
+import 'package:cododoro/data_layer/models/TimerStates.dart' as _i6;
+import 'package:cododoro/data_layer/storage/HistoryRepository.dart' as _i7;
+import 'package:cododoro/data_layer/storage/Settings.dart' as _i8;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:shared_preferences/shared_preferences.dart' as _i2;
 

@@ -1,7 +1,7 @@
 import 'dart:isolate';
 
 import 'package:cododoro/main.dart';
-import 'package:cododoro/models/VolumeController.dart';
+import 'package:cododoro/data_layer/models/VolumeController.dart';
 import 'package:cododoro/onboarding/OnboardingConfig.dart';
 import 'package:cododoro/onboarding/OnboardingTour.dart';
 import 'package:cododoro/viewlogic/isDayChangeOnTick.dart';
@@ -14,10 +14,10 @@ import 'package:cododoro/widgets/dialogs/WorkEndedDialog.dart';
 import 'package:cododoro_macos_module/main.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
-import 'package:cododoro/models/ElapsedTimeModel.dart';
-import 'package:cododoro/storage/HistoryRepository.dart';
-import 'package:cododoro/storage/NotificationsSchedule.dart';
-import 'package:cododoro/storage/Settings.dart';
+import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
+import 'package:cododoro/data_layer/storage/NotificationsSchedule.dart';
+import 'package:cododoro/data_layer/storage/Settings.dart';
 import 'package:cododoro/widgets/views/Controlls.dart';
 import 'package:cododoro/widgets/settings/SettingsDialog.dart';
 import 'package:cododoro/widgets/StatsScreen.dart';
@@ -28,8 +28,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'TimeCounter.dart';
 import 'dart:async';
 
-import '../models/TimerStateModel.dart';
-import '../models/TimerStates.dart';
+import '../data_layer/models/TimerStateModel.dart';
+import '../data_layer/models/TimerStates.dart';
 import '../viewlogic/TimerScreenLogic.dart' as logic;
 
 import 'package:flutter/foundation.dart' show kIsWeb;

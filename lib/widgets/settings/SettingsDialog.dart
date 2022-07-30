@@ -1,8 +1,8 @@
-import 'package:cododoro/storage/ThemeSettings.dart';
+import 'package:cododoro/data_layer/storage/ThemeSettings.dart';
 import 'package:cododoro/widgets/settings/StandingDeskSettingsCategory.dart';
 import 'package:cododoro/widgets/settings/LooksSettingsCategory.dart';
 import 'package:flutter/material.dart';
-import 'package:cododoro/storage/Settings.dart';
+import 'package:cododoro/data_layer/storage/Settings.dart';
 import 'package:cododoro/widgets/settings/NotificationsSettingsCategory.dart';
 import 'package:cododoro/widgets/settings/TimeSettingsCategory.dart';
 import 'package:provider/provider.dart';

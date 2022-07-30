@@ -1,9 +1,9 @@
-import 'package:cododoro/models/ElapsedTimeModel.dart';
-import 'package:cododoro/models/TimerStateModel.dart';
-import 'package:cododoro/models/TimerStates.dart';
+import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/models/TimerStateModel.dart';
+import 'package:cododoro/data_layer/models/TimerStates.dart';
 import 'package:cododoro/onboarding/OnboardingConfig.dart';
-import 'package:cododoro/storage/HistoryRepository.dart';
-import 'package:cododoro/storage/Settings.dart';
+import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
+import 'package:cododoro/data_layer/storage/Settings.dart';
 import 'package:cododoro/viewlogic/TimerScreenLogic.dart' as TimerScreenLogic;
 import 'package:cododoro/viewlogic/isDayChangeOnTick.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
-import 'TimerScreenLogic_test.mocks.dart';
-import 'TimerScreen_test.mocks.dart';
+import 'timer_screen_logic_test.mocks.dart';
+import 'timer_screen_test.mocks.dart';
 
 class AlwaysTrueIsDayChangeOnTick implements IsDayChangeOnTick {
   @override

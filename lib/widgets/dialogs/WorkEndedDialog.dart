@@ -1,5 +1,5 @@
-import 'package:cododoro/storage/HistoryRepository.dart';
-import 'package:cododoro/storage/Settings.dart';
+import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
+import 'package:cododoro/data_layer/storage/Settings.dart';
 import 'package:cododoro/viewlogic/StandTimeRemaining.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

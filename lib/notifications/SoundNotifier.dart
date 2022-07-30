@@ -1,5 +1,5 @@
-import 'package:cododoro/models/VolumeController.dart';
-import 'package:cododoro/notifiers/BaseNotifier.dart';
+import 'package:cododoro/data_layer/models/VolumeController.dart';
+import 'package:cododoro/notifications/BaseNotifier.dart';
 import 'package:just_audio/just_audio.dart';
 
 class SoundNotifier implements BaseNotifier {

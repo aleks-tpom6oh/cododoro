@@ -1,4 +1,4 @@
-import 'package:cododoro/storage/HistoryRepository.dart';
+import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
 
 stopwatchTime(Duration d) => d.toString().split('.').first.padLeft(8, "0");
 

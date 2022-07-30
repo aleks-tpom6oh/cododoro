@@ -1,9 +1,9 @@
-import 'package:cododoro/models/ElapsedTimeModel.dart';
-import 'package:cododoro/storage/Settings.dart';
+import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/storage/Settings.dart';
 import 'package:cododoro/viewlogic/WorkTimeGoalEstimate.dart';
 import 'package:cododoro/viewlogic/WorkTimeRemaining.dart';
 import 'package:flutter/material.dart';
-import 'package:cododoro/storage/HistoryRepository.dart';
+import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
 import 'package:provider/provider.dart';
 import 'package:cododoro/utils.dart';
 

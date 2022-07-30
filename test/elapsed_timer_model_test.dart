@@ -1,4 +1,4 @@
-import 'package:cododoro/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
 import 'package:test/test.dart';
 
 void main() {

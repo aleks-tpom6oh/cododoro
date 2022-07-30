@@ -1,4 +1,4 @@
-import 'package:cododoro/storage/Settings.dart';
+import 'package:cododoro/data_layer/storage/Settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -34,12 +34,15 @@ class _StandingDeskSettingsCategoryState
       return Colors.grey;
     }
 
-    final textController = new TextEditingController();
+    final targetStandingTimeTextController = new TextEditingController();
+    final standingReminderHourTextController = new TextEditingController();
 
     standingDeskEnabled = this.widget.settings.standingDesk;
     final targetStandingTime = this.widget.settings.targetStandingMinutes;
+    final standingReminderHour = this.widget.settings.standingReminderHour;
 
-    textController.text = targetStandingTime.toString();
+    targetStandingTimeTextController.text = targetStandingTime.toString();
+    standingReminderHourTextController.text = standingReminderHour.toString();
 
     return Column(
       children: [
@@ -76,7 +79,7 @@ class _StandingDeskSettingsCategoryState
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: TextField(
-                      controller: textController,
+                      controller: targetStandingTimeTextController,
                       maxLines: 1,
                       textAlign: TextAlign.center,
                       enabled: true,
@@ -93,7 +96,7 @@ class _StandingDeskSettingsCategoryState
               ? TextButton(
                   onPressed: () {
                     final newTaretStandingTime =
-                        int.tryParse(textController.text);
+                        int.tryParse(targetStandingTimeTextController.text);
                     if (newTaretStandingTime != null &&
                         newTaretStandingTime > 0 &&
                         newTaretStandingTime <= 600) {
@@ -106,10 +109,59 @@ class _StandingDeskSettingsCategoryState
                       if (newTaretStandingTime != null &&
                           newTaretStandingTime > 600) {
                         widget.settings.setTargetStandingMinutes(600);
-                        textController.text = "600";
+                        targetStandingTimeTextController.text = "600";
                       } else if (newTaretStandingTime != null) {
                         widget.settings.setTargetStandingMinutes(1);
-                        textController.text = "1";
+                        targetStandingTimeTextController.text = "1";
+                      }
+                    }
+                  },
+                  child: const Text('Set'),
+                )
+              : SizedBox(
+                  height: 51,
+                )
+        ]),
+        Row(children: [
+          standingDeskEnabled == true
+              ? Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: TextField(
+                      controller: standingReminderHourTextController,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      enabled: true,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      decoration: InputDecoration(
+                          alignLabelWithHint: true,
+                          labelText: "Remind to stand if standing goal is not met after HH:00 hour"),
+                    ),
+                  ),
+                )
+              : SizedBox(),
+          standingDeskEnabled == true
+              ? TextButton(
+                  onPressed: () {
+                    final newStandingReminderHour =
+                        int.tryParse(standingReminderHourTextController.text);
+                    if (newStandingReminderHour != null &&
+                        newStandingReminderHour > 0 &&
+                        newStandingReminderHour <= 23) {
+                      widget.settings
+                          .setStandingReminderHour(newStandingReminderHour);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Use hour between 0 and 23')));
+
+                      if (newStandingReminderHour != null &&
+                          newStandingReminderHour > 23) {
+                        widget.settings.setStandingReminderHour(23);
+                        standingReminderHourTextController.text = "23";
+                      } else if (newStandingReminderHour != null) {
+                        widget.settings.setStandingReminderHour(0);
+                        standingReminderHourTextController.text = "0";
                       }
                     }
                   },

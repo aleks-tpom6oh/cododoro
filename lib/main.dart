@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:avo_inspector/avo_inspector.dart';
-import 'package:cododoro/models/ElapsedTimeModel.dart';
-import 'package:cododoro/storage/HistoryRepository.dart';
-import 'package:cododoro/storage/ThemeSettings.dart';
+import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
+import 'package:cododoro/data_layer/storage/ThemeSettings.dart';
 import 'package:cododoro/widgets/IdleScreen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +18,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-import 'models/TimerStateModel.dart';
-import 'storage/Settings.dart';
+import 'data_layer/models/TimerStateModel.dart';
+import 'data_layer/storage/Settings.dart';
 import 'widgets/TimerScreen.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
