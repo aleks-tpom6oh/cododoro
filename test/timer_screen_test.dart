@@ -1,7 +1,7 @@
-import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/cubit/elapsed_time_cubit.dart';
 import 'package:cododoro/data_layer/models/TimerStates.dart';
 import 'package:cododoro/notifications/BaseNotifier.dart';
-import 'package:cododoro/widgets/TimerScreen.dart';
+import 'package:cododoro/home/timer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mocktail/mocktail.dart';
@@ -10,7 +10,7 @@ import 'package:test/test.dart';
 import 'package:cododoro/data_layer/models/TimerStateModel.dart';
 import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
 
-import 'package:cododoro/viewlogic/TimerScreenLogic.dart' as logic;
+import 'package:cododoro/viewlogic/timer_screen_logic.dart' as logic;
 
 import 'dart:convert';
 
@@ -20,14 +20,14 @@ class MockSharedPrefs extends Mock implements SharedPreferences {}
 
 class MockTimerStateModel extends Mock implements TimerStateModel {}
 
-class MockElapsedTimeModel extends Mock implements ElapsedTimeModel {}
+class MockElapsedTimeCubit extends Mock implements ElapsedTimeCubit {}
 
 @GenerateMocks([BaseNotifier])
 void main() {
   test(
-      'Stand dialog confirm function starts both stansing and working intervals',
+      'Stand dialog confirm function starts both standing and working intervals',
       () async {
-    ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
+    ElapsedTimeCubit mockElapsedTimeCubit = MockElapsedTimeCubit();
     TimerStateModel mockTimerModel = MockTimerStateModel();
     SharedPreferences mockPrefs = MockSharedPrefs();
     HistoryRepository historyRepo = HistoryRepository(prefs: mockPrefs);
@@ -45,7 +45,7 @@ void main() {
     logic.notifiers = [];
 
     state.onPleaseStandUpConfirmed(
-        mockElapsedTimeModel, mockTimerModel, historyRepo)();
+        mockElapsedTimeCubit, mockTimerModel, historyRepo)();
 
     List lastWrite = verify(() => mockPrefs.setStringList(any(), captureAny())).captured.last;
 

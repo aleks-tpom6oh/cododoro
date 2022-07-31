@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../StatsScreen.dart';
+import 'stats_screen.dart';
 
 class StatsListToggleButton extends StatefulWidget {
   final Function(ListState) onToggle;

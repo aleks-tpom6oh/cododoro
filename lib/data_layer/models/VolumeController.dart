@@ -1,6 +1,6 @@
-final volumeController = _VolumeModel();
+final volumeController = _VolumeController();
 
-class _VolumeModel {
+class _VolumeController {
   bool _isSoundOn = true;
 
   bool get isSoundOn {

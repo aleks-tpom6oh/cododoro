@@ -1,27 +1,27 @@
-import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/cubit/elapsed_time_cubit.dart';
 import 'package:test/test.dart';
 
 void main() {
   test(
       'ElapsedTimeModel does not increase elapsed time if tick with addTime = false',
       () {
-    final elapsedTimeModel = ElapsedTimeModel();
+    final elapsedTimeCubit = ElapsedTimeCubit();
 
-    final initialElapsedTime = elapsedTimeModel.elapsedTimeMs;
+    final initialElapsedTime = elapsedTimeCubit.state.elapsedTime.inMilliseconds;
 
-    elapsedTimeModel.onTick(addTime: false);
+    elapsedTimeCubit.onTick(addTime: false);
 
-    expect(elapsedTimeModel.elapsedTimeMs, equals(initialElapsedTime));
+    expect(elapsedTimeCubit.state.elapsedTime.inMilliseconds, equals(initialElapsedTime));
   });
 
   test('ElapsedTimeModel increases elapsed time if tick with addTime = true',
       () {
-    final elapsedTimeModel = ElapsedTimeModel();
+    final elapsedTimeCubit = ElapsedTimeCubit();
 
-    final initialElapsedTime = elapsedTimeModel.elapsedTimeMs;
+    final initialElapsedTime = elapsedTimeCubit.state.elapsedTime.inMilliseconds;
 
-    elapsedTimeModel.onTick(addTime: true);
+    elapsedTimeCubit.onTick(addTime: true);
 
-    expect(elapsedTimeModel.elapsedTimeMs, greaterThan(initialElapsedTime));
+    expect(elapsedTimeCubit.state.elapsedTime.inMilliseconds, greaterThan(initialElapsedTime));
   });
 }
