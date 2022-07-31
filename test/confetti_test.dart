@@ -1,12 +1,12 @@
-import 'package:cododoro/data_layer/cubit/elapsed_time_cubit.dart';
-import 'package:cododoro/data_layer/models/TimerStateModel.dart';
-import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
-import 'package:cododoro/data_layer/storage/Settings.dart';
+import 'package:cododoro/common/cubit/elapsed_time_cubit.dart';
+import 'package:cododoro/common/data_layer/persistent/history_repository.dart';
+import 'package:cododoro/common/data_layer/persistent/settings.dart';
+import 'package:cododoro/common/data_layer/timer_state_model.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:cododoro/viewlogic/timer_screen_logic.dart' as TimerScreenLogic;
+import 'package:cododoro/home_screen/view_model/timer_screen_logic.dart' as TimerScreenLogic;
 
 class MockElapsedTimeCubit extends Mock implements ElapsedTimeCubit {}
 

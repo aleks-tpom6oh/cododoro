@@ -1,4 +1,4 @@
-import 'package:cododoro/data_layer/cubit/elapsed_time_cubit.dart';
+import 'package:cododoro/common/cubit/elapsed_time_cubit.dart';
 import 'package:test/test.dart';
 
 void main() {

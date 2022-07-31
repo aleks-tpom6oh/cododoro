@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:avo_inspector/avo_inspector.dart';
-import 'package:cododoro/data_layer/cubit/elapsed_time_cubit.dart';
-import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
-import 'package:cododoro/data_layer/storage/ThemeSettings.dart';
+import 'package:cododoro/common/cubit/elapsed_time_cubit.dart';
+import 'package:cododoro/common/data_layer/persistent/history_repository.dart';
+import 'package:cododoro/common/data_layer/persistent/theme_settings.dart';
 import 'package:cododoro/idle_screen/idle_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,9 +19,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-import 'data_layer/models/TimerStateModel.dart';
-import 'data_layer/storage/Settings.dart';
-import 'home/timer_screen.dart';
+import 'common/data_layer/persistent/settings.dart';
+import 'common/data_layer/timer_state_model.dart';
+import 'home_screen/screen/timer_screen.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();

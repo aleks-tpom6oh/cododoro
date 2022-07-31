@@ -4,7 +4,7 @@
 
 import 'dart:async' as _i3;
 
-import 'package:cododoro/notifications/BaseNotifier.dart' as _i2;
+import 'package:cododoro/notifications/base_notifier.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: avoid_redundant_argument_values
