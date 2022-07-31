@@ -1,11 +1,13 @@
-import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
-import 'package:cododoro/data_layer/storage/NotificationsSchedule.dart';
-import 'package:cododoro/widgets/views/StatsListToggleButton.dart';
-import 'package:flutter/material.dart';
+import 'package:cododoro/data_layer/cubit/elapsed_time_cubit.dart';
+import 'package:cododoro/data_layer/cubit/elapsed_time_state.dart';
 import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
+import 'package:cododoro/data_layer/storage/NotificationsSchedule.dart';
+import 'package:cododoro/stats/stats_list_toggle_button.dart';
 import 'package:cododoro/utils.dart';
-import 'package:provider/provider.dart';
 import 'package:cododoro/widgets/dialogs/AddTimeDialog.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 enum ListState { pomodoro, standing }
 
@@ -26,9 +28,10 @@ class _StatsScreenState extends State<StatsScreen> {
         title: Text("Stats Screen"),
       ),
       body: Center(
-          child: Selector<ElapsedTimeModel, int>(
-        selector: (_, elapsedTimeModel) => Duration(seconds: elapsedTimeModel.elapsedTime).inMinutes,
-        builder: (_, __, ___) {
+          child: BlocBuilder<ElapsedTimeCubit, ElapsedTimeState>( //Selector<ElapsedTimeModel, int>(
+        buildWhen: (previous, current) => Duration(seconds: previous.elapsedTime.inMinutes) != Duration(seconds: current.elapsedTime.inMinutes),
+        //buildWhen: (_, elapsedTimeModel) => Duration(seconds: elapsedTimeModel.elapsedTime).inMinutes,
+        builder: (_, __) {
           final historyRepository = context.watch<HistoryRepository>();
 
           final todayIntervals = historyRepository.getTodayIntervals();

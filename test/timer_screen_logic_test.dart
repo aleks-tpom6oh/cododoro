@@ -1,16 +1,17 @@
-import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/cubit/elapsed_time_cubit.dart';
+import 'package:cododoro/data_layer/cubit/elapsed_time_state.dart';
 import 'package:cododoro/data_layer/models/TimerStateModel.dart';
 import 'package:cododoro/data_layer/models/TimerStates.dart';
-import 'package:cododoro/onboarding/OnboardingConfig.dart';
 import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
 import 'package:cododoro/data_layer/storage/Settings.dart';
-import 'package:cododoro/viewlogic/TimerScreenLogic.dart' as TimerScreenLogic;
+import 'package:cododoro/onboarding/OnboardingConfig.dart';
 import 'package:cododoro/viewlogic/isDayChangeOnTick.dart';
+import 'package:cododoro/viewlogic/timer_screen_logic.dart' as TimerScreenLogic;
 import 'package:flutter/material.dart';
 import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
-import 'package:mockito/mockito.dart';
 
 import 'timer_screen_logic_test.mocks.dart';
 import 'timer_screen_test.mocks.dart';
@@ -35,11 +36,11 @@ class AlwaysFalseIsDayChangeOnTick implements IsDayChangeOnTick {
   }
 }
 
-@GenerateMocks([ElapsedTimeModel, TimerStateModel, HistoryRepository, Settings])
+@GenerateMocks([ElapsedTimeCubit, TimerStateModel, HistoryRepository, Settings])
 void main() {
   test('Tick when timer is not running does not increase the elapsed time',
       () async {
-    ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
+    ElapsedTimeCubit mockElapsedTimeCubit = MockElapsedTimeCubit();
     TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
     Settings mockSettings = MockSettings();
@@ -51,7 +52,7 @@ void main() {
 
     TimerScreenLogic.tick(
         // ignore: no-empty-block
-        mockElapsedTimeModel,
+        mockElapsedTimeCubit,
         mockTimerModel,
         mockHistoryRepo,
         mockSettings,
@@ -61,16 +62,16 @@ void main() {
         // ignore: no-empty-block
         onReachedStandingGoal: () {});
 
-    verify(mockElapsedTimeModel.onTick(addTime: false));
+    verify(mockElapsedTimeCubit.onTick(addTime: false));
   });
 
   test('Starts work session on init when onboarding step 1 is passed', () {
     WidgetsFlutterBinding.ensureInitialized();
-    
+
     // Given
     SharedPreferences.setMockInitialValues({});
-    
-    ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
+
+    ElapsedTimeCubit mockElapsedTimeCubit = MockElapsedTimeCubit();
     TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
     OnboardingConfig config = OnboardingConfig();
@@ -79,20 +80,22 @@ void main() {
 
     // When
     TimerScreenLogic.onOnboardingConfigLoaded(
-        config, mockElapsedTimeModel, mockTimerModel, mockHistoryRepo, false);
+        config, mockElapsedTimeCubit, mockTimerModel, mockHistoryRepo, false);
 
     // Then
     verify(mockHistoryRepo.startSession(IntervalType.work));
     verify(mockTimerModel.state = TimerStates.sessionWorking);
   });
 
-  test('Does not start work session on init when onboarding step 1 is not passed', () {
+  test(
+      'Does not start work session on init when onboarding step 1 is not passed',
+      () {
     WidgetsFlutterBinding.ensureInitialized();
-    
+
     // Given
     SharedPreferences.setMockInitialValues({});
-    
-    ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
+
+    ElapsedTimeCubit mockElapsedTimeCubit = MockElapsedTimeCubit();
     TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
     OnboardingConfig config = OnboardingConfig();
@@ -101,7 +104,7 @@ void main() {
 
     // When
     TimerScreenLogic.onOnboardingConfigLoaded(
-        config, mockElapsedTimeModel, mockTimerModel, mockHistoryRepo, false);
+        config, mockElapsedTimeCubit, mockTimerModel, mockHistoryRepo, false);
 
     // Then
     verifyNever(mockHistoryRepo.startSession(IntervalType.work));
@@ -109,7 +112,7 @@ void main() {
   });
 
   test('Tick when timer is running does increase the elapsed time', () async {
-    ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
+    ElapsedTimeCubit mockElapsedTimeCubit = MockElapsedTimeCubit();
     TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
     Settings mockSettings = MockSettings();
@@ -122,12 +125,13 @@ void main() {
     when(mockSettings.targetStandingMinutes).thenAnswer((_) => 100);
     when(mockHistoryRepo.getTodayIntervals()).thenAnswer((_) => []);
     when(mockTimerModel.state).thenReturn(TimerStates.noSession);
-    when(mockElapsedTimeModel.elapsedTime).thenReturn(0);
+    when(mockElapsedTimeCubit.state).thenReturn(ElapsedTimeState(
+        lastTickDateTime: null, elapsedTime: Duration(seconds: 0)));
 
     try {
       TimerScreenLogic.tick(
           // ignore: no-empty-block
-          mockElapsedTimeModel,
+          mockElapsedTimeCubit,
           mockTimerModel,
           mockHistoryRepo,
           mockSettings,
@@ -138,12 +142,12 @@ void main() {
           onReachedStandingGoal: () {});
     } catch (e) {}
 
-    verify(mockElapsedTimeModel.onTick(addTime: true));
+    verify(mockElapsedTimeCubit.onTick(addTime: true));
   });
 
   test('Tick stops session on day changed', () async {
     // Given
-    ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
+    ElapsedTimeCubit mockElapsedTimeCubit = MockElapsedTimeCubit();
     TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
     Settings mockSettings = MockSettings();
@@ -157,12 +161,13 @@ void main() {
     when(mockHistoryRepo.getTodayIntervals()).thenAnswer((_) => []);
     when(mockTimerModel.state).thenReturn(TimerStates.sessionWorking);
     when(mockTimerModel.isRunning()).thenReturn(false);
-    when(mockElapsedTimeModel.elapsedTime).thenReturn(0);
+    when(mockElapsedTimeCubit.state).thenReturn(ElapsedTimeState(
+        lastTickDateTime: null, elapsedTime: Duration(seconds: 0)));
 
     // When
     TimerScreenLogic.tick(
         // ignore: no-empty-block
-        mockElapsedTimeModel,
+        mockElapsedTimeCubit,
         mockTimerModel,
         mockHistoryRepo,
         mockSettings,
@@ -178,7 +183,7 @@ void main() {
 
   test('Tick does not stop session on day changed', () async {
     // Given
-    ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
+    ElapsedTimeCubit mockElapsedTimeCubit = MockElapsedTimeCubit();
     TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
     Settings mockSettings = MockSettings();
@@ -192,13 +197,14 @@ void main() {
     when(mockHistoryRepo.getTodayIntervals()).thenAnswer((_) => []);
     when(mockTimerModel.state).thenReturn(TimerStates.sessionWorking);
     when(mockTimerModel.isRunning()).thenReturn(false);
-    when(mockElapsedTimeModel.elapsedTime).thenReturn(0);
+    when(mockElapsedTimeCubit.state).thenReturn(ElapsedTimeState(
+        lastTickDateTime: null, elapsedTime: Duration(seconds: 0)));
 
     // When
     try {
       TimerScreenLogic.tick(
           // ignore: no-empty-block
-          mockElapsedTimeModel,
+          mockElapsedTimeCubit,
           mockTimerModel,
           mockHistoryRepo,
           mockSettings,
@@ -214,7 +220,7 @@ void main() {
   });
 
   test('Start session does nothing if session is there', () {
-    ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
+    ElapsedTimeCubit mockElapsedTimeCubit = MockElapsedTimeCubit();
     TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
 
@@ -226,11 +232,11 @@ void main() {
       when(mockTimerModel.state).thenReturn(timerState);
 
       TimerScreenLogic.startWorkSession(
-          mockElapsedTimeModel, mockTimerModel, mockHistoryRepo);
+          mockElapsedTimeCubit, mockTimerModel, mockHistoryRepo);
 
       verifyNever(mockTimerModel.forceResume());
       verifyNever(mockTimerModel.state = TimerStates.sessionWorking);
-      verifyZeroInteractions(mockElapsedTimeModel);
+      verifyZeroInteractions(mockElapsedTimeCubit);
       verifyZeroInteractions(mockHistoryRepo);
     });
   });
@@ -238,7 +244,7 @@ void main() {
   test(
       'Start session resumes and starts a working session if no session currently',
       () {
-    ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
+    ElapsedTimeCubit mockElapsedTimeCubit = MockElapsedTimeCubit();
     TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
 
@@ -246,18 +252,18 @@ void main() {
     TimerScreenLogic.soundNotifier = MockBaseNotifier();
 
     TimerScreenLogic.startWorkSession(
-        mockElapsedTimeModel, mockTimerModel, mockHistoryRepo);
+        mockElapsedTimeCubit, mockTimerModel, mockHistoryRepo);
 
     verify(mockTimerModel.forceResume());
     verify(mockTimerModel.state = TimerStates.sessionWorking);
-    verify(mockElapsedTimeModel.elapsedTime = 0);
+    verify(mockElapsedTimeCubit.reset());
     verify(mockHistoryRepo.startSession(IntervalType.work));
   });
 
   test(
       'Start session resumes and starts a working session if no session currently and paused',
       () {
-    ElapsedTimeModel mockElapsedTimeModel = MockElapsedTimeModel();
+    ElapsedTimeCubit mockElapsedTimeCubit = MockElapsedTimeCubit();
     TimerStateModel mockTimerModel = MockTimerStateModel();
     HistoryRepository mockHistoryRepo = MockHistoryRepository();
 
@@ -266,11 +272,11 @@ void main() {
     TimerScreenLogic.soundNotifier = MockBaseNotifier();
 
     TimerScreenLogic.startWorkSession(
-        mockElapsedTimeModel, mockTimerModel, mockHistoryRepo);
+        mockElapsedTimeCubit, mockTimerModel, mockHistoryRepo);
 
     verify(mockTimerModel.forceResume());
     verify(mockTimerModel.state = TimerStates.sessionWorking);
-    verify(mockElapsedTimeModel.elapsedTime = 0);
+    verify(mockElapsedTimeCubit.reset());
     verify(mockHistoryRepo.startSession(IntervalType.work));
   });
 

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/cubit/elapsed_time_cubit.dart';
 import 'package:cododoro/data_layer/models/TimerStateModel.dart';
 import 'package:cododoro/data_layer/models/TimerStates.dart';
 import 'package:cododoro/notifications/BaseNotifier.dart';
@@ -58,42 +58,42 @@ String getNotificationSound(TimerStateModel timerModel) {
   return 'assets/audio/alarm.mp3';
 }
 
-void tick(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
+void tick(ElapsedTimeCubit elapsedTimeCubit, TimerStateModel timerModel,
     HistoryRepository history, Settings settings, SharedPreferences prefs,
     {required bool isStanding,
     required Function() onReachedStandingGoal,
     required IsDayChangeOnTick isDayChangeOnTick}) async {
-  elapsedTimeModel.onTick(addTime: timerModel.isRunning());
+  elapsedTimeCubit.onTick(addTime: timerModel.isRunning());
 
-  syncSession(elapsedTimeModel, history, timerModel);
+  syncSession(elapsedTimeCubit, history, timerModel);
 
   if (timerModel.isRunning()) {
     await notifyIfStandingGoalReached(
         timerModel, settings, history, isStanding, onReachedStandingGoal);
 
-    await handleOvertime(timerModel, elapsedTimeModel, settings);
+    await handleOvertime(timerModel, elapsedTimeCubit, settings);
   }
 
   if (isDayChangeOnTick.isDayChangeOnTick(DateTime.now(), prefs)) {
-    stopSession(elapsedTimeModel, timerModel, history);
+    stopSession(elapsedTimeCubit, timerModel, history);
   }
 }
 
 void onOnboardingConfigLoaded(
     OnboardingConfig config,
-    ElapsedTimeModel elapsedTimeModel,
+    ElapsedTimeCubit elapsedTimeCubit,
     TimerStateModel timerModel,
     HistoryRepository history,
     bool isStanding) {
   if (config.stepShown >= 1) {
-    nextStage(elapsedTimeModel, timerModel, history, isStanding);
+    nextStage(elapsedTimeCubit, timerModel, history, isStanding);
   }
 }
 
 Future<void> handleOvertime(TimerStateModel timerModel,
-    ElapsedTimeModel elapsedTimeModel, Settings settings) async {
+    ElapsedTimeCubit elapsedTimeCubit, Settings settings) async {
   if (timerModel.state == TimerStates.sessionWorking &&
-      elapsedTimeModel.elapsedTime > await settings.workDuration) {
+      elapsedTimeCubit.state.elapsedTime.inSeconds > await settings.workDuration) {
     timerModel.state = TimerStates.sessionWorkingOvertime;
     await _notifyAll(getNotificationMessage(timerModel),
         soundPath: getNotificationSound(timerModel));
@@ -101,7 +101,7 @@ Future<void> handleOvertime(TimerStateModel timerModel,
         message: getNotificationMessage(timerModel),
         soundPath: getNotificationSound(timerModel));
   } else if (timerModel.state == TimerStates.sessionResting &&
-      elapsedTimeModel.elapsedTime > await settings.restDuration) {
+      elapsedTimeCubit.state.elapsedTime.inSeconds > await settings.restDuration) {
     timerModel.state = TimerStates.sessionRestingOvertime;
     await _notifyAll(getNotificationMessage(timerModel),
         soundPath: getNotificationSound(timerModel));
@@ -109,11 +109,11 @@ Future<void> handleOvertime(TimerStateModel timerModel,
         message: getNotificationMessage(timerModel),
         soundPath: getNotificationSound(timerModel));
   } else if (timerModel.state == TimerStates.sessionWorkingOvertime &&
-      elapsedTimeModel.elapsedTime < await settings.workDuration) {
+      elapsedTimeCubit.state.elapsedTime.inSeconds < await settings.workDuration) {
     timerModel.state = TimerStates.sessionWorking;
     notificationsTimer?.cancel();
   } else if (timerModel.state == TimerStates.sessionRestingOvertime &&
-      elapsedTimeModel.elapsedTime < await settings.restDuration) {
+      elapsedTimeCubit.state.elapsedTime.inSeconds < await settings.restDuration) {
     timerModel.state = TimerStates.sessionResting;
     notificationsTimer?.cancel();
   }
@@ -146,12 +146,12 @@ Future<void> notifyIfStandingGoalReached(
   }
 }
 
-void startWorkSession(ElapsedTimeModel elapsedTimeModel,
+void startWorkSession(ElapsedTimeCubit elapsedTimeCubit,
     TimerStateModel timerModel, HistoryRepository history) {
   if (timerModel.state == TimerStates.noSession) {
     timerModel.state = TimerStates.sessionWorking;
     timerModel.forceResume();
-    elapsedTimeModel.elapsedTime = 0;
+    elapsedTimeCubit.reset();
     notificationsTimer?.cancel();
 
     history.startSession(IntervalType.work);
@@ -198,23 +198,23 @@ void pauseResume(TimerStateModel timerModel) {
   timerModel.pauseResume();
 }
 
-void syncSession(ElapsedTimeModel elapsedTimeModel, HistoryRepository history,
+void syncSession(ElapsedTimeCubit elapsedTimeCubit, HistoryRepository history,
     TimerStateModel timerModel) {
   if (timerModel.isRunning()) {
     history.updateCurrentPomodoroSession(
-        DateTime.now(), Duration(seconds: elapsedTimeModel.elapsedTime));
+        DateTime.now(), Duration(seconds: elapsedTimeCubit.state.elapsedTime.inSeconds));
   }
   history.updateCurrentStandingSession(addTime: timerModel.isWorking);
 }
 
-void stopSession(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
+void stopSession(ElapsedTimeCubit elapsedTimeCubit, TimerStateModel timerModel,
     HistoryRepository history) {
   if (timerModel.state != TimerStates.noSession) {
     history.updateCurrentPomodoroSession(
-        DateTime.now(), Duration(seconds: elapsedTimeModel.elapsedTime));
+        DateTime.now(), Duration(seconds: elapsedTimeCubit.state.elapsedTime.inSeconds));
 
     timerModel.state = TimerStates.noSession;
-    elapsedTimeModel.elapsedTime = 0;
+    elapsedTimeCubit.reset();
   }
   notificationsTimer?.cancel();
 }
@@ -290,7 +290,7 @@ bool shouldShowWorkEndedDialogOnNextStageClick(TimerStateModel timerModel) {
       timerModel.state == TimerStates.sessionWorkingOvertime;
 }
 
-void nextStage(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
+void nextStage(ElapsedTimeCubit elapsedTimeCubit, TimerStateModel timerModel,
     HistoryRepository history, bool isStanding) async {
   notificationsTimer?.cancel();
   switch (timerModel.state) {
@@ -298,9 +298,9 @@ void nextStage(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
     case TimerStates.sessionWorkingOvertime:
       {
         history.updateCurrentPomodoroSession(
-            DateTime.now(), Duration(seconds: elapsedTimeModel.elapsedTime));
+            DateTime.now(), Duration(seconds: elapsedTimeCubit.state.elapsedTime.inSeconds));
         timerModel.state = TimerStates.sessionResting;
-        elapsedTimeModel.elapsedTime = 0;
+        elapsedTimeCubit.reset();
         stopStandingSession(history);
         history.startSession(IntervalType.rest);
       }
@@ -309,14 +309,14 @@ void nextStage(ElapsedTimeModel elapsedTimeModel, TimerStateModel timerModel,
     case TimerStates.sessionRestingOvertime:
       {
         history.updateCurrentPomodoroSession(
-            DateTime.now(), Duration(seconds: elapsedTimeModel.elapsedTime));
+            DateTime.now(), Duration(seconds: elapsedTimeCubit.state.elapsedTime.inSeconds));
       }
       continue next;
     next:
     case TimerStates.noSession:
       {
         timerModel.state = TimerStates.sessionWorking;
-        elapsedTimeModel.elapsedTime = 0;
+        elapsedTimeCubit.reset();
         if (isStanding) {
           history.startSession(IntervalType.stand);
         }

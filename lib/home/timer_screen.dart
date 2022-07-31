@@ -1,40 +1,40 @@
 import 'dart:isolate';
 
+import 'package:cododoro/data_layer/cubit/elapsed_time_cubit.dart';
 import 'package:cododoro/main.dart';
 import 'package:cododoro/data_layer/models/VolumeController.dart';
 import 'package:cododoro/onboarding/OnboardingConfig.dart';
 import 'package:cododoro/onboarding/OnboardingTour.dart';
 import 'package:cododoro/viewlogic/isDayChangeOnTick.dart';
 import 'package:cododoro/widgets/dialogs/RestIdeasDialog.dart';
-import 'package:cododoro/widgets/SitStandButton.dart';
-import 'package:cododoro/widgets/StandGoalTimer.dart';
+import 'package:cododoro/home/sit_stand_button.dart';
 import 'package:cododoro/widgets/dialogs/StandingGoalReachedDialog.dart';
 import 'package:cododoro/widgets/dialogs/SuggestToStandDialog.dart';
 import 'package:cododoro/widgets/dialogs/WorkEndedDialog.dart';
 import 'package:cododoro_macos_module/main.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
-import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
 import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
 import 'package:cododoro/data_layer/storage/NotificationsSchedule.dart';
 import 'package:cododoro/data_layer/storage/Settings.dart';
 import 'package:cododoro/widgets/views/Controlls.dart';
 import 'package:cododoro/widgets/settings/SettingsDialog.dart';
-import 'package:cododoro/widgets/StatsScreen.dart';
-import 'package:cododoro/widgets/DurationOutput.dart';
+import 'package:cododoro/stats/stats_screen.dart';
+import 'package:cododoro/home/duration_output.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'TimeCounter.dart';
+import 'stand_goal_timer.dart';
+import 'work_rest_timer.dart';
+import 'time_counter.dart';
 import 'dart:async';
 
 import '../data_layer/models/TimerStateModel.dart';
 import '../data_layer/models/TimerStates.dart';
-import '../viewlogic/TimerScreenLogic.dart' as logic;
+import '../viewlogic/timer_screen_logic.dart' as logic;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
-
-import 'WorkRestTimer.dart';
 
 Isolate? _timerIsolate;
 Timer? tickTimer;
@@ -56,7 +56,7 @@ class _TimerScreenState extends State<TimerScreen>
 
   OnboardingTour? _onboardingTour;
 
-  late final AnimationController _revealAnimation;
+  AnimationController? _revealAnimation;
 
   void toggleSound() {
     setState(() {
@@ -67,24 +67,28 @@ class _TimerScreenState extends State<TimerScreen>
   }
 
   void _animateSessionInfo(Function action) {
-    _revealAnimation.reverse().then((_) {
-      _fadeInSessionInfo();
+    if (_revealAnimation != null) {
+      _revealAnimation?.reverse().then((_) {
+        _fadeInSessionInfo();
+        action.call();
+      });
+    } else {
       action.call();
-    });
+    }
   }
 
   void _fadeInSessionInfo() {
-    _revealAnimation.forward();
+    _revealAnimation!.forward();
   }
 
   Timer? standingGoalReachedDialogDelayTimer;
   void _tick() {
     final timerModel = context.read<TimerStateModel>();
-    final elapsedTimeModel = context.read<ElapsedTimeModel>();
+    final elapsedTimeCubit = BlocProvider.of<ElapsedTimeCubit>(context);
     final historyRepository = context.read<HistoryRepository>();
     final settings = context.read<Settings>();
 
-    logic.tick(elapsedTimeModel, timerModel, historyRepository, settings,
+    logic.tick(elapsedTimeCubit, timerModel, historyRepository, settings,
         historyRepository.prefs,
         isStanding: _isStanding,
         isDayChangeOnTick: IsDayChangeOnTick(), onReachedStandingGoal: () {
@@ -99,7 +103,7 @@ class _TimerScreenState extends State<TimerScreen>
                 logic.stopStandingSession(historyRepository);
               });
             }, onSitAndTakeABreak: () {
-              nextStage(elapsedTimeModel, timerModel, historyRepository)();
+              nextStage(elapsedTimeCubit, timerModel, historyRepository)();
               setState(() {
                 _isStanding = false;
                 logic.stopStandingSession(historyRepository);
@@ -127,6 +131,14 @@ class _TimerScreenState extends State<TimerScreen>
         Duration(milliseconds: 100), (Timer t) => sendPort.send("tick"));
   }
 
+  void initAnimations() {
+    _revealAnimation = AnimationController(
+      value: 0.0,
+      duration: const Duration(milliseconds: 100),
+      vsync: this,
+    );
+  }
+
   @override
   void initState() {
     logic.timerScreenInitState();
@@ -140,11 +152,7 @@ class _TimerScreenState extends State<TimerScreen>
 
     super.initState();
 
-    _revealAnimation = AnimationController(
-      value: 0.0,
-      duration: const Duration(milliseconds: 100),
-      vsync: this,
-    );
+    initAnimations();
 
     clearOldHistory();
 
@@ -155,11 +163,12 @@ class _TimerScreenState extends State<TimerScreen>
         _onboardingTour?.startOnboardingTour(context);
 
         final timerModel = context.read<TimerStateModel>();
-        final elapsedTimeModel = context.read<ElapsedTimeModel>();
+        final elapsedTimeCubit = BlocProvider.of<ElapsedTimeCubit>(context);
+
         final historyRepository = context.read<HistoryRepository>();
 
         logic.onOnboardingConfigLoaded(initializedOnboardingConfig,
-            elapsedTimeModel, timerModel, historyRepository, _isStanding);
+            elapsedTimeCubit, timerModel, historyRepository, _isStanding);
       });
     });
   }
@@ -204,7 +213,7 @@ class _TimerScreenState extends State<TimerScreen>
     }
   }
 
-  void Function() nextStage(ElapsedTimeModel elapsedTimeModel,
+  void Function() nextStage(ElapsedTimeCubit elapsedTimeCubit,
       TimerStateModel timerModel, HistoryRepository historyRepository) {
     final nextStage = () {
       if (logic.shouldShowWorkEndedDialogOnNextStageClick(timerModel)) {
@@ -218,17 +227,17 @@ class _TimerScreenState extends State<TimerScreen>
 
       _animateSessionInfo(() {
         logic.nextStage(
-            elapsedTimeModel, timerModel, historyRepository, _isStanding);
+            elapsedTimeCubit, timerModel, historyRepository, _isStanding);
       });
     };
 
     return nextStage;
   }
 
-  void Function() onPleaseStandUpConfirmed(ElapsedTimeModel elapsedTimeModel,
+  void Function() onPleaseStandUpConfirmed(ElapsedTimeCubit elapsedTimeCubit,
       TimerStateModel timerModel, HistoryRepository historyRepository) {
     final result = () {
-      nextStage(elapsedTimeModel, timerModel, historyRepository)();
+      nextStage(elapsedTimeCubit, timerModel, historyRepository)();
       if (!_isStanding) {
         try {
           setState(() {
@@ -247,7 +256,7 @@ class _TimerScreenState extends State<TimerScreen>
       heroTag: "proceed-fab",
       onPressed: () {
         final timerModel = context.read<TimerStateModel>();
-        final elapsedTimeModel = context.read<ElapsedTimeModel>();
+        final elapsedTimeCubit = BlocProvider.of<ElapsedTimeCubit>(context);
         final historyRepository = context.read<HistoryRepository>();
         final settings = context.read<Settings>();
 
@@ -262,13 +271,13 @@ class _TimerScreenState extends State<TimerScreen>
               builder: (BuildContext context) {
                 return SuggestToStandDialog(
                     onConfirm: onPleaseStandUpConfirmed(
-                        elapsedTimeModel, timerModel, historyRepository),
+                        elapsedTimeCubit, timerModel, historyRepository),
                     onReject: nextStage(
-                        elapsedTimeModel, timerModel, historyRepository));
+                        elapsedTimeCubit, timerModel, historyRepository));
               },
             );
           } else {
-            nextStage(elapsedTimeModel, timerModel, historyRepository)();
+            nextStage(elapsedTimeCubit, timerModel, historyRepository)();
           }
         });
       },
@@ -411,7 +420,7 @@ class _TimerScreenState extends State<TimerScreen>
             ),
             Center(
                 child: FadeTransition(
-              opacity: _revealAnimation,
+              opacity: _revealAnimation!,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -499,20 +508,23 @@ class _TimerScreenState extends State<TimerScreen>
             onExpand: () {
               _animateSessionInfo(() {
                 var timerModel = context.read<TimerStateModel>();
-                var elapsedTimeModel = context.read<ElapsedTimeModel>();
+                final elapsedTimeCubit =
+                    BlocProvider.of<ElapsedTimeCubit>(context);
                 final historyRepository = context.read<HistoryRepository>();
                 logic.startWorkSession(
-                    elapsedTimeModel, timerModel, historyRepository);
+                    elapsedTimeCubit, timerModel, historyRepository);
                 _onboardingTour?.moveToSecondOnboardingTourStep(context);
               });
             },
             onCollapse: () {
               _animateSessionInfo(() {
                 final timerModel = context.read<TimerStateModel>();
-                final elapsedTimeModel = context.read<ElapsedTimeModel>();
+                final elapsedTimeCubit =
+                    BlocProvider.of<ElapsedTimeCubit>(context);
+
                 final historyRepository = context.read<HistoryRepository>();
                 logic.stopSession(
-                    elapsedTimeModel, timerModel, historyRepository);
+                    elapsedTimeCubit, timerModel, historyRepository);
               });
             },
             children: [proceedStageFab(), pauseResumeFab()]));
@@ -524,7 +536,7 @@ class _TimerScreenState extends State<TimerScreen>
     tickTimer?.cancel();
     logic.timeScreenDispose();
     standingGoalReachedDialogDelayTimer?.cancel();
-    _revealAnimation.dispose();
+    _revealAnimation!.dispose();
     super.dispose();
   }
 

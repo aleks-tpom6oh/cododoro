@@ -1,11 +1,11 @@
-import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/cubit/elapsed_time_cubit.dart';
+import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
 import 'package:cododoro/data_layer/storage/Settings.dart';
+import 'package:cododoro/utils.dart';
 import 'package:cododoro/viewlogic/WorkTimeGoalEstimate.dart';
 import 'package:cododoro/viewlogic/WorkTimeRemaining.dart';
 import 'package:flutter/material.dart';
-import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
-import 'package:provider/provider.dart';
-import 'package:cododoro/utils.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WorkRestTimer extends StatefulWidget {
   final void Function() showIdleScreen;
@@ -21,7 +21,7 @@ class _WorkRestTimerState extends State<WorkRestTimer> {
   Widget build(BuildContext context) {
     final historyRepository = context.watch<HistoryRepository>();
     final settings = context.read<Settings>();
-    context.watch<ElapsedTimeModel>();
+    BlocProvider.of<ElapsedTimeCubit>(context, listen: true);
 
     final Iterable<StoredInterval>? todayIntervals =
         historyRepository.getTodayIntervals();

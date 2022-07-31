@@ -1,13 +1,13 @@
-import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/cubit/elapsed_time_cubit.dart';
 import 'package:cododoro/data_layer/models/TimerStateModel.dart';
-import 'package:cododoro/onboarding/OnboardingConfig.dart';
-import 'package:cododoro/onboarding/OnboardingUtils.dart';
 import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
 import 'package:cododoro/data_layer/storage/Settings.dart';
+import 'package:cododoro/onboarding/OnboardingConfig.dart';
+import 'package:cododoro/onboarding/OnboardingUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../viewlogic/TimerScreenLogic.dart' as timerScreenLogic;
+import '../viewlogic/timer_screen_logic.dart' as timerScreenLogic;
 
 class OnboardingTour {
   final OnboardingConfig config;
@@ -78,10 +78,10 @@ Press the timer button to go from chilling to work""",
             TextButton(
                 onPressed: () {
                   var timerModel = context.read<TimerStateModel>();
-                  var elapsedTimeModel = context.read<ElapsedTimeModel>();
+                  var elapsedTimeCubit = BlocProvider.of<ElapsedTimeCubit>(context);
                   final historyRepository = context.read<HistoryRepository>();
                   timerScreenLogic.startWorkSession(
-                      elapsedTimeModel, timerModel, historyRepository);
+                      elapsedTimeCubit, timerModel, historyRepository);
                   _overlayEntry?.remove();
 
                   _showSecondStep(context);

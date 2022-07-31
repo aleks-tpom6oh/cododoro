@@ -1,13 +1,14 @@
 import 'dart:async';
 
 import 'package:avo_inspector/avo_inspector.dart';
-import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/cubit/elapsed_time_cubit.dart';
 import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
 import 'package:cododoro/data_layer/storage/ThemeSettings.dart';
-import 'package:cododoro/widgets/IdleScreen.dart';
+import 'package:cododoro/idle_screen/idle_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:mixpanel_analytics/mixpanel_analytics.dart';
@@ -20,7 +21,7 @@ import 'package:timezone/timezone.dart' as tz;
 
 import 'data_layer/models/TimerStateModel.dart';
 import 'data_layer/storage/Settings.dart';
-import 'widgets/TimerScreen.dart';
+import 'home/timer_screen.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -172,20 +173,23 @@ class _MyAppState extends State<MyApp> {
           ChangeNotifierProvider(create: (context) => TimerStateModel()),
           ChangeNotifierProvider(
               create: (context) => Settings(prefs: sharedPrefs)),
-          ChangeNotifierProvider(create: (context) => ElapsedTimeModel()),
           ChangeNotifierProvider(
               create: (context) => HistoryRepository(prefs: sharedPrefs)),
           ChangeNotifierProvider(create: (context) => themeSettings)
         ],
-        child: MaterialApp(
-            title: 'Pomodoro Code',
-            theme: _themeSetting == ThemeSetting.dark ? darkTheme : lightTheme,
-            darkTheme:
-                _themeSetting == ThemeSetting.light ? lightTheme : darkTheme,
-            home: TimerScreen(showIdleScreen: () {
-              setState(() {
-                isIdle = true;
-              });
-            })));
+        child: BlocProvider(
+          create: (context) => ElapsedTimeCubit(),
+          child: MaterialApp(
+              title: 'Pomodoro Code',
+              theme:
+                  _themeSetting == ThemeSetting.dark ? darkTheme : lightTheme,
+              darkTheme:
+                  _themeSetting == ThemeSetting.light ? lightTheme : darkTheme,
+              home: TimerScreen(showIdleScreen: () {
+                setState(() {
+                  isIdle = true;
+                });
+              })),
+        ));
   }
 }

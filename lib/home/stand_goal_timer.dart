@@ -1,12 +1,12 @@
-import 'package:cododoro/data_layer/models/ElapsedTimeModel.dart';
+import 'package:cododoro/data_layer/cubit/elapsed_time_cubit.dart';
 import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
 import 'package:cododoro/data_layer/storage/Settings.dart';
-import 'package:cododoro/viewlogic/StandTimeRemaining.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:cododoro/utils.dart';
+import 'package:cododoro/viewlogic/StandTimeRemaining.dart';
+import 'package:cododoro/widgets/dialogs/ShareStandingGoalReachedDialog.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'dialogs/ShareStandingGoalReachedDialog.dart';
 
 class StandGoalTimer extends StatefulWidget {
   StandGoalTimer({Key? key, required this.standingDeskTrackingEnabled})
@@ -21,7 +21,7 @@ class StandGoalTimer extends StatefulWidget {
 class _StandGoalTimerState extends State<StandGoalTimer> {
   @override
   Widget build(BuildContext context) {
-    context.watch<ElapsedTimeModel>();
+    BlocProvider.of<ElapsedTimeCubit>(context, listen: true);
     final historyRepository = context.read<HistoryRepository>();
     final settings = context.read<Settings>();
 
