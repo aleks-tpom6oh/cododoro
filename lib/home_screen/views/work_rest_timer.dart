@@ -6,7 +6,7 @@ import 'package:cododoro/common/utils/work_time_remaining.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../utils.dart';
+import '../../common/utils/utils.dart';
 
 class WorkRestTimer extends StatelessWidget {
   final void Function() showIdleScreen;

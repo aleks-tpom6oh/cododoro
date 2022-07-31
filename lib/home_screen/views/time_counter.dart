@@ -2,7 +2,7 @@ import 'package:cododoro/common/cubit/elapsed_time_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../utils.dart';
+import '../../common/utils/utils.dart';
 
 class TimerCounter extends StatelessWidget {
   const TimerCounter({Key? key, this.elapsedTime: 0}) : super(key: key);

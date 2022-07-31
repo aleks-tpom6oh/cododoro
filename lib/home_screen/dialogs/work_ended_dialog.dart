@@ -4,7 +4,7 @@ import 'package:cododoro/common/utils/stand_time_remaining.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../utils.dart';
+import '../../common/utils/utils.dart';
 
 class WorkEndedDialog extends StatefulWidget {
   WorkEndedDialog({Key? key}) : super(key: key);

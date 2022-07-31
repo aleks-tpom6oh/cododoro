@@ -1,7 +1,7 @@
 import 'package:cododoro/common/data_layer/persistent/history_repository.dart';
 import 'package:cododoro/common/data_layer/persistent/settings.dart';
 
-import '../../utils.dart';
+import 'utils.dart';
 
 Duration calculateRemainingStandTime(
     HistoryRepository historyRepository, Settings settings) {

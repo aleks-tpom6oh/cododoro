@@ -3,7 +3,7 @@ import 'package:cododoro/common/data_layer/persistent/history_repository.dart';
 import 'package:cododoro/common/data_layer/persistent/settings.dart';
 import 'package:cododoro/common/utils/stand_time_remaining.dart';
 import 'package:cododoro/home_screen/dialogs/share_standing_goal_reached_dialog.dart';
-import 'package:cododoro/utils.dart';
+import 'package:cododoro/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

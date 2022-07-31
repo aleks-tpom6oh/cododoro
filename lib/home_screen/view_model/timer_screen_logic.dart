@@ -15,7 +15,7 @@ import 'package:cododoro/common/data_layer/persistent/settings.dart';
 import 'package:confetti/confetti.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../utils.dart';
+import '../../common/utils/utils.dart';
 
 BaseNotifier soundNotifier = SoundNotifier();
 

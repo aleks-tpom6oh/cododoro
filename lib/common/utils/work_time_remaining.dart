@@ -2,7 +2,7 @@ import 'package:cododoro/common/data_layer/persistent/history_repository.dart';
 import 'package:cododoro/common/data_layer/persistent/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../utils.dart';
+import 'utils.dart';
 
 Duration calculateRemainingWorkTime(
     HistoryRepository historyRepository, Settings settings) {
