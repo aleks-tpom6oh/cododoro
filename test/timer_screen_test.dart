@@ -1,16 +1,16 @@
-import 'package:cododoro/data_layer/cubit/elapsed_time_cubit.dart';
-import 'package:cododoro/data_layer/models/TimerStates.dart';
-import 'package:cododoro/notifications/BaseNotifier.dart';
-import 'package:cododoro/home/timer_screen.dart';
+import 'package:cododoro/common/cubit/elapsed_time_cubit.dart';
+import 'package:cododoro/common/data_layer/timer_states.dart';
+import 'package:cododoro/notifications/base_notifier.dart';
+import 'package:cododoro/home_screen/screen/timer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
-import 'package:cododoro/data_layer/models/TimerStateModel.dart';
-import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
+import 'package:cododoro/common/data_layer/timer_state_model.dart';
+import 'package:cododoro/common/data_layer/persistent/history_repository.dart';
 
-import 'package:cododoro/viewlogic/timer_screen_logic.dart' as logic;
+import 'package:cododoro/home_screen/view_model/timer_screen_logic.dart' as logic;
 
 import 'dart:convert';
 

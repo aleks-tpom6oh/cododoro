@@ -1,5 +1,5 @@
-import 'package:cododoro/data_layer/storage/Settings.dart';
-import 'package:cododoro/viewlogic/isDayChangeOnTick.dart';
+import 'package:cododoro/common/data_layer/persistent/settings.dart';
+import 'package:cododoro/common/utils/is_day_change_on_tick.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

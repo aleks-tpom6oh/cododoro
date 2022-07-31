@@ -1,5 +1,5 @@
-import 'package:cododoro/data_layer/models/TimerStateModel.dart';
-import 'package:cododoro/data_layer/models/TimerStates.dart';
+import 'package:cododoro/common/data_layer/timer_state_model.dart';
+import 'package:cododoro/common/data_layer/timer_states.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:cododoro/data_layer/storage/ThemeSettings.dart';
-import 'package:cododoro/viewlogic/WorkTimeRemaining.dart';
+import 'package:cododoro/common/data_layer/persistent/theme_settings.dart';
+import 'package:cododoro/common/utils/work_time_remaining.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';

@@ -1,12 +1,14 @@
-import 'package:cododoro/data_layer/cubit/elapsed_time_cubit.dart';
-import 'package:cododoro/data_layer/cubit/elapsed_time_state.dart';
-import 'package:cododoro/data_layer/models/TimerStateModel.dart';
-import 'package:cododoro/data_layer/models/TimerStates.dart';
-import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
-import 'package:cododoro/data_layer/storage/Settings.dart';
-import 'package:cododoro/onboarding/OnboardingConfig.dart';
-import 'package:cododoro/viewlogic/isDayChangeOnTick.dart';
-import 'package:cododoro/viewlogic/timer_screen_logic.dart' as TimerScreenLogic;
+import 'package:cododoro/common/cubit/elapsed_time_cubit.dart';
+import 'package:cododoro/common/cubit/elapsed_time_state.dart';
+import 'package:cododoro/common/data_layer/timer_state_model.dart';
+import 'package:cododoro/common/data_layer/timer_states.dart';
+import 'package:cododoro/common/data_layer/persistent/history_repository.dart';
+import 'package:cododoro/common/data_layer/persistent/settings.dart';
+import 'package:cododoro/notifications/base_notifier.dart';
+import 'package:cododoro/onboarding/onboarding_config.dart';
+import 'package:cododoro/common/utils/is_day_change_on_tick.dart';
+import 'package:cododoro/home_screen/view_model/timer_screen_logic.dart'
+    as TimerScreenLogic;
 import 'package:flutter/material.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -14,7 +16,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
 
 import 'timer_screen_logic_test.mocks.dart';
-import 'timer_screen_test.mocks.dart';
 
 class AlwaysTrueIsDayChangeOnTick implements IsDayChangeOnTick {
   @override
@@ -36,7 +37,13 @@ class AlwaysFalseIsDayChangeOnTick implements IsDayChangeOnTick {
   }
 }
 
-@GenerateMocks([ElapsedTimeCubit, TimerStateModel, HistoryRepository, Settings])
+@GenerateMocks([
+  ElapsedTimeCubit,
+  TimerStateModel,
+  HistoryRepository,
+  Settings,
+  BaseNotifier
+])
 void main() {
   test('Tick when timer is not running does not increase the elapsed time',
       () async {

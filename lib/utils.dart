@@ -1,4 +1,4 @@
-import 'package:cododoro/data_layer/storage/HistoryRepository.dart';
+import 'package:cododoro/common/data_layer/persistent/history_repository.dart';
 
 stopwatchTime(Duration d) => d.toString().split('.').first.padLeft(8, "0");
 
@@ -17,8 +17,8 @@ extension TimePrinter on DateTime {
   }
 
   String toHourMinutesTimestamp() {
-    final timeString =this.toString().split(" ")[1];
-  
+    final timeString = this.toString().split(" ")[1];
+
     return timeString.substring(0, timeString.lastIndexOf(":"));
   }
 }

@@ -6,12 +6,14 @@ import 'dart:async' as _i3;
 import 'dart:ui' as _i9;
 
 import 'package:bloc/bloc.dart' as _i6;
-import 'package:cododoro/data_layer/cubit/elapsed_time_cubit.dart' as _i5;
-import 'package:cododoro/data_layer/cubit/elapsed_time_state.dart' as _i2;
-import 'package:cododoro/data_layer/models/TimerStateModel.dart' as _i7;
-import 'package:cododoro/data_layer/models/TimerStates.dart' as _i8;
-import 'package:cododoro/data_layer/storage/HistoryRepository.dart' as _i10;
-import 'package:cododoro/data_layer/storage/Settings.dart' as _i11;
+import 'package:cododoro/common/cubit/elapsed_time_cubit.dart' as _i5;
+import 'package:cododoro/common/cubit/elapsed_time_state.dart' as _i2;
+import 'package:cododoro/common/data_layer/persistent/history_repository.dart'
+    as _i10;
+import 'package:cododoro/common/data_layer/persistent/settings.dart' as _i11;
+import 'package:cododoro/common/data_layer/timer_state_model.dart' as _i7;
+import 'package:cododoro/common/data_layer/timer_states.dart' as _i8;
+import 'package:cododoro/notifications/base_notifier.dart' as _i12;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:shared_preferences/shared_preferences.dart' as _i4;
 
@@ -351,4 +353,27 @@ class MockSettings extends _i1.Mock implements _i11.Settings {
   void notifyListeners() =>
       super.noSuchMethod(Invocation.method(#notifyListeners, []),
           returnValueForMissingStub: null);
+}
+
+/// A class which mocks [BaseNotifier].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockBaseNotifier extends _i1.Mock implements _i12.BaseNotifier {
+  MockBaseNotifier() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i3.Future<void> notify(String? message,
+          {String? soundPath, Duration? delay = Duration.zero}) =>
+      (super.noSuchMethod(
+          Invocation.method(
+              #notify, [message], {#soundPath: soundPath, #delay: delay}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
+  @override
+  void dispose() => super.noSuchMethod(Invocation.method(#dispose, []),
+      returnValueForMissingStub: null);
+  @override
+  String toString() => super.toString();
 }
