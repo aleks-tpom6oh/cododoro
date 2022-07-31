@@ -16,7 +16,6 @@ dependencies:
   async: ^2.6.1
   intl: ^0.17.0
 
-  provider: ^5.0.0
   shared_preferences: ^2.0.6
   just_audio: ^0.9.5
   flutter_local_notifications: ^8.1.1
@@ -31,7 +30,7 @@ dependencies:
   mocktail: ^0.1.4
   confetti: ^0.6.0
   avo_inspector: ^0.9.10
-  flutter_bloc: ^7.1.0
+  flutter_bloc: ^8.0.1
   freezed_annotation: ^1.1.0
   json_annotation: ^4.6.0
 

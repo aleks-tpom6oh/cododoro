@@ -2,11 +2,11 @@
 // in cododoro/test/timer_screen_logic_test.dart.
 // Do not manually edit this file.
 
-import 'dart:async' as _i3;
+import 'dart:async' as _i5;
 import 'dart:ui' as _i9;
 
 import 'package:bloc/bloc.dart' as _i6;
-import 'package:cododoro/common/cubit/elapsed_time_cubit.dart' as _i5;
+import 'package:cododoro/common/cubit/elapsed_time_cubit.dart' as _i4;
 import 'package:cododoro/common/cubit/elapsed_time_state.dart' as _i2;
 import 'package:cododoro/common/data_layer/persistent/history_repository.dart'
     as _i10;
@@ -15,7 +15,7 @@ import 'package:cododoro/common/data_layer/timer_state_model.dart' as _i7;
 import 'package:cododoro/common/data_layer/timer_states.dart' as _i8;
 import 'package:cododoro/notifications/base_notifier.dart' as _i12;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:shared_preferences/shared_preferences.dart' as _i4;
+import 'package:shared_preferences/shared_preferences.dart' as _i3;
 
 // ignore_for_file: avoid_redundant_argument_values
 // ignore_for_file: avoid_setters_without_getters
@@ -28,16 +28,13 @@ import 'package:shared_preferences/shared_preferences.dart' as _i4;
 class _FakeElapsedTimeState_0 extends _i1.Fake implements _i2.ElapsedTimeState {
 }
 
-class _FakeStreamSubscription_1<T> extends _i1.Fake
-    implements _i3.StreamSubscription<T> {}
-
-class _FakeSharedPreferences_2 extends _i1.Fake
-    implements _i4.SharedPreferences {}
+class _FakeSharedPreferences_1 extends _i1.Fake
+    implements _i3.SharedPreferences {}
 
 /// A class which mocks [ElapsedTimeCubit].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockElapsedTimeCubit extends _i1.Mock implements _i5.ElapsedTimeCubit {
+class MockElapsedTimeCubit extends _i1.Mock implements _i4.ElapsedTimeCubit {
   MockElapsedTimeCubit() {
     _i1.throwOnMissingStub(this);
   }
@@ -47,10 +44,10 @@ class MockElapsedTimeCubit extends _i1.Mock implements _i5.ElapsedTimeCubit {
       (super.noSuchMethod(Invocation.getter(#state),
           returnValue: _FakeElapsedTimeState_0()) as _i2.ElapsedTimeState);
   @override
-  _i3.Stream<_i2.ElapsedTimeState> get stream =>
+  _i5.Stream<_i2.ElapsedTimeState> get stream =>
       (super.noSuchMethod(Invocation.getter(#stream),
               returnValue: Stream<_i2.ElapsedTimeState>.empty())
-          as _i3.Stream<_i2.ElapsedTimeState>);
+          as _i5.Stream<_i2.ElapsedTimeState>);
   @override
   bool get isClosed =>
       (super.noSuchMethod(Invocation.getter(#isClosed), returnValue: false)
@@ -62,22 +59,6 @@ class MockElapsedTimeCubit extends _i1.Mock implements _i5.ElapsedTimeCubit {
   void onTick({bool? addTime}) =>
       super.noSuchMethod(Invocation.method(#onTick, [], {#addTime: addTime}),
           returnValueForMissingStub: null);
-  @override
-  _i3.StreamSubscription<_i2.ElapsedTimeState> listen(
-          void Function(_i2.ElapsedTimeState)? onData,
-          {Function? onError,
-          void Function()? onDone,
-          bool? cancelOnError}) =>
-      (super.noSuchMethod(
-              Invocation.method(#listen, [
-                onData
-              ], {
-                #onError: onError,
-                #onDone: onDone,
-                #cancelOnError: cancelOnError
-              }),
-              returnValue: _FakeStreamSubscription_1<_i2.ElapsedTimeState>())
-          as _i3.StreamSubscription<_i2.ElapsedTimeState>);
   @override
   void emit(_i2.ElapsedTimeState? state) =>
       super.noSuchMethod(Invocation.method(#emit, [state]),
@@ -95,9 +76,9 @@ class MockElapsedTimeCubit extends _i1.Mock implements _i5.ElapsedTimeCubit {
       super.noSuchMethod(Invocation.method(#onError, [error, stackTrace]),
           returnValueForMissingStub: null);
   @override
-  _i3.Future<void> close() => (super.noSuchMethod(Invocation.method(#close, []),
+  _i5.Future<void> close() => (super.noSuchMethod(Invocation.method(#close, []),
       returnValue: Future<void>.value(),
-      returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
+      returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
   String toString() => super.toString();
 }
@@ -179,11 +160,11 @@ class MockHistoryRepository extends _i1.Mock implements _i10.HistoryRepository {
   }
 
   @override
-  _i4.SharedPreferences get prefs =>
+  _i3.SharedPreferences get prefs =>
       (super.noSuchMethod(Invocation.getter(#prefs),
-          returnValue: _FakeSharedPreferences_2()) as _i4.SharedPreferences);
+          returnValue: _FakeSharedPreferences_1()) as _i3.SharedPreferences);
   @override
-  set prefs(_i4.SharedPreferences? _prefs) =>
+  set prefs(_i3.SharedPreferences? _prefs) =>
       super.noSuchMethod(Invocation.setter(#prefs, _prefs),
           returnValueForMissingStub: null);
   @override
@@ -255,11 +236,11 @@ class MockSettings extends _i1.Mock implements _i11.Settings {
   }
 
   @override
-  _i4.SharedPreferences get prefs =>
+  _i3.SharedPreferences get prefs =>
       (super.noSuchMethod(Invocation.getter(#prefs),
-          returnValue: _FakeSharedPreferences_2()) as _i4.SharedPreferences);
+          returnValue: _FakeSharedPreferences_1()) as _i3.SharedPreferences);
   @override
-  set prefs(_i4.SharedPreferences? _prefs) =>
+  set prefs(_i3.SharedPreferences? _prefs) =>
       super.noSuchMethod(Invocation.setter(#prefs, _prefs),
           returnValueForMissingStub: null);
   @override
@@ -364,13 +345,13 @@ class MockBaseNotifier extends _i1.Mock implements _i12.BaseNotifier {
   }
 
   @override
-  _i3.Future<void> notify(String? message,
+  _i5.Future<void> notify(String? message,
           {String? soundPath, Duration? delay = Duration.zero}) =>
       (super.noSuchMethod(
           Invocation.method(
               #notify, [message], {#soundPath: soundPath, #delay: delay}),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
   @override
   void dispose() => super.noSuchMethod(Invocation.method(#dispose, []),
       returnValueForMissingStub: null);
