@@ -78,7 +78,7 @@ Press the timer button to go from chilling to work""",
             TextButton(
                 onPressed: () {
                   var timerModel = context.read<TimerStateModel>();
-                  var elapsedTimeCubit = BlocProvider.of<ElapsedTimeCubit>(context);
+                  var elapsedTimeCubit = context.read<ElapsedTimeCubit>();
                   final historyRepository = context.read<HistoryRepository>();
                   timerScreenLogic.startWorkSession(
                       elapsedTimeCubit, timerModel, historyRepository);

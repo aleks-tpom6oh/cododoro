@@ -83,10 +83,9 @@ void onOnboardingConfigLoaded(
     OnboardingConfig config,
     ElapsedTimeCubit elapsedTimeCubit,
     TimerStateModel timerModel,
-    HistoryRepository history,
-    bool isStanding) {
+    HistoryRepository history) {
   if (config.stepShown >= 1) {
-    nextStage(elapsedTimeCubit, timerModel, history, isStanding);
+    startWorkSession(elapsedTimeCubit, timerModel, history);    
   }
 }
 

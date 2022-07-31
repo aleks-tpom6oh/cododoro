@@ -68,7 +68,7 @@ class _TimerScreenState extends State<TimerScreen>
 
   void _animateSessionInfo(Function action) {
     if (_revealAnimation != null) {
-      _revealAnimation?.reverse().then((_) {
+      _revealAnimation!.reverse().then((_) {
         _fadeInSessionInfo();
         action.call();
       });
@@ -133,7 +133,7 @@ class _TimerScreenState extends State<TimerScreen>
 
   void initAnimations() {
     _revealAnimation = AnimationController(
-      value: 0.0,
+      value:  0.0,
       duration: const Duration(milliseconds: 100),
       vsync: this,
     );
@@ -163,12 +163,12 @@ class _TimerScreenState extends State<TimerScreen>
         _onboardingTour?.startOnboardingTour(context);
 
         final timerModel = context.read<TimerStateModel>();
-        final elapsedTimeCubit = BlocProvider.of<ElapsedTimeCubit>(context);
+        final elapsedTimeCubit = context.read<ElapsedTimeCubit>();
 
         final historyRepository = context.read<HistoryRepository>();
 
         logic.onOnboardingConfigLoaded(initializedOnboardingConfig,
-            elapsedTimeCubit, timerModel, historyRepository, _isStanding);
+            elapsedTimeCubit, timerModel, historyRepository);
       });
     });
   }

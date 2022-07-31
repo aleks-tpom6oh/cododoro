@@ -21,7 +21,7 @@ class StandGoalTimer extends StatefulWidget {
 class _StandGoalTimerState extends State<StandGoalTimer> {
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<ElapsedTimeCubit>(context, listen: true);
+    context.watch<ElapsedTimeCubit>();
     final historyRepository = context.read<HistoryRepository>();
     final settings = context.read<Settings>();
 

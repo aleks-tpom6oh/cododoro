@@ -80,7 +80,7 @@ void main() {
 
     // When
     TimerScreenLogic.onOnboardingConfigLoaded(
-        config, mockElapsedTimeCubit, mockTimerModel, mockHistoryRepo, false);
+        config, mockElapsedTimeCubit, mockTimerModel, mockHistoryRepo);
 
     // Then
     verify(mockHistoryRepo.startSession(IntervalType.work));
@@ -104,7 +104,7 @@ void main() {
 
     // When
     TimerScreenLogic.onOnboardingConfigLoaded(
-        config, mockElapsedTimeCubit, mockTimerModel, mockHistoryRepo, false);
+        config, mockElapsedTimeCubit, mockTimerModel, mockHistoryRepo);
 
     // Then
     verifyNever(mockHistoryRepo.startSession(IntervalType.work));

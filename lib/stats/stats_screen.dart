@@ -28,9 +28,8 @@ class _StatsScreenState extends State<StatsScreen> {
         title: Text("Stats Screen"),
       ),
       body: Center(
-          child: BlocBuilder<ElapsedTimeCubit, ElapsedTimeState>( //Selector<ElapsedTimeModel, int>(
+          child: BlocBuilder<ElapsedTimeCubit, ElapsedTimeState>(
         buildWhen: (previous, current) => Duration(seconds: previous.elapsedTime.inMinutes) != Duration(seconds: current.elapsedTime.inMinutes),
-        //buildWhen: (_, elapsedTimeModel) => Duration(seconds: elapsedTimeModel.elapsedTime).inMinutes,
         builder: (_, __) {
           final historyRepository = context.watch<HistoryRepository>();
 

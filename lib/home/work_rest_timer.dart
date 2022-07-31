@@ -21,7 +21,7 @@ class _WorkRestTimerState extends State<WorkRestTimer> {
   Widget build(BuildContext context) {
     final historyRepository = context.watch<HistoryRepository>();
     final settings = context.read<Settings>();
-    BlocProvider.of<ElapsedTimeCubit>(context, listen: true);
+    context.watch<ElapsedTimeCubit>();
 
     final Iterable<StoredInterval>? todayIntervals =
         historyRepository.getTodayIntervals();
