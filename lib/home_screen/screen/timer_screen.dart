@@ -1,7 +1,13 @@
 import 'dart:isolate';
 
 import 'package:cododoro/common/cubit/elapsed_time_cubit.dart';
+import 'package:cododoro/common/data_layer/timer_state_model.dart';
+import 'package:cododoro/common/data_layer/timer_states.dart';
 import 'package:cododoro/common/utils/is_day_change_on_tick.dart';
+import 'package:cododoro/home_screen/views/day_work_rest_timer.dart';
+import 'package:cododoro/home_screen/views/stand_goal_timer.dart';
+import 'package:cododoro/home_screen/views/time_counter.dart';
+import 'package:cododoro/home_screen/views/week_work_timer.dart';
 import 'package:cododoro/main.dart';
 import 'package:cododoro/common/data_layer/volume_controller.dart';
 
@@ -27,14 +33,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../views/stand_goal_timer.dart';
-import '../views/work_rest_timer.dart';
-import '../views/time_counter.dart';
 import 'dart:async';
 
-import '../../common/data_layer/timer_state_model.dart';
-import '../../common/data_layer/timer_states.dart';
-import '../view_model/timer_screen_logic.dart' as logic;
+import 'package:cododoro/home_screen/view_model/timer_screen_logic.dart'
+    as logic;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -307,7 +309,7 @@ class _TimerScreenState extends State<TimerScreen>
 
   Widget seeStatsButton() {
     return Container(
-      margin: new EdgeInsets.only(left: 8, top: 8),
+      margin: new EdgeInsets.only(top: 8),
       child: ElevatedButton(
         child: Text('View stats'),
         onPressed: () {
@@ -371,9 +373,16 @@ class _TimerScreenState extends State<TimerScreen>
                         child: Column(
                           children: [
                             seeStatsButton(),
-                            SizedBox(height: 8),
-                            WorkRestTimer(
-                                showIdleScreen: widget.showIdleScreen),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 8),
+                                DayWorkRestTimer(
+                                    showIdleScreen: widget.showIdleScreen),
+                                SizedBox(height: 8),
+                                WeekWorkTimer(),
+                              ],
+                            ),
                           ],
                         )),
                     Container(
@@ -384,7 +393,8 @@ class _TimerScreenState extends State<TimerScreen>
                         children: [
                           Text("Intervals"),
                           DurationOutput(
-                              duration: settings.workDuration, label: "💻"),
+                              duration: settings.workDurationSeconds,
+                              label: "💻"),
                           DurationOutput(
                               duration: settings.restDuration, label: "🏖"),
                           IconButton(

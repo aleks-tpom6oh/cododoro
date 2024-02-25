@@ -244,7 +244,7 @@ class MockSettings extends _i1.Mock implements _i11.Settings {
       super.noSuchMethod(Invocation.setter(#prefs, _prefs),
           returnValueForMissingStub: null);
   @override
-  int get workDuration =>
+  int get workDurationSeconds =>
       (super.noSuchMethod(Invocation.getter(#workDuration), returnValue: 0)
           as int);
   @override
@@ -280,7 +280,7 @@ class MockSettings extends _i1.Mock implements _i11.Settings {
       (super.noSuchMethod(Invocation.getter(#hasListeners), returnValue: false)
           as bool);
   @override
-  void setWorkDuration(int? newDuration) =>
+  void setWorkDurationSeconds(int? newDuration) =>
       super.noSuchMethod(Invocation.method(#setWorkDuration, [newDuration]),
           returnValueForMissingStub: null);
   @override

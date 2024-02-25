@@ -22,19 +22,19 @@ DateTime estimateWorkGoalTime(HistoryRepository historyRepository,
   if (latestInterval?.type == IntervalType.work) {
     final Duration timeLeftThisInterval = Duration(
         seconds:
-            max(0, settings.workDuration - latestInterval!.duration.inSeconds));
+            max(0, settings.workDurationSeconds - latestInterval!.duration.inSeconds));
 
     final Duration workTimeLeftAfterCurrentInterval =
         (workTimeTillGoal - timeLeftThisInterval);
 
     final int fullWorkIntervalsLeft =
         (workTimeLeftAfterCurrentInterval.inMilliseconds /
-                Duration(seconds: settings.workDuration).inMilliseconds)
+                Duration(seconds: settings.workDurationSeconds).inMilliseconds)
             .floor();
 
     final Duration extraWorkTime = workTimeTillGoal -
         timeLeftThisInterval -
-        Duration(seconds: fullWorkIntervalsLeft * settings.workDuration);
+        Duration(seconds: fullWorkIntervalsLeft * settings.workDurationSeconds);
 
     final int numberOfRestIntervalsLeft = extraWorkTime.inSeconds > 0
         ? fullWorkIntervalsLeft + 1
@@ -45,15 +45,15 @@ DateTime estimateWorkGoalTime(HistoryRepository historyRepository,
 
     estimatedTotalTime = timeLeftThisInterval +
         extraWorkTime +
-        Duration(seconds: fullWorkIntervalsLeft * settings.workDuration) +
+        Duration(seconds: fullWorkIntervalsLeft * settings.workDurationSeconds) +
         estimatedRestTime;
   } else {
     final int fullWorkIntervalsLeft = (workTimeTillGoal.inMilliseconds /
-            Duration(seconds: settings.workDuration).inMilliseconds)
+            Duration(seconds: settings.workDurationSeconds).inMilliseconds)
         .floor();
 
     final Duration extraWorkTime = workTimeTillGoal -
-        Duration(seconds: fullWorkIntervalsLeft * settings.workDuration);
+        Duration(seconds: fullWorkIntervalsLeft * settings.workDurationSeconds);
 
     final int numberOfRestIntervalsLeft = extraWorkTime.inSeconds > 0
         ? fullWorkIntervalsLeft - 1
@@ -69,7 +69,7 @@ DateTime estimateWorkGoalTime(HistoryRepository historyRepository,
 
     estimatedTotalTime = restTimeLeftThisInterval +
         extraWorkTime +
-        Duration(seconds: fullWorkIntervalsLeft * settings.workDuration) +
+        Duration(seconds: fullWorkIntervalsLeft * settings.workDurationSeconds) +
         estimatedRestTime;
   }
 

@@ -43,7 +43,7 @@ class _TimeSettingsCategoryState extends State<TimeSettingsCategory> {
         dayHoursAdjustment.toString();
 
     final workDuration =
-        "${Duration(seconds: this.widget.settings.workDuration).inMinutes}";
+        "${Duration(seconds: this.widget.settings.workDurationSeconds).inMinutes}";
     widget.workDurationInputController.text = workDuration;
     final restDuration =
         "${Duration(seconds: this.widget.settings.restDuration).inMinutes}";
@@ -79,7 +79,7 @@ class _TimeSettingsCategoryState extends State<TimeSettingsCategory> {
             ),
             TextButton(
               onPressed: () {
-                widget.settings.setWorkDuration(
+                widget.settings.setWorkDurationSeconds(
                     (double.parse(widget.workDurationInputController.text) * 60)
                         .toInt());
               },

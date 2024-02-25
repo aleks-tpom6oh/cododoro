@@ -8,6 +8,8 @@ const String standingDeskKey = "STANDING_DESK";
 const String showCuteCatsKey = "SHOW_CUTE_CATS";
 const String targetStandingMinutesKey = "TARGET_STANDING_MINUTES";
 const String targetWorkingMinutesKey = "TARGET_WORKING_MINUTES";
+const String targetWeeklyWorkingMinutesKey = "TARGET_WEEKLY_WORKING_MINUTES";
+const String weekStartDayKey = "WEEK_START_DAY";
 const String standingReminderHourKey = "STANDING_REMINDER_HOUR";
 
 int _defaultDayHoursOffset = 4;
@@ -33,11 +35,11 @@ class Settings with ChangeNotifier {
 
   bool _defaulShowCuteCats = true;
 
-  int get workDuration {
+  int get workDurationSeconds {
     return prefs.getInt(workDurationKey) ?? _defaultWorkDuration;
   }
 
-  void setWorkDuration(int newDuration) {
+  void setWorkDurationSeconds(int newDuration) {
     prefs.setInt(workDurationKey, newDuration);
     notifyListeners();
   }
@@ -99,6 +101,25 @@ class Settings with ChangeNotifier {
 
   void setTargetWorkingMinutes(int newTargetWorkingMinutes) {
     prefs.setInt(targetWorkingMinutesKey, newTargetWorkingMinutes);
+    notifyListeners();
+  }
+
+  int get targetWeeklyWorkingMinutes {
+    return prefs.getInt(targetWeeklyWorkingMinutesKey) ??
+        _defaulTargetWorkingMinutes * 5;
+  }
+
+  void setTargetWeeklyWorkingMinutes(int newTargetWeeklyWorkingMinutes) {
+    prefs.setInt(targetWeeklyWorkingMinutesKey, newTargetWeeklyWorkingMinutes);
+    notifyListeners();
+  }
+
+  int get weekStartDay {
+    return prefs.getInt(weekStartDayKey) ?? DateTime.monday;
+  }
+
+  void setWeekStartDay(int newWeekStartDay) {
+    prefs.setInt(weekStartDayKey, newWeekStartDay);
     notifyListeners();
   }
 

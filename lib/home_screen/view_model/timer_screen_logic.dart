@@ -93,7 +93,7 @@ Future<void> handleOvertime(TimerStateModel timerModel,
     ElapsedTimeCubit elapsedTimeCubit, Settings settings) async {
   if (timerModel.state == TimerStates.sessionWorking &&
       elapsedTimeCubit.state.elapsedTime.inSeconds >
-          await settings.workDuration) {
+          await settings.workDurationSeconds) {
     timerModel.state = TimerStates.sessionWorkingOvertime;
     await _notifyAll(getNotificationMessage(timerModel),
         soundPath: getNotificationSound(timerModel));
@@ -111,7 +111,7 @@ Future<void> handleOvertime(TimerStateModel timerModel,
         soundPath: getNotificationSound(timerModel));
   } else if (timerModel.state == TimerStates.sessionWorkingOvertime &&
       elapsedTimeCubit.state.elapsedTime.inSeconds <
-          await settings.workDuration) {
+          await settings.workDurationSeconds) {
     timerModel.state = TimerStates.sessionWorking;
     notificationsTimer?.cancel();
   } else if (timerModel.state == TimerStates.sessionRestingOvertime &&

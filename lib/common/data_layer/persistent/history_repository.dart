@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:clock/clock.dart';
 
 import 'settings.dart' as Settings;
 
@@ -209,6 +210,27 @@ class HistoryRepository with ChangeNotifier {
             [];
 
     return todayIntervals.map((e) => StoredInterval.fromJson(json.decode(e)));
+  }
+
+  Iterable<StoredInterval> getWeekIntervals({required int weekStartDay}) {
+    final today = clock.now();
+
+    final daysSinceStartOfWeek = today.weekday - weekStartDay;
+    final thisWeekDays = List.generate(daysSinceStartOfWeek + 1, (index) {
+      return today.subtract(Duration(days: index));
+    });
+
+    final stringIntervals = thisWeekDays.expand((element) {
+      return prefs.getStringList(dayKeyCache(time: element, prefs: prefs)) ??
+          [];
+    });
+
+    final parserIntervals = stringIntervals.map((intervalString) {
+      Map<String, dynamic> intervalJson = json.decode(intervalString);
+      return StoredInterval.fromJson(intervalJson);
+    });
+
+    return parserIntervals;
   }
 
   StoredInterval? getLatestPomodoroInterval() {
