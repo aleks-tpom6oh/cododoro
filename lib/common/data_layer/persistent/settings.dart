@@ -106,7 +106,7 @@ class Settings with ChangeNotifier {
 
   int get targetWeeklyWorkingMinutes {
     return prefs.getInt(targetWeeklyWorkingMinutesKey) ??
-        _defaulTargetWorkingMinutes * 5;
+        targetWorkingMinutes * 5;
   }
 
   void setTargetWeeklyWorkingMinutes(int newTargetWeeklyWorkingMinutes) {

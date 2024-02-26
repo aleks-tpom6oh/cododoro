@@ -46,7 +46,7 @@ class WeekWorkTimer extends StatelessWidget {
                   workTargetReached()
                       ? Text("💻 Goal reached")
                       : remainingIntervalsCount > 0
-                          ? Text("🍅 ${remainingIntervalsCount} to go")
+                          ? Text("less than ${remainingIntervalsCount} 🍅 to go")
                           : Text(
                               "💻 ${workTimeTillWeekGoal.toShortHMString()} till goal"),
                 ],
