@@ -9,12 +9,14 @@ class TimeSettingsCategory extends StatefulWidget {
     required this.workDurationInputController,
     required this.restDurationInputController,
     required this.dayStartAdjustmentInputController,
-    required this.targetWorkMinutesInputController,
+    required this.targetDayWorkMinutesInputController,
+    required this.targetWeekWorkHoursInputController,
   }) : super(key: key);
 
   final Settings settings;
   final TextEditingController workDurationInputController;
-  final TextEditingController targetWorkMinutesInputController;
+  final TextEditingController targetDayWorkMinutesInputController;
+  final TextEditingController targetWeekWorkHoursInputController;
   final TextEditingController restDurationInputController;
   final TextEditingController dayStartAdjustmentInputController;
 
@@ -50,7 +52,11 @@ class _TimeSettingsCategoryState extends State<TimeSettingsCategory> {
     widget.restDurationInputController.text = restDuration;
 
     final targetWorkingMinutes = widget.settings.targetWorkingMinutes;
-    widget.targetWorkMinutesInputController.text = "$targetWorkingMinutes";
+    widget.targetDayWorkMinutesInputController.text = "$targetWorkingMinutes";
+
+    final targetWeekWorkingHours =
+        widget.settings.targetWeeklyWorkingMinutes / 60;
+    widget.targetWeekWorkHoursInputController.text = "$targetWeekWorkingHours";
 
     return Column(
       children: [
@@ -91,7 +97,7 @@ class _TimeSettingsCategoryState extends State<TimeSettingsCategory> {
           children: [
             Expanded(
               child: TextField(
-                controller: widget.targetWorkMinutesInputController,
+                controller: widget.targetDayWorkMinutesInputController,
                 maxLines: 1,
                 textAlign: TextAlign.center,
                 enabled: true,
@@ -104,8 +110,8 @@ class _TimeSettingsCategoryState extends State<TimeSettingsCategory> {
             ),
             TextButton(
               onPressed: () {
-                final newTaretWorkingTime =
-                    int.tryParse(widget.targetWorkMinutesInputController.text);
+                final newTaretWorkingTime = int.tryParse(
+                    widget.targetDayWorkMinutesInputController.text);
                 if (newTaretWorkingTime != null &&
                     newTaretWorkingTime > 0 &&
                     newTaretWorkingTime <= 720) {
@@ -117,10 +123,52 @@ class _TimeSettingsCategoryState extends State<TimeSettingsCategory> {
                   if (newTaretWorkingTime != null &&
                       newTaretWorkingTime > 720) {
                     widget.settings.setTargetWorkingMinutes(720);
-                    widget.targetWorkMinutesInputController.text = "720";
+                    widget.targetDayWorkMinutesInputController.text = "720";
                   } else if (newTaretWorkingTime != null) {
                     widget.settings.setTargetWorkingMinutes(1);
-                    widget.targetWorkMinutesInputController.text = "1";
+                    widget.targetDayWorkMinutesInputController.text = "1";
+                  }
+                }
+              },
+              child: const Text('Set'),
+            )
+          ],
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: widget.targetWeekWorkHoursInputController,
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                enabled: true,
+                keyboardType: TextInputType.number,
+                inputFormatters: [ FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
+                decoration: InputDecoration(
+                    alignLabelWithHint: true,
+                    labelText: "Target working hours per week"),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                final newWeekTargetWorkingTime = double.tryParse(
+                    widget.targetWeekWorkHoursInputController.text);
+                if (newWeekTargetWorkingTime != null &&
+                    newWeekTargetWorkingTime > 0 &&
+                    newWeekTargetWorkingTime <= 84) {
+                  widget.settings.setTargetWeeklyWorkingMinutes(
+                      (newWeekTargetWorkingTime * 60).ceil());
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Use an integer from 1 to 84')));
+
+                  if (newWeekTargetWorkingTime != null &&
+                      newWeekTargetWorkingTime > 84) {
+                    widget.settings.setTargetWeeklyWorkingMinutes(84 * 60);
+                    widget.targetWeekWorkHoursInputController.text = "84";
+                  } else if (newWeekTargetWorkingTime != null) {
+                    widget.settings.setTargetWeeklyWorkingMinutes(1 * 60);
+                    widget.targetWeekWorkHoursInputController.text = "1";
                   }
                 }
               },
