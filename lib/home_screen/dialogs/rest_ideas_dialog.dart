@@ -28,6 +28,27 @@ class _RestIdeasDialogState extends State<RestIdeasDialog> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  Text("🖐️ ", style: TextStyle(color: textColor)),
+                  InkWell(
+                    onTap: () {
+                      mixpanelTrack(
+                          eventName: "Hand Exercise Clicked", params: {});
+                      launch('https://www.etsy.com/listing/1123315742/carpal-tunnel-exercises-print-digital');
+                    },
+                    child: Text("Hand exercise, carpal tunnel prevention",
+                        style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: textColor)),
+                  ),
+                  Text(" 3 mins")
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   Text("🏋️ ", style: TextStyle(color: textColor)),
                   InkWell(
                     onTap: () {
